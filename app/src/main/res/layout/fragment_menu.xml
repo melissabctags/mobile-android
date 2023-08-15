@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MenuFragment">
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/llMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="25.54dp"
+                    android:layout_height="25.54dp"
+                    android:layout_gravity="top|center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_menu_cuadrado" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/menu"
+                    android:textAllCaps="false"
+                    android:textColor="@color/red"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSettings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="25.54dp"
+                    android:layout_height="25.54dp"
+                    android:layout_gravity="top|center"
+                    android:src="@drawable/ic_settings" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/settings"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llReceives"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="25.54dp"
+                    android:layout_height="25.54dp"
+                    android:layout_gravity="top|center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_ticket" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/receives"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llOrders"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="25.54dp"
+                    android:layout_height="25.54dp"
+                    android:layout_gravity="top|center"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_order_gray" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/orders"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</FrameLayout>
