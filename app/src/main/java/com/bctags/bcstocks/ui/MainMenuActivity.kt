@@ -45,7 +45,7 @@ class MainMenuActivity : DrawerBaseActivity() {
                     if (response.isSuccessful) {
                         val userResponse: UserResponse? = response.body()
                         val name="Welcome "+ userResponse?.userData?.firstName + " " + userResponse?.userData?.lastName
-//                        binding.tvWelcome.text= name
+                        binding.tvWelcome.text= name
                     } else {
                         Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
                     }
@@ -58,27 +58,26 @@ class MainMenuActivity : DrawerBaseActivity() {
     }
 
     private fun initListeners() {
-
-//        binding.cvReceives.setOnClickListener {
-//            val intent = Intent(this, NewReceiveActivity::class.java)
-//            startActivity(intent)
-//        }
-//        binding.cvOrders.setOnClickListener {
-//            val intent = Intent(this, OrdersActivity::class.java)
-//            startActivity(intent)
-//        }
-//        binding.cvInventory.setOnClickListener {
-//            val intent = Intent(this, InventoryActivity::class.java)
-//            startActivity(intent)
-//        }
-//        binding.cvTransfer.setOnClickListener {
-//            val intent = Intent(this, TransferActivity::class.java)
-//            startActivity(intent)
-//        }
-//        binding.cvChangeLocation.setOnClickListener {
-//            val intent = Intent(this, LocationsActivity::class.java)
-//            startActivity(intent)
-//        }
+        binding.cvReceives.setOnClickListener {
+            val intent = Intent(this, NewReceiveActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cvOrders.setOnClickListener {
+            val intent = Intent(this, OrdersActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cvInventory.setOnClickListener {
+            val intent = Intent(this, InventoryActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cvTransfer.setOnClickListener {
+            val intent = Intent(this, TransferActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cvChangeLocation.setOnClickListener {
+            val intent = Intent(this, LocationsActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
