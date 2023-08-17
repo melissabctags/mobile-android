@@ -1,7 +1,6 @@
 package com.bctags.bcstocks.ui.receives
 
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -14,20 +13,17 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityScannerReceiveBinding
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.BranchData
-import com.bctags.bcstocks.io.response.ItemsPo
 import com.bctags.bcstocks.io.response.PurchaseOrderData
 import com.bctags.bcstocks.io.response.SupplierData
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
 import com.bctags.bcstocks.model.ReceiveNew
-import com.bctags.bcstocks.ui.DrawerBaseActivity
+import com.bctags.bcstocks.util.DrawerBaseActivity
+import com.bctags.bcstocks.util.EPCTools
 import com.bctags.bcstocks.ui.receives.adapter.ItemsReceiveAdapter
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
@@ -38,9 +34,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.epctagcoder.parse.SGTIN.ParseSGTIN.Builder
-import org.epctagcoder.result.SGTIN
-import kotlin.properties.Delegates
 
 
 class ScannerReceiveActivity : DrawerBaseActivity() {
@@ -137,23 +130,35 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
         filterEpcs()
     }
+    val tools= EPCTools()
+
+//    val sgtin = Sgtin198()e
 
     private fun filterEpcs() {
         epcsList.forEach { i ->
-            Log.i("TAG",i)
-            val sgtin:SGTIN = Builder().withRFIDTag(i).build().sgtin;
-            val prefix = sgtin.companyPrefix.toString()
-            val reference = sgtin.itemReference.toString()
+//            val sgtin:SGTIN = Builder().withRFIDTag(i).build().sgtin;
+//            val prefix = sgtin.companyPrefix.toString()
+//            val reference = sgtin.itemReference.toString()//
+//            val upc=prefix+reference
 
-            val upc=prefix+reference
+           // val prefix =  tools.parseHexString(i);
 
+            val upc =tools.getGTIN(i).toString()
+
+//            val sgtin198 = Sgtin198.fromEpc(i)
+//            val prefix = Sgtin.getCompanyPrefixDigits(sgtin198.partition.toInt()).toString()
+//            val reference = Sgtin.getItemReferenceDigits(sgtin198.partition.toInt()).toString()//
+//            val upc=prefix+reference
+
+            Log.i("EPC",i)
+            Log.i("UPC",upc)
             if(hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)){
                 hashUpcs[upc] = 1
             }else{
                 hashUpcs[upc] = hashUpcs[upc]!! + 1
             }
         }
-
+        Log.i("LISTA",receiveItemsList.toString())
         receiveItemsList.forEach{
             if(hashUpcs.containsKey(it.upc)){
                 it.quantity= hashUpcs[it.upc]?.toInt() ?: 0

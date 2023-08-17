@@ -22,7 +22,7 @@
             android:name=".ui.MainMenuActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.DrawerBaseActivity"
+            android:name=".util.DrawerBaseActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"

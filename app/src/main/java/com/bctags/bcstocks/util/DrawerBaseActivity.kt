@@ -1,4 +1,4 @@
-package com.bctags.bcstocks.ui
+package com.bctags.bcstocks.util
 
 import android.content.Context
 import android.content.Intent
@@ -15,7 +15,6 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.ui.login.LoginActivity
-import com.bctags.bcstocks.ui.orders.OrdersActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.google.android.material.navigation.NavigationView
 

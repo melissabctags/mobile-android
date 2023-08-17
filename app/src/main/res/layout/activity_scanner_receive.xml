@@ -152,15 +152,10 @@
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
-
-
-
     </LinearLayout>
 
 
-
-
-
+    <!---SCAN-->
     <androidx.cardview.widget.CardView
         android:id="@+id/cvScanning"
         android:layout_width="match_parent"
@@ -178,14 +173,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             />
     </androidx.cardview.widget.CardView>
-
-
-
-
-
-
-
-
+    <!---SCAN-->
 
 
 

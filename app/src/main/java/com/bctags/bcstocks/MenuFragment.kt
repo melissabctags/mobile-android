@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.bctags.bcstocks.ui.MainMenuActivity
 import com.bctags.bcstocks.ui.orders.OrdersActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.bctags.bcstocks.ui.settings.SettingsActivity
@@ -28,7 +29,7 @@ class MenuFragment : Fragment() {
 
     private fun initListeners() {
         llMenu.setOnClickListener {
-            val intent = Intent(activity, SettingsActivity::class.java)
+            val intent = Intent(activity, MainMenuActivity::class.java)
             startActivity(intent)
         }
         llSettings.setOnClickListener {

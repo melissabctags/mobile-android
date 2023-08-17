@@ -2,7 +2,6 @@ package com.bctags.bcstocks.ui.receives
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import com.bctags.bcstocks.R
@@ -17,7 +16,7 @@ import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.ReceiveNew
-import com.bctags.bcstocks.ui.DrawerBaseActivity
+import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
