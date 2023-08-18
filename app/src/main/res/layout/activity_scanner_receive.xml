@@ -146,16 +146,43 @@
                     />
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerItemsReceived"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerItemsReceived"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </ScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveReceive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="15dp"
+                app:strokeColor="@color/black"
+                app:backgroundTint="@color/black"
+                android:text="@string/done"
+                android:textSize="18sp"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:strokeWidth="1dp"
+                app:cornerRadius="30dp"
+                app:icon="@drawable/ic_check"
+                app:iconSize="20dp"
+                app:iconGravity="textStart"
+                app:iconTint="@color/white"
+                android:visibility="invisible"
+                />
 
         </LinearLayout>
     </LinearLayout>
 
 
-    <!---SCAN-->
+    <!---SCAN -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cvScanning"
         android:layout_width="match_parent"

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/light_gray"
     android:orientation="vertical">
 
@@ -215,12 +216,47 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/avenir_book"
+                    android:text="@string/invoice"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/LoginTextInputLayoutStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/LoginTextInputLayoutStyle"
+                    app:boxCornerRadiusBottomEnd="20dp"
+                    app:boxCornerRadiusBottomStart="20dp"
+                    app:boxCornerRadiusTopEnd="20dp"
+                    app:boxCornerRadiusTopStart="20dp"
+                    app:boxStrokeWidth="1dp"
+                    android:gravity="end">
 
+                    <EditText
+                        android:id="@+id/etInvoice"
+                        android:layout_width="240dp"
+                        android:layout_height="match_parent"
+                        android:backgroundTint="@color/gray"
+                        android:textColor="@color/dark_gray"
+                        android:textColorHint="@color/gray"
+                        android:gravity="top|start"
+
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
 
 
 
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
 

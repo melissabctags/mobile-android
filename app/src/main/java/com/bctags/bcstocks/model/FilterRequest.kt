@@ -5,7 +5,7 @@ data class FilterRequest(
     var filterList: MutableList<Filter>,
     var pagination: Pagination,
 )
-data class FilterRequestOnlyPag(
+data class FilterRequestPagination(
     var pagination: Pagination,
 )
 data class Pagination(

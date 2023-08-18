@@ -1,12 +1,15 @@
 package com.bctags.bcstocks.io
 
 import com.bctags.bcstocks.io.response.CarrierResponse
+import com.bctags.bcstocks.io.response.GeneralResponse
+import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.LoginResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderResponse
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.model.FilterRequest
-import com.bctags.bcstocks.model.FilterRequestOnlyPag
+import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.LoginRequest
+import com.bctags.bcstocks.model.ReceiveNew
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -26,6 +29,12 @@ interface ApiService {
 
     @POST(value = "/carrier/list")
     fun getCarrierList(): Call<CarrierResponse>
+
+    @POST(value = "/location/list")
+    fun getLocationsList(@Body requestBody: FilterRequestPagination): Call<LocationResponse>
+
+    @POST(value = "/receipt/create")
+    fun createReceive(@Body requestBody: ReceiveNew): Call<GeneralResponse>
 
 
 

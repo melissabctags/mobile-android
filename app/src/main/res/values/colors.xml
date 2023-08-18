@@ -8,4 +8,5 @@
     <color name="light_gray">#ECECEC</color>
     <color name="lighter_gray">#F3F3F3</color>
     <color name="red">#EC1C24</color>
+    <color name="green_success">#1CEC49</color>
 </resources>

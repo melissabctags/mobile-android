@@ -30,15 +30,5 @@ data class ItemsPo(
     @SerializedName("Item") var Item: ItemData,
 )
 
-data class BranchData(
-    @SerializedName("id") var id: Int,
-    @SerializedName("name") var name: String,
-//    @SerializedName("address") var address: String,
-//    @SerializedName("zipCode") var zipCode: String,
-//    @SerializedName("city") var city: String,
-//    @SerializedName("state") var state: String,
-//    @SerializedName("country") var country: String,
-//    @SerializedName("updatedAt") var updatedAt: String,
-)
 
 

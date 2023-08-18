@@ -30,10 +30,10 @@ data class ItemReceive(
     @SerializedName("locationId") var locationId: Int,
     @SerializedName("updatedAt") var updatedAt: String,
     @SerializedName("Item") var Item: ItemData,
-    @SerializedName("Location") var Location: Location,
+    @SerializedName("Location") var Location: LocationData,
 )
-data class Location(
-    @SerializedName("id") var id: Int,
-    @SerializedName("name") var name: String,
-)
+//data class Location(
+//    @SerializedName("id") var id: Int,
+//    @SerializedName("name") var name: String,
+//)
 

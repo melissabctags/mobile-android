@@ -16,6 +16,7 @@ data class ItemsNewReceiveTempo(
     var upc: String,
     var receivedQuantity: Int,
     var position: Int,
+    var locationId: Int,
 )
 
 data class ReceiveNew(
@@ -23,10 +24,11 @@ data class ReceiveNew(
     var carrierId: Int,
     var comments: String,
     var items: MutableList<ItemNewReceive>,
+    var invoice:String
 )
 
 data class ItemNewReceive(
     var itemId: Int,
     var quantity: Int,
-    var idLocation: Int,
+    var locationId: Int,
 )

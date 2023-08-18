@@ -36,7 +36,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
     val mapPurchaseOrders: HashMap<String, String> = HashMap()
     val mapCarriers: HashMap<String, String> = HashMap()
 
-    var newReceive: ReceiveNew = ReceiveNew(0, 0, "",  mutableListOf())
+    var newReceive: ReceiveNew = ReceiveNew(0, 0, "",  mutableListOf(),"")
     var purchaseOrder: PurchaseOrderData =  PurchaseOrderData(0,"",0,0,"","","", BranchData(0,""),mutableListOf(),SupplierData(0,""))
 
     val SERVER_ERROR="Server error, try later"
@@ -70,6 +70,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
     private fun scanActivity(){
         val intent = Intent(this, ScannerReceiveActivity::class.java)
         newReceive.comments= binding.etComments.text.toString()
+        newReceive.invoice= binding.etInvoice.text.toString()
 //        intent.putExtra("purchaseOrderId",newReceive.purchaseOrderId)
 //        intent.putExtra("carrierId",newReceive.carrierId)
 //        intent.putExtra("comments", newReceive.comments)
