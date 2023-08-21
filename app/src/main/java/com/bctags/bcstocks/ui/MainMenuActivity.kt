@@ -5,28 +5,26 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.bctags.bcstocks.databinding.ActivityMainMenuBinding
+import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.ui.inventory.InventoryActivity
 import com.bctags.bcstocks.ui.locations.LocationsActivity
 import com.bctags.bcstocks.ui.orders.OrdersActivity
+import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.bctags.bcstocks.ui.transfer.TransferActivity
+import com.bctags.bcstocks.util.DrawerBaseActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import com.bctags.bcstocks.ui.receives.NewReceiveActivity
-import com.bctags.bcstocks.util.DrawerBaseActivity
 
 
 class MainMenuActivity : DrawerBaseActivity() {
     private val apiClient = ApiClient().apiService
     private lateinit var binding: ActivityMainMenuBinding
 
-    val SERVER_ERROR="Server error, try later"
-
+    val SERVER_ERROR = "Server error, try later"
+    val apiCall = ApiCall()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainMenuBinding.inflate(layoutInflater)
@@ -37,24 +35,17 @@ class MainMenuActivity : DrawerBaseActivity() {
 
     private fun getCurrentUser() {
         CoroutineScope(Dispatchers.IO).launch {
-            val call = apiClient.getCurrentUser()
-            call.enqueue(object : Callback<UserResponse> {
-                override fun onResponse(
-                    call: Call<UserResponse>,
-                    response: Response<UserResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        val userResponse: UserResponse? = response.body()
-                        val name="Welcome "+ userResponse?.userData?.firstName + " " + userResponse?.userData?.lastName
-                        binding.tvWelcome.text= name
-                    } else {
-                        Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                    }
+            apiCall.performApiCall(
+                apiClient.getCurrentUser(),
+                onSuccess = { response ->
+                    val userResponse: UserResponse? = response
+                    val name = "Welcome " + userResponse?.userData?.firstName + " " + userResponse?.userData?.lastName
+                    binding.tvWelcome.text = name
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
-                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                    Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                }
-            })
+            )
         }
     }
 
@@ -81,10 +72,6 @@ class MainMenuActivity : DrawerBaseActivity() {
         }
 
     }
-
-
-
-
 
 
 }

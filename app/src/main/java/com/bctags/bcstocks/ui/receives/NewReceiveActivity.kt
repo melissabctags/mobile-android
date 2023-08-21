@@ -6,6 +6,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityNewReceiveBinding
+import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.BranchData
 import com.bctags.bcstocks.io.response.CarrierResponse
@@ -36,10 +37,23 @@ class NewReceiveActivity : DrawerBaseActivity() {
     val mapPurchaseOrders: HashMap<String, String> = HashMap()
     val mapCarriers: HashMap<String, String> = HashMap()
 
-    var newReceive: ReceiveNew = ReceiveNew(0, 0, "",  mutableListOf(),"")
-    var purchaseOrder: PurchaseOrderData =  PurchaseOrderData(0,"",0,0,"","","", BranchData(0,""),mutableListOf(),SupplierData(0,""))
+    var newReceive: ReceiveNew = ReceiveNew(0, 0, "", mutableListOf(), "")
+    var purchaseOrder: PurchaseOrderData = PurchaseOrderData(
+        0,
+        "",
+        0,
+        0,
+        "",
+        "",
+        "",
+        BranchData(0, ""),
+        mutableListOf(),
+        SupplierData(0, "")
+    )
 
-    val SERVER_ERROR="Server error, try later"
+    val SERVER_ERROR = "Server error, try later"
+
+    val apiCall = ApiCall()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +65,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun initUI() {
-        binding.ivGoBack.setOnClickListener{
+        binding.ivGoBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnScan.setOnClickListener {
@@ -60,17 +74,21 @@ class NewReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun checkForm() {
-        if(newReceive.carrierId!=0 && newReceive.purchaseOrderId!=0){
+        if (newReceive.carrierId != 0 && newReceive.purchaseOrderId != 0) {
             scanActivity()
-        }else{
-            Toast.makeText(applicationContext, "Purchase order and Carried must be selected ",Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(
+                applicationContext,
+                "Purchase order and Carried must be selected ",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    private fun scanActivity(){
+    private fun scanActivity() {
         val intent = Intent(this, ScannerReceiveActivity::class.java)
-        newReceive.comments= binding.etComments.text.toString()
-        newReceive.invoice= binding.etInvoice.text.toString()
+        newReceive.comments = binding.etComments.text.toString()
+        newReceive.invoice = binding.etInvoice.text.toString()
 //        intent.putExtra("purchaseOrderId",newReceive.purchaseOrderId)
 //        intent.putExtra("carrierId",newReceive.carrierId)
 //        intent.putExtra("comments", newReceive.comments)
@@ -82,26 +100,28 @@ class NewReceiveActivity : DrawerBaseActivity() {
 
     private fun getCarrierList() {
         CoroutineScope(Dispatchers.IO).launch {
-            val call = apiClient.getCarrierList()
-            call.enqueue(object : Callback<CarrierResponse> {
-                override fun onResponse(call: Call<CarrierResponse>,response: Response<CarrierResponse>) {
-                    if (response.isSuccessful) {
-                        val carrierResponse: CarrierResponse? = response.body()
-                        var list: MutableList<String> = mutableListOf()
-                        carrierResponse?.list?.forEach { i ->
-                            list.add(i.name)
-                            mapCarriers[i.name] = i.id.toString();
-                        }
-                        val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
-                        dropDown.listArrange(list,autoComplete,mapCarriers,this@NewReceiveActivity,::updateCarriers)
-                    } else {
-                        Toast.makeText(applicationContext, SERVER_ERROR,Toast.LENGTH_SHORT).show()
+            apiCall.performApiCall(
+                apiClient.getCarrierList(),
+                onSuccess = { response ->
+                    val carrierResponse: CarrierResponse? = response
+                    var list: MutableList<String> = mutableListOf()
+                    carrierResponse?.list?.forEach { i ->
+                        list.add(i.name)
+                        mapCarriers[i.name] = i.id.toString();
                     }
+                    val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
+                    dropDown.listArrange(
+                        list,
+                        autoComplete,
+                        mapCarriers,
+                        this@NewReceiveActivity,
+                        ::updateCarriers
+                    )
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
-                override fun onFailure(call: Call<CarrierResponse>, t: Throwable) {
-                    Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                }
-            })
+            )
         }
     }
 
@@ -111,35 +131,31 @@ class NewReceiveActivity : DrawerBaseActivity() {
         val poRequestBody = FilterRequest(poFilter, pag)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val call = apiClient.getPurchaseOrder(poRequestBody)
-            call.enqueue(object : Callback<PurchaseOrderResponse> {
-                override fun onResponse(call: Call<PurchaseOrderResponse>,response: Response<PurchaseOrderResponse>) {
-                    if (response.isSuccessful) {
-                        val purchaseOrderResponse: PurchaseOrderResponse? = response.body()
-                        var list: MutableList<String> = mutableListOf()
-                        purchaseOrderResponse?.list?.forEach { po ->
-                            list.add(po.number)
-                            mapPurchaseOrders[po.number] = po.id.toString();
-                        }
-                        val autoComplete: AutoCompleteTextView = findViewById(R.id.purchaseOrderList)
-                        dropDown.listArrange(list,autoComplete,mapPurchaseOrders,this@NewReceiveActivity,::updatePo)
-                    } else {
-                        Toast.makeText(applicationContext, SERVER_ERROR,Toast.LENGTH_SHORT).show()
+            apiCall.performApiCall(
+                apiClient.getPurchaseOrder(poRequestBody),
+                onSuccess = { response ->
+                    val purchaseOrderResponse: PurchaseOrderResponse? = response
+                    var list: MutableList<String> = mutableListOf()
+                    purchaseOrderResponse?.list?.forEach { po ->
+                        list.add(po.number)
+                        mapPurchaseOrders[po.number] = po.id.toString();
                     }
+                    val autoComplete: AutoCompleteTextView = findViewById(R.id.purchaseOrderList)
+                    dropDown.listArrange(list,autoComplete,mapPurchaseOrders,this@NewReceiveActivity,::updatePo)
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
-                override fun onFailure(call: Call<PurchaseOrderResponse>, t: Throwable) {
-                    Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                }
-            })
+            )
         }
     }
 
-    private fun updateCarriers(id: String, text: String){
-        newReceive.carrierId=id.toInt()
+    private fun updateCarriers(id: String, text: String) {
+        newReceive.carrierId = id.toInt()
     }
 
-    private fun updatePo(id: String, text: String){
-        newReceive.purchaseOrderId=id.toInt()
+    private fun updatePo(id: String, text: String) {
+        newReceive.purchaseOrderId = id.toInt()
         searchPoSupplier(id)
     }
 
@@ -149,24 +165,20 @@ class NewReceiveActivity : DrawerBaseActivity() {
         val poRequestBody = FilterRequest(poFilter, pag)
 
         CoroutineScope(Dispatchers.IO).launch {
-            val call = apiClient.getPurchaseOrder(poRequestBody)
-            call.enqueue(object : Callback<PurchaseOrderResponse> {
-                override fun onResponse(call: Call<PurchaseOrderResponse>,response: Response<PurchaseOrderResponse>) {
-                    if (response.isSuccessful) {
-                        val poResponse: PurchaseOrderResponse? = response.body()
+            apiCall.performApiCall(
+                apiClient.getPurchaseOrder(poRequestBody),
+                onSuccess = { response ->
+                    val poResponse: PurchaseOrderResponse? = response
                         if (poResponse != null) {
-                            val text= "Supplier: " + poResponse.list[0].Supplier.name
-                            binding.tvPoSupplier.text =text
-                            purchaseOrder=poResponse.list[0]
+                            val text = "Supplier: " + poResponse.list[0].Supplier.name
+                            binding.tvPoSupplier.text = text
+                            purchaseOrder = poResponse.list[0]
                         }
-                    } else {
-                        Toast.makeText(applicationContext, SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                    }
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
-                override fun onFailure(call: Call<PurchaseOrderResponse>, t: Throwable) {
-                    Toast.makeText(applicationContext,SERVER_ERROR,Toast.LENGTH_SHORT).show()
-                }
-            })
+            )
         }
     }
 

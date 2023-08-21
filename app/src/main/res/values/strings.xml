@@ -32,6 +32,7 @@
     <string name="done">Done</string>
     <string name="back">Back</string>
     <string name="invoice">Invoice</string>
+    <string name="tasks">Tasks</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>

@@ -9,20 +9,19 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bctags.bcstocks.R
+import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
-import com.bctags.bcstocks.io.response.LoginResponse
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.ui.MainMenuActivity
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class LoginActivity : AppCompatActivity() {
+
+    val apiCall = ApiCall()
 
     private val SERVER_ERROR_MESSAGE = "Server Error. Try Again."
     private val INCORRECT_CREDENTIALS = "You have entered an invalid username or password."
@@ -77,58 +76,21 @@ class LoginActivity : AppCompatActivity() {
             val loginRequestBody = LoginRequest(txUsername, txPassword)
 
             CoroutineScope(Dispatchers.Main).launch {
-                val call = apiClient.login(loginRequestBody)
-                call.enqueue(object : Callback<LoginResponse> {
-                    override fun onResponse(
-                        call: Call<LoginResponse>,
-                        response: Response<LoginResponse>
-                    ) {
-                        if (response.isSuccessful) {
-                            val loginResponse = response.body()
-
-                            if (loginResponse == null) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    SERVER_ERROR_MESSAGE,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return
-                            }
-                            if (loginResponse.success) {
-                                createSessionPreference(loginResponse.loginData.token)
-                                goToMenu()
-                            } else {
-                                Toast.makeText(
-                                    applicationContext,
-                                    INCORRECT_CREDENTIALS,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        } else {
-                            Toast.makeText(
-                                applicationContext,
-                                SERVER_ERROR_MESSAGE,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                apiCall.performApiCall(
+                    apiClient.login(loginRequestBody),
+                    onSuccess = { response ->
+                        createSessionPreference(response.loginData.token)
+                        goToMenu()
+                    },
+                    onError = { error ->
+                        Toast.makeText(applicationContext, SERVER_ERROR_MESSAGE, Toast.LENGTH_SHORT).show()
                     }
-
-                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                        Toast.makeText(
-                            applicationContext,
-                            SERVER_ERROR_MESSAGE,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                })
+                )
             }
         } else {
-            Toast.makeText(
-                applicationContext,
-                EMPTY_CREDENTIALS,
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(applicationContext, EMPTY_CREDENTIALS, Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }
