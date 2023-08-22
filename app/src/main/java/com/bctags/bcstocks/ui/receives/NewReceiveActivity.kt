@@ -71,6 +71,14 @@ class NewReceiveActivity : DrawerBaseActivity() {
         binding.btnScan.setOnClickListener {
             checkForm()
         }
+        binding.btnNewHistorial.setOnClickListener {
+            toHistory()
+        }
+    }
+
+    private fun toHistory() {
+        val intent = Intent(this, HistorialReceivesActivity::class.java)
+        startActivity(intent)
     }
 
     private fun checkForm() {

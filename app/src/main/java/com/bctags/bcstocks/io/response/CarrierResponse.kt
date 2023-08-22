@@ -11,4 +11,7 @@ class CarrierData(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String,
 )
+class Carrier(
+    @SerializedName("name") var name: String,
+)
 

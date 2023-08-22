@@ -5,8 +5,6 @@ data class ReceiveRequest(
     val username: String,
     val password: String,
 )
-
-//  var itemReceiving = ItemsNewReceiveTempo(it.Item.id,0,it.quantity,0,it.Item.description,it.Item.upc,it.receivedQuantity,0)
 data class ItemsNewReceiveTempo(
     var itemId: Int,
     var quantity: Int,
@@ -18,7 +16,6 @@ data class ItemsNewReceiveTempo(
     var position: Int,
     var locationId: Int,
 )
-
 data class ReceiveNew(
     var purchaseOrderId: Int,
     var carrierId: Int,
@@ -26,9 +23,23 @@ data class ReceiveNew(
     var items: MutableList<ItemNewReceive>,
     var invoice:String
 )
-
 data class ItemNewReceive(
     var itemId: Int,
     var quantity: Int,
     var locationId: Int,
+)
+
+
+
+
+data class ReceiveTempo(
+    var id: Int,
+    var number: String,
+    var purchaseOrderId: Int,
+    var purchaseOrder: String,
+    var carrierId: Int,
+    var carrier: String,
+    var comments: String,
+    var items: MutableList<ItemsNewReceiveTempo>,
+    var invoice:String
 )

@@ -10,7 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.R
-import com.bctags.bcstocks.databinding.ItemReceiveBinding
+import com.bctags.bcstocks.databinding.RvItemReceiveBinding
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors.getColorStateList
@@ -19,7 +19,7 @@ import com.google.android.material.color.MaterialColors.getColorStateList
 
 class ItemsReceiveViewHolder(view: View):RecyclerView.ViewHolder(view)  {
 
-    private val binding = ItemReceiveBinding.bind(view)
+    private val binding = RvItemReceiveBinding.bind(view)
 
     fun render(item: ItemsNewReceiveTempo, onclickListener:(ItemsNewReceiveTempo)->Unit){
         binding.tvItemDescription.text= item.description

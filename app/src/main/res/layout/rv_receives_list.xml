@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:paddingBottom="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <TextView
+        android:id="@+id/tvNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="@string/number"
+        android:gravity="start|center_vertical"
+        android:fontFamily="@font/avenir_medium"
+        android:textSize="16sp"
+        android:layout_weight="2"
+        android:textColor="@color/black"
+        android:paddingHorizontal="5dp"
+        />
+    <TextView
+        android:id="@+id/tvCarrier"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="@string/carrier"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/avenir_medium"
+        android:textSize="16sp"
+        android:layout_weight="2"
+        android:textColor="@color/black"
+        android:paddingHorizontal="5dp"
+        />
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="@string/date"
+        android:gravity="center_vertical"
+        android:fontFamily="@font/avenir_medium"
+        android:textSize="16sp"
+        android:layout_weight="3"
+        android:textColor="@color/black"
+        android:paddingHorizontal="5dp"
+        />
+
+
+
+</LinearLayout>

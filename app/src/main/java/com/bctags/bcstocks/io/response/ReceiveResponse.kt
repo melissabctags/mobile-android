@@ -6,34 +6,40 @@ import com.google.gson.annotations.SerializedName
 
 class ReceiveResponse (
     @SerializedName("success") var success: Boolean,
-    @SerializedName("data") var list: MutableList<ReceiveData>
+    @SerializedName("data") var data: MutableList<ReceiveData>
 )
 
 data class ReceiveData(
     @SerializedName("id") var id: Int,
     @SerializedName("number") var number: String,
-    @SerializedName("supplierId") var supplierId: Int,
-    @SerializedName("branchId") var branchId: Int,
-    @SerializedName("supplier") var supplier: SupplierResponse,
+    @SerializedName("invoice") var invoice: String,
     @SerializedName("comments") var comments: String,
-    @SerializedName("status") var status: String,
-    @SerializedName("updatedAt") var updatedAt: String,
     @SerializedName("Branch") var Branch: BranchData,
+    @SerializedName("Carrier") var Carrier: Carrier,
+    @SerializedName("PurchaseOrder") var purchaseOrder: PurchaseOrderRec,
+    @SerializedName("receivingStatus") var receivingStatus: String,
+    @SerializedName("createdAt") var createdAt: String,
     @SerializedName("Items") var Items: MutableList<ItemReceive>,
-    @SerializedName("Carrier") var Carrier: CarrierData,
 )
 
 data class ItemReceive(
-    @SerializedName("id") var id: Int,
-    @SerializedName("itemId") var itemId: Int,
     @SerializedName("quantity") var quantity: Int,
-    @SerializedName("locationId") var locationId: Int,
-    @SerializedName("updatedAt") var updatedAt: String,
-    @SerializedName("Item") var Item: ItemData,
-    @SerializedName("Location") var Location: LocationData,
+    @SerializedName("Location") var location: LocationItemRec,
+    @SerializedName("Item") var Item: ItemRec,
 )
-//data class Location(
-//    @SerializedName("id") var id: Int,
-//    @SerializedName("name") var name: String,
-//)
+data class ItemRec(
+    @SerializedName("item") var item: String,
+    @SerializedName("description") var description: String,
+    @SerializedName("upc") var upc: String,
+)
+data class LocationItemRec(
+    @SerializedName("name") var name: String,
+)
+data class PurchaseOrderRec(
+    @SerializedName("number") var number: String,
+    @SerializedName("Supplier") var supplier: SupplierRec,
+)
+data class SupplierRec(
+    @SerializedName("name") var name: String,
+)
 

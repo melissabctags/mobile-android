@@ -33,6 +33,11 @@
     <string name="back">Back</string>
     <string name="invoice">Invoice</string>
     <string name="tasks">Tasks</string>
+    <string name="search">Search</string>
+    <string name="number">Number</string>
+    <string name="date">Date</string>
+    <string name="reset">Reset</string>
+    <string name="list">List</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -46,7 +51,6 @@
     <string name="order_qty">Order qty</string>
     <string name="quantity">Quantity</string>
     <string name="item">Item</string>
-
 
 
     <string name="error_message">Something has gone wrong, check your data or try again later.</string>

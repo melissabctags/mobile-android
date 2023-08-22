@@ -12,7 +12,7 @@ class ItemsReceiveAdapter( val itemsList: List<ItemsNewReceiveTempo>, private va
     //pasar el item, layout a modificar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsReceiveViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ItemsReceiveViewHolder(layoutInflater.inflate(R.layout.item_receive,parent,false))
+        return ItemsReceiveViewHolder(layoutInflater.inflate(R.layout.rv_item_receive,parent,false))
     }
     //devuelve el tamaño del listado
     override fun getItemCount(): Int =itemsList.size
