@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.io
 
+import android.util.Log
 import android.widget.Toast
 import com.bctags.bcstocks.io.response.LocationResponse
 import kotlinx.coroutines.CoroutineScope

@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.bctags.bcstocks.ui.MainMenuActivity
-import com.bctags.bcstocks.ui.orders.OrdersActivity
+import com.bctags.bcstocks.ui.workorders.WorkOrdersActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.bctags.bcstocks.ui.settings.SettingsActivity
 
@@ -41,7 +41,7 @@ class MenuFragment : Fragment() {
             startActivity(intent)
         }
         llOrders.setOnClickListener {
-            val intent = Intent(activity, OrdersActivity::class.java)
+            val intent = Intent(activity, WorkOrdersActivity::class.java)
             startActivity(intent)
         }
     }

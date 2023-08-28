@@ -10,7 +10,7 @@ import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.ui.inventory.InventoryActivity
 import com.bctags.bcstocks.ui.locations.LocationsActivity
-import com.bctags.bcstocks.ui.orders.OrdersActivity
+import com.bctags.bcstocks.ui.workorders.WorkOrdersActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.bctags.bcstocks.ui.transfer.TransferActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
@@ -55,7 +55,7 @@ class MainMenuActivity : DrawerBaseActivity() {
             startActivity(intent)
         }
         binding.cvOrders.setOnClickListener {
-            val intent = Intent(this, OrdersActivity::class.java)
+            val intent = Intent(this, WorkOrdersActivity::class.java)
             startActivity(intent)
         }
         binding.cvInventory.setOnClickListener {

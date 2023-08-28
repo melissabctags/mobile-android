@@ -6,9 +6,14 @@ import com.google.gson.annotations.SerializedName
 
 class ReceiveResponse (
     @SerializedName("success") var success: Boolean,
-    @SerializedName("data") var data: MutableList<ReceiveData>
+    @SerializedName("data") var data: MutableList<ReceiveData>,
+    @SerializedName("pagination") var pagination:PaginationResponse
 )
-
+data class PaginationResponse(
+    var current: Int,
+    var pageSize: Int,
+    var totals: Int,
+)
 data class ReceiveData(
     @SerializedName("id") var id: Int,
     @SerializedName("number") var number: String,
@@ -25,13 +30,13 @@ data class ReceiveData(
 data class ItemReceive(
     @SerializedName("quantity") var quantity: Int,
     @SerializedName("Location") var location: LocationItemRec,
-    @SerializedName("Item") var Item: ItemRec,
+    @SerializedName("Item") var Item: ItemData,
 )
-data class ItemRec(
-    @SerializedName("item") var item: String,
-    @SerializedName("description") var description: String,
-    @SerializedName("upc") var upc: String,
-)
+//data class ItemRec(
+//    @SerializedName("item") var item: String,
+//    @SerializedName("description") var description: String,
+//    @SerializedName("upc") var upc: String,
+//)
 data class LocationItemRec(
     @SerializedName("name") var name: String,
 )

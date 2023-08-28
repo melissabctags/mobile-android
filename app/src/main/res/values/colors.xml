@@ -9,4 +9,5 @@
     <color name="lighter_gray">#F3F3F3</color>
     <color name="red">#EC1C24</color>
     <color name="green_success">#1CEC49</color>
+    <color name="yellow_alert">#FFE600</color>
 </resources>

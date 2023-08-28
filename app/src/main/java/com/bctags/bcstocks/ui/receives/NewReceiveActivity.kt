@@ -19,6 +19,7 @@ import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.ReceiveNew
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
+import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +33,10 @@ class NewReceiveActivity : DrawerBaseActivity() {
     private lateinit var binding: ActivityNewReceiveBinding
 
     private val apiClient = ApiClient().apiService
-    val dropDown = DropDown()
+    private val apiCall = ApiCall()
+
+    private val dropDown = DropDown()
+    private val utils = Utils()
 
     val mapPurchaseOrders: HashMap<String, String> = HashMap()
     val mapCarriers: HashMap<String, String> = HashMap()
@@ -50,10 +54,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
         mutableListOf(),
         SupplierData(0, "")
     )
-
     val SERVER_ERROR = "Server error, try later"
-
-    val apiCall = ApiCall()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +132,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
                 }
             )
         }
+
     }
 
     private fun getPurchaseOrderList() {

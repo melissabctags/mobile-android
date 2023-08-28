@@ -6,20 +6,18 @@ import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.LoginResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderResponse
 import com.bctags.bcstocks.io.response.ReceiveResponse
+import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.UserResponse
+import com.bctags.bcstocks.io.response.WorkOrderResponse
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.model.ReceiveNew
-import com.bctags.bcstocks.model.ReceiveRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
-import retrofit2.http.GET
-
 
 interface ApiService {
-
     @POST(value = "/auth/signin")//
     fun login(@Body requestBody: LoginRequest): Call<LoginResponse>
 
@@ -40,6 +38,15 @@ interface ApiService {
 
     @POST(value = "/receipt/list")
     fun receiveList(@Body requestBody: FilterRequest): Call<ReceiveResponse>
+
+    @POST(value = "/supplier/list")
+    fun supplierList(): Call<SupplierResponse>
+
+    @POST(value = "/workorder/list")
+    fun workOrderList(@Body requestBody: FilterRequest): Call<WorkOrderResponse>
+
+
+
 
 
 

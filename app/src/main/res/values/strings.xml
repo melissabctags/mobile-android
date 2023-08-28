@@ -8,6 +8,7 @@
     <string name="menu">Menu</string>
     <string name="changeLocation">Change of location</string>
     <string name="orders">Orders</string>
+    <string name="work_orders">Work orders</string>
     <string name="logOut">Log out</string>
     <string name="login">Log in</string>
     <string name="username">Username</string>
@@ -38,6 +39,17 @@
     <string name="date">Date</string>
     <string name="reset">Reset</string>
     <string name="list">List</string>
+    <string name="image_description">Image description</string>
+    <string name="client">Client</string>
+    <string name="po_reference">Po Reference</string>
+    <string name="po">PO</string>
+    <string name="view">View</string>
+    <string name="pick">Pick</string>
+    <string name="delivery_date">Delivery date</string>
+    <string name="create_date">Create date</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="units">Units</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>

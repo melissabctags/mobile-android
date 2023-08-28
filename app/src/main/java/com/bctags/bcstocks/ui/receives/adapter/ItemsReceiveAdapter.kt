@@ -7,7 +7,7 @@ import com.bctags.bcstocks.R
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
 
 //adapter: se encarga de coger la info
-class ItemsReceiveAdapter( val itemsList: List<ItemsNewReceiveTempo>, private val onclickListener:(ItemsNewReceiveTempo)->Unit): RecyclerView.Adapter<ItemsReceiveViewHolder>() {
+class ItemsReceiveAdapter(val itemsList: List<ItemsNewReceiveTempo>, private val onclickListener:(ItemsNewReceiveTempo)->Unit): RecyclerView.Adapter<ItemsReceiveViewHolder>() {
 
     //pasar el item, layout a modificar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemsReceiveViewHolder {
