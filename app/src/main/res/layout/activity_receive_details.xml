@@ -33,7 +33,7 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/avenir_medium"
             android:gravity="center"
-            android:text="@string/work_order"
+            android:text="@string/receives"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="20sp" />
@@ -59,7 +59,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvOrderNumber"
+                android:id="@+id/tvNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -68,7 +68,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                tools:text="@string/work_orders" />
+                tools:text="@string/receives" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -98,13 +98,13 @@
                             android:layout_weight="2"
                             android:fontFamily="@font/avenir_medium"
                             android:gravity="start"
-                            android:text="@string/client"
+                            android:text="@string/invoice"
                             android:textAllCaps="false"
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tvClient"
+                            android:id="@+id/tvInvoice"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -117,37 +117,7 @@
                             tools:text="@string/work_orders" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="2"
-                            android:fontFamily="@font/avenir_medium"
-                            android:gravity="start"
-                            android:text="@string/po_reference"
-                            android:textAllCaps="false"
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/tvPoReference"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/avenir_medium"
-                            android:gravity="start"
-                            android:textAllCaps="false"
-                            android:textColor="@color/black"
-                            android:textSize="16sp"
-                            tools:text="@string/po" />
-
-                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -161,13 +131,45 @@
                             android:layout_weight="2"
                             android:fontFamily="@font/avenir_medium"
                             android:gravity="start"
-                            android:text="@string/po"
+                            android:text="@string/purchase_order"
                             android:textAllCaps="false"
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tvPo"
+                            android:id="@+id/tvPurchaseOrder"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="3"
+                            android:fontFamily="@font/avenir_medium"
+                            android:gravity="start"
+                            android:textAllCaps="false"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            tools:text="@string/date" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="7dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="2"
+                            android:fontFamily="@font/avenir_medium"
+                            android:gravity="start"
+                            android:text="@string/supplier"
+                            android:textAllCaps="false"
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tvSupplier"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -193,13 +195,13 @@
                             android:layout_weight="2"
                             android:fontFamily="@font/avenir_medium"
                             android:gravity="start"
-                            android:text="@string/delivery_date"
+                            android:text="@string/date"
                             android:textAllCaps="false"
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tvDeliveryDate"
+                            android:id="@+id/tvDate"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
@@ -212,37 +214,7 @@
                             tools:text="@string/date" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingVertical="5dp">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="2"
-                            android:fontFamily="@font/avenir_medium"
-                            android:gravity="start"
-                            android:text="@string/create_date"
-                            android:textAllCaps="false"
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/tvCreateDate"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="3"
-                            android:fontFamily="@font/avenir_medium"
-                            android:gravity="start"
-                            android:textAllCaps="false"
-                            android:textColor="@color/black"
-                            android:textSize="16sp"
-                            tools:text="@string/date" />
-                    </LinearLayout>
 
 
                 </LinearLayout>
@@ -291,10 +263,21 @@
                     android:textAllCaps="false"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="2"
+                    android:fontFamily="@font/avenir_heavy"
+                    android:gravity="start"
+                    android:text="@string/location"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerWorkOrderItems"
+                android:id="@+id/recyclerItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
@@ -331,6 +314,7 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
 

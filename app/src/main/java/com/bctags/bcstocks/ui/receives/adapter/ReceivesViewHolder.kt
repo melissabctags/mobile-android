@@ -7,6 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.databinding.RvReceivesListBinding
 import com.bctags.bcstocks.io.response.ReceiveData
+import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.util.Utils
 
 //ViewHolder:  se encarga de pintar las celdas
@@ -17,7 +18,7 @@ class ReceivesViewHolder(view: View):RecyclerView.ViewHolder(view)  {
     val utils= Utils()
 
 
-    fun render(receiveData: ReceiveData, onclickListener:(ReceiveData)->Unit){
+    fun render(receiveData: ReceiveData, onclickListener: (ReceiveData) -> Unit,){
         binding.tvNumber.text= receiveData.number
         binding.tvCarrier.text= receiveData.Carrier.name
         binding.tvDate.text= utils.dateFormatter(receiveData.createdAt)

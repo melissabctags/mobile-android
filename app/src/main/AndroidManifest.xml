@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.receives.ReceiveDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.workorders.OrderDetailsActivity"
             android:exported="false" />
         <activity

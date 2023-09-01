@@ -50,6 +50,7 @@
     <string name="name">Name</string>
     <string name="description">Description</string>
     <string name="units">Units</string>
+    <string name="work_order">Work order</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -58,6 +59,7 @@
 
     <string name="scan">Scan</string>
     <string name="stop_scan">Stop scanning</string>
+    <string name="stop">Stop</string>
 
     <string name="items">Items</string>
     <string name="order_qty">Order qty</string>

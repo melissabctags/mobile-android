@@ -78,7 +78,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="20dp"
+    android:paddingTop="30dp"
     >
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,7 +86,6 @@
                 android:orientation="horizontal"
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
-
                 >
                 <LinearLayout
                     android:layout_width="0dp"
@@ -94,6 +93,7 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:layout_weight="1"
+                    android:paddingStart="20dp"
                     >
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cvReceives"
@@ -126,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:gravity="center"
+                    android:paddingEnd="20dp"
                     android:layout_weight="1"
                     >
                     <androidx.cardview.widget.CardView
@@ -167,6 +168,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
+            android:paddingStart="20dp"
             android:layout_weight="1"
             >
             <androidx.cardview.widget.CardView
@@ -200,6 +202,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
+            android:paddingEnd="20dp"
             android:layout_weight="1"
             >
             <androidx.cardview.widget.CardView
@@ -241,15 +244,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
+            android:paddingStart="20dp"
             android:layout_weight="1"
             >
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvTransfer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="15dp"
                 android:backgroundTint="@color/light_gray"
-                >
+                app:cardCornerRadius="15dp">
+
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -275,6 +280,7 @@
             android:orientation="vertical"
             android:gravity="center"
             android:layout_weight="1"
+            android:paddingEnd="20dp"
             >
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvTasks"

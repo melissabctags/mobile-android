@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.ui.receives
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.AutoCompleteTextView
@@ -145,7 +146,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
                 apiClient.getPurchaseOrder(poRequestBody),
                 onSuccess = { response ->
                     val purchaseOrderResponse: PurchaseOrderResponse? = response
-                    var list: MutableList<String> = mutableListOf()
+                    val list: MutableList<String> = mutableListOf()
                     purchaseOrderResponse?.list?.forEach { po ->
                         list.add(po.number)
                         mapPurchaseOrders[po.number] = po.id.toString();
@@ -169,6 +170,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
         searchPoSupplier(id)
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun searchPoSupplier(id: String) {
         val pag = Pagination(1, 100)
         val poFilter = mutableListOf(Filter("id", "eq", mutableListOf(id)))
@@ -178,12 +180,10 @@ class NewReceiveActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.getPurchaseOrder(poRequestBody),
                 onSuccess = { response ->
-                    val poResponse: PurchaseOrderResponse? = response
-                        if (poResponse != null) {
-                            val text = "Supplier: " + poResponse.list[0].Supplier.name
-                            binding.tvPoSupplier.text = text
-                            purchaseOrder = poResponse.list[0]
-                        }
+                    val poResponse: PurchaseOrderResponse = response
+                    val text = "Supplier: " + poResponse.list[0].Supplier.name
+                    binding.tvPoSupplier.text = text
+                    purchaseOrder = poResponse.list[0]
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()

@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.ui.workorders
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -59,6 +60,7 @@ class WorkOrdersActivity : DrawerBaseActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun prevPagination() {
         if (pagination.prevPage != 0) {
             pagination=utils.prevPagination(pagination)
@@ -67,6 +69,7 @@ class WorkOrdersActivity : DrawerBaseActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun NextPagination() {
         if (pagination.nextPage != 0) {
             pagination=utils.NextPagination(pagination)

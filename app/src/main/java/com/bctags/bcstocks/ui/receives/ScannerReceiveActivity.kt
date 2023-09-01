@@ -39,8 +39,11 @@ import com.bctags.bcstocks.util.ReaderRFID
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
+import com.rscja.deviceapi.RFIDWithUHFUART
+import com.rscja.deviceapi.entity.UHFTAGInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -53,6 +56,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     val dropDown = DropDown()
     val tools = EPCTools()
     val messageDialog = MessageDialog()
+    val reader: ReaderRFID = ReaderRFID()
 
     var newReceive: ReceiveNew = ReceiveNew(0, 0, "", mutableListOf(), "")
     var purchaseOrder: PurchaseOrderData = PurchaseOrderData(
@@ -68,15 +72,19 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         SupplierData(0, "")
     )
     val DURACION: Long = 2500;
-    var hashUpcs: HashMap<String, Int> = HashMap()
 
-
-    var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
     val mapLocation: HashMap<String, String> = HashMap()
+    var hashUpcs: MutableMap<String, Int> = mutableMapOf()
+    var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
 
     private lateinit var adapter: ItemsReceiveAdapter
     val SERVER_ERROR = "Server error, try later"
     var locationList: MutableList<String> = mutableListOf()
+
+    private var isScanning = true
+    var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
+    val epcsList: MutableList<String> = mutableListOf()
+    var isInventory: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,14 +142,45 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
-    val reader: ReaderRFID = ReaderRFID()
-
     private fun readTag() {
-        reader.readTag()
+        var result: Boolean = rfid.init();
+        if (!result) {
+            Log.i("DIDN'T WORK", "DIDN'T WORK")
+            rfid.stopInventory()
+            rfid.free()
+        }
+        if (rfid.startInventoryTag()) {
+            Log.i("WORKS", "WORKS")
+            isInventory = true
+            tagsReader()
+        } else {
+            stopInventory()
+        }
+    }
+
+    private fun tagsReader() {
+        CoroutineScope(Dispatchers.Default).launch {
+            while (isInventory) {
+                val uhftagInfo: UHFTAGInfo? = rfid.readTagFromBuffer();
+                Log.i("EPC", uhftagInfo.toString())
+                if (uhftagInfo != null) {
+                    epcsList.add(uhftagInfo.epc.toString())
+                } else {
+                    delay(300)
+                }
+            }
+        }
     }
 
     private fun stopInventory() {
-        countUpcs(reader.stopInventory())
+        isScanning = false
+        isInventory = false
+        rfid.stopInventory()
+        rfid.free()
+        val btnText = "Scan"
+        binding.tvScan.text = btnText
+        val list = epcsList.distinct() as MutableList<String>
+        countUpcs(list)
         checkReceivesUpcs()
     }
 
@@ -198,12 +237,27 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         val tfLocationList: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
 
         if (item.quantity == 0) {
-            checkButtonReceiveItemMaterialButton(btnStatus,"#ffe600",R.color.black,R.drawable.ic_exclamation)
+            checkButtonReceiveItemMaterialButton(
+                btnStatus,
+                "#ffe600",
+                R.color.black,
+                R.drawable.ic_exclamation
+            )
         } else {
             if ((item.receivedQuantity + item.quantity) >= item.orderQuantity) {
-                checkButtonReceiveItemMaterialButton(btnStatus,"#20c95e",R.color.white,R.drawable.ic_done)
+                checkButtonReceiveItemMaterialButton(
+                    btnStatus,
+                    "#20c95e",
+                    R.color.white,
+                    R.drawable.ic_done
+                )
             } else {
-                checkButtonReceiveItemMaterialButton(btnStatus,"#ff7700",R.color.black,R.drawable.ic_exclamation)
+                checkButtonReceiveItemMaterialButton(
+                    btnStatus,
+                    "#ff7700",
+                    R.color.black,
+                    R.drawable.ic_exclamation
+                )
             }
         }
         tvItemDescription.text = item.description
@@ -258,8 +312,19 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun initListeners() {
-        binding.tvStopScanning.setOnClickListener {
-            stopInventory()
+        binding.tvScan.setOnClickListener {
+            if (isScanning) {
+                stopInventory()
+            } else {
+                val btnText = "Stop"
+                binding.tvScan.text = btnText
+                isScanning = true
+                receiveItemsList.clear()
+                hashUpcs.clear()
+                initItemsList()
+                initRecyclerView()
+                readTag()
+            }
         }
         binding.ivGoBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -282,7 +347,11 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
             }
         }
         if (empty) {
-            messageDialog.showDialog(this@ScannerReceiveActivity,R.layout.dialog_error,"Select a location for $emptyLocations") { }
+            messageDialog.showDialog(
+                this@ScannerReceiveActivity,
+                R.layout.dialog_error,
+                "Select a location for $emptyLocations"
+            ) { }
         } else {
             newReceive.items = newItems
             sendNewReceive()
@@ -294,10 +363,18 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.createReceive(newReceive),
                 onSuccess = { response ->
-                    messageDialog.showDialog(this@ScannerReceiveActivity,R.layout.dialog_success,"") { goMainReceive() }
+                    messageDialog.showDialog(
+                        this@ScannerReceiveActivity,
+                        R.layout.dialog_success,
+                        ""
+                    ) { goMainReceive() }
                 },
                 onError = { error ->
-                    messageDialog.showDialog(this@ScannerReceiveActivity,R.layout.dialog_error,error) { }
+                    messageDialog.showDialog(
+                        this@ScannerReceiveActivity,
+                        R.layout.dialog_error,
+                        error
+                    ) { }
                 }
             )
         }

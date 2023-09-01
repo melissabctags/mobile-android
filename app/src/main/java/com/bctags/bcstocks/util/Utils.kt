@@ -1,23 +1,9 @@
 package com.bctags.bcstocks.util
 
 import android.icu.text.SimpleDateFormat
-import android.util.Log
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
-import com.bctags.bcstocks.R
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
-import com.bctags.bcstocks.io.response.CarrierData
-import com.bctags.bcstocks.io.response.CarrierResponse
-import com.bctags.bcstocks.io.response.SupplierData
-import com.bctags.bcstocks.io.response.SupplierResponse
-import com.bctags.bcstocks.model.Filter
-import com.bctags.bcstocks.model.FilterRequest
-import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.TempPagination
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class Utils {
     private val apiClient = ApiClient().apiService
@@ -69,7 +55,13 @@ class Utils {
         return pagination
     }
 
-
+    fun convertDate(input: Int): String? {
+        return if (input >= 10) {
+            input.toString()
+        } else {
+            "0$input"
+        }
+    }
 
 
 

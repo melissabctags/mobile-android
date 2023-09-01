@@ -2,7 +2,7 @@ package com.bctags.bcstocks.model
 import com.google.gson.annotations.SerializedName
 
 data class FilterRequest(
-    var filterList: MutableList<Filter>,
+    var filters: MutableList<Filter>,
     var pagination: Pagination,
 )
 data class FilterRequestPagination(

@@ -15,7 +15,7 @@ class WorkOrderDetailsAdapter(val list: List<ItemWorkOrder>): RecyclerView.Adapt
     //pasar el item, layout a modificar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkOrderDetailsViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return WorkOrderDetailsViewHolder(layoutInflater.inflate(R.layout.rv_workorder_items_list,parent,false))
+        return WorkOrderDetailsViewHolder(layoutInflater.inflate(R.layout.rv_simple_items_list,parent,false))
     }
 
     //devuelve el tamaño del listado

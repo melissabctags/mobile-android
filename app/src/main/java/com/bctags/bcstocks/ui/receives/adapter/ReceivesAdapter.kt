@@ -2,13 +2,16 @@ package com.bctags.bcstocks.ui.receives.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.io.response.ReceiveData
+import com.bctags.bcstocks.io.response.WorkOrderData
+
 
 //adapter: se encarga de coger la info
-class ReceivesAdapter(val receivesList: List<ReceiveData>,private val onclickListener: (ReceiveData) -> Unit) : RecyclerView.Adapter<ReceivesViewHolder>() {
+class ReceivesAdapter(
+    val receivesList: MutableList<ReceiveData>,private val onClickListener:(ReceiveData)->Unit
+) : RecyclerView.Adapter<ReceivesViewHolder>() {
 
     //pasar el item, layout a modificar
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReceivesViewHolder {
@@ -22,7 +25,7 @@ class ReceivesAdapter(val receivesList: List<ReceiveData>,private val onclickLis
     //pasar por cada item y va a llamar al render
     override fun onBindViewHolder(holder: ReceivesViewHolder, position: Int) {
         val item = receivesList[position]
-        holder.render(item, onclickListener)
+        holder.render(item,onClickListener)
     }
 
 

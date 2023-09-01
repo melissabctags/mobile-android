@@ -12,18 +12,19 @@ class ReaderRFID {
 
     var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance();
 
-    var epcsList: MutableList<String> = mutableListOf()
+    val epcsList: MutableList<String> = mutableListOf()
 
     var isInventory: Boolean = false
 
-     fun readTag() {
+    fun readTag() {
         var result: Boolean = rfid.init();
         if (!result) {
-            Log.i("DIDN'T WORK","DIDN'T WORK")
-           // stopInventory()
+            Log.i("DIDN'T WORK", "DIDN'T WORK")
+            rfid.stopInventory()
+            rfid.free()
         }
         if (rfid.startInventoryTag()) {
-            Log.i("WORKS","WORKS")
+            Log.i("WORKS", "WORKS")
             isInventory = true
             tagsReader()
         } else {
@@ -31,10 +32,11 @@ class ReaderRFID {
         }
     }
 
-     fun tagsReader() {
-        CoroutineScope(Dispatchers.Default ).launch {
+    fun tagsReader() {
+        CoroutineScope(Dispatchers.Default).launch {
             while (isInventory) {
-                var uhftagInfo: UHFTAGInfo? = rfid.readTagFromBuffer() ;
+                val uhftagInfo: UHFTAGInfo? = rfid.readTagFromBuffer();
+                Log.i("EPC", uhftagInfo.toString())
                 if (uhftagInfo != null) {
                     epcsList.add(uhftagInfo.epc.toString())
                 } else {
@@ -44,14 +46,15 @@ class ReaderRFID {
         }
     }
 
-     fun stopInventory() : MutableList<String> {
+    fun stopInventory(): MutableList<String> {
+        Log.i("STOP", "STOP")
         rfid.stopInventory()
         rfid.free()
-        epcsList = epcsList.distinct() as MutableList<String>
-        //filterEpcs()
+        Log.i("STOP2","STOP2")
+        //epcsList = epcsList.distinct() as MutableList<String>
+        Log.i("STOP3",epcsList.toString())
         return epcsList
     }
-
 
 
 }

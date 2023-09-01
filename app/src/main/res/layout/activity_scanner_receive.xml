@@ -73,12 +73,12 @@
                 android:layout_weight="1"
                 >
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/tvStopScanning"
+                    android:id="@+id/tvScan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     app:strokeColor="@color/black"
-                    android:text="@string/stop_scan"
+                    android:text="@string/stop"
                     android:textSize="18sp"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
