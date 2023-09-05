@@ -8,6 +8,10 @@ data class WorkOrderResponse(
     @SerializedName("data") var data: MutableList<WorkOrderData>,
     @SerializedName("pagination") var pagination:PaginationResponse
 )
+data class WorkOrderResponseOne(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data:WorkOrderData,
+)
 data class WorkOrderData(
     @SerializedName("id") var id: Int,
     @SerializedName("bcTagsClientId") var bcTagsClientId: Int,
@@ -43,3 +47,13 @@ data class ItemWorkOrder(
     @SerializedName("createdAt") var createdAt:String,
     @SerializedName("Item") var Item:ItemData,
 )
+
+data class PartialResponse(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: PartialData,
+)
+data class PartialData(
+    @SerializedName("message") var message: String,
+    @SerializedName("id") var id: Int,
+)
+

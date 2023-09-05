@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lighter_gray"
+    android:orientation="vertical">
+
+    <!--HEADER-->
+    <!--HEADER-->
+    <!--HEADER-->
+    <LinearLayout
+        android:id="@+id/llHeader"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/red"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivGoBack"
+            android:layout_width="20.99dp"
+            android:layout_height="25.9dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="30dp"
+            android:src="@drawable/ic_left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/avenir_medium"
+            android:gravity="center"
+            android:text="@string/picking"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="23sp" />
+    </LinearLayout>
+
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_gray"
+                android:orientation="horizontal"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/tvHeadItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:fontFamily="@font/avenir_heavy"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="@string/item"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvHeadOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:fontFamily="@font/avenir_heavy"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/order_qty"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvHeadQty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:fontFamily="@font/avenir_heavy"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/quantity"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingVertical="5dp">
+
+                <TextView
+                    android:id="@+id/tvItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:fontFamily="@font/avenir_medium"
+                    android:gravity="start|center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="@string/item"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:fontFamily="@font/avenir_medium"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/order_qty"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvQty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:fontFamily="@font/avenir_medium"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/quantity"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="15dp"
+                android:paddingHorizontal="10dp"
+                android:fontFamily="@font/avenir_heavy"
+                android:gravity="start|center_vertical"
+                android:text="@string/locations"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </ScrollView>
+
+
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
+
+    <!---FOOTER-->
+    <!---FOOTER-->
+    <!---FOOTER-->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginBottom="-40dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="23dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fcMenu"
+            android:name="com.bctags.bcstocks.MenuFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+

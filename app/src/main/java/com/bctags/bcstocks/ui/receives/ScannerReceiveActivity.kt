@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -235,8 +236,10 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
         val btnStatus: MaterialButton = dialog.findViewById(R.id.btnStatus)
         val tfLocationList: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
+        val llStatus: LinearLayout = dialog.findViewById(R.id.llStatus)
 
         if (item.quantity == 0) {
+            llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ffe600"))
             checkButtonReceiveItemMaterialButton(
                 btnStatus,
                 "#ffe600",
@@ -245,6 +248,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
             )
         } else {
             if ((item.receivedQuantity + item.quantity) >= item.orderQuantity) {
+                llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#20c95e"))
                 checkButtonReceiveItemMaterialButton(
                     btnStatus,
                     "#20c95e",
@@ -252,6 +256,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                     R.drawable.ic_done
                 )
             } else {
+                llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff7700"))
                 checkButtonReceiveItemMaterialButton(
                     btnStatus,
                     "#ff7700",
@@ -306,7 +311,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         color: Int,
         iconDrawable: Int
     ) {
-        btn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(colorTint))
+        //btn.backgroundTintList = ColorStateList.valueOf(Color.parseColor(colorTint))
         btn.setIconResource(iconDrawable)
         btn.setIconTintResource(color)
     }

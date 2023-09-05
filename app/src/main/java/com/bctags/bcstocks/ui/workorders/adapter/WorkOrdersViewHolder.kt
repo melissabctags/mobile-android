@@ -22,7 +22,7 @@ class WorkOrdersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.tvPo.text = item.po
         binding.tvDate.text = item.dateOrderPlaced
 
-        if (item.status == "created" || item.status == "picking") {
+        if (item.status == "created" || item.status == "in_progress") {
             binding.mbIcon.visibility = View.VISIBLE
         }
 

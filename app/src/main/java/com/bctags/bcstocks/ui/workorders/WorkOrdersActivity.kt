@@ -6,22 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bctags.bcstocks.R
-import com.bctags.bcstocks.databinding.ActivityHistorialReceivesBinding
 import com.bctags.bcstocks.databinding.ActivityOrdersBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
-import com.bctags.bcstocks.io.response.ReceiveData
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.TempPagination
-import com.bctags.bcstocks.ui.receives.ScannerReceiveActivity
-import com.bctags.bcstocks.ui.receives.adapter.ReceivesAdapter
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
+import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
-import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -111,7 +106,7 @@ class WorkOrdersActivity : DrawerBaseActivity() {
         binding.recyclerWorkOrders.adapter = adapter
     }
 
-    fun viewWorkOrder(workOrderData: WorkOrderData) {
+    fun viewWorkOrder(workOrderData: WorkOrderData) {3
         val intent = Intent(this, OrderDetailsActivity::class.java)
         val gson = Gson()
         intent.putExtra("WORK_ORDER", gson.toJson(workOrderData))
@@ -119,7 +114,10 @@ class WorkOrdersActivity : DrawerBaseActivity() {
     }
 
     fun pickWorkOrder(workOrderData: WorkOrderData) {
-        Toast.makeText(applicationContext, "PICK", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, PickingListActivity::class.java)
+        intent.putExtra("WORK_ORDER_ID", workOrderData.id)
+        intent.putExtra("PARTIAL_ID", 0)
+        startActivity(intent)
     }
 
 

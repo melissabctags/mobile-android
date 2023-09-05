@@ -1,62 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="350dp"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:background="@drawable/dialog_bg"
-    >
-    <com.google.android.material.button.MaterialButton
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        app:cornerRadius="15dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:id="@+id/btnStatus"
-        app:cardElevation="0dp"
-        android:gravity="center_horizontal"
-        android:layout_gravity="center"
-        android:layout_margin="20dp"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
-        android:insetRight="0dp"
-        android:insetBottom="0dp"
-        app:icon="@drawable/ic_done"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:iconTint="@color/black"
-        />
-
+    android:orientation="vertical"
+    android:layout_margin="0dp"
+    android:padding="0dp"
+    app:cardCornerRadius="25dp"
+>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/avenir_black"
-            android:textSize="18sp"
-            android:layout_weight="1"
-            android:text="@string/item"
-            android:textColor="@color/black"
-            android:paddingStart="5dp"
-            android:paddingVertical="5dp"
+        android:orientation="vertical">
 
-            />
-        <TextView
-            android:id="@+id/tvItemDescription"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/avenir_medium"
-            android:textSize="15sp"
-            android:layout_weight="2"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet lacinia dui.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet lacinia dui."
-            android:textColor="@color/black"
-            android:paddingBottom="15dp"
-            android:paddingStart="5dp"
+
+    <LinearLayout
+        android:id="@+id/llStatus"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="@color/red"
+        android:orientation="vertical">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStatus"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:backgroundTint="@color/white"
+            app:cardElevation="0dp"
+            app:cornerRadius="15dp"
+            app:icon="@drawable/ic_done"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@color/black"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+
             />
     </LinearLayout>
 
@@ -64,43 +44,85 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:fontFamily="@font/avenir_heavy"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="5dp"
+            android:text="@string/item"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/light_gray"
+            android:fontFamily="@font/avenir_heavy"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="5dp"
+            />
+        <TextView
+            android:id="@+id/tvItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="2"
+            android:fontFamily="@font/avenir_medium"
+            android:paddingHorizontal="5dp"
+            android:paddingBottom="15dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textAlignment="center"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet lacinia dui.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet lacinia dui." />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="30dp"
-        android:padding="5dp"
-        >
+        android:orientation="horizontal"
+        android:padding="5dp">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/avenir_black"
-            android:textSize="18sp"
-            android:paddingStart="5dp"
             android:layout_weight="1"
+            android:fontFamily="@font/avenir_black"
+            android:paddingHorizontal="5dp"
             android:text="@string/quantity"
             android:textColor="@color/black"
-            />
+            android:layout_gravity="center_vertical"
+            android:textSize="18sp" />
+
         <com.google.android.material.textfield.TextInputLayout
             style="@style/LoginTextInputLayoutStyle"
             android:layout_width="0dp"
-            android:layout_weight="2"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
             android:theme="@style/LoginTextInputLayoutStyle"
             app:boxCornerRadiusBottomEnd="20dp"
             app:boxCornerRadiusBottomStart="20dp"
             app:boxCornerRadiusTopEnd="20dp"
             app:boxCornerRadiusTopStart="20dp"
-            app:boxStrokeWidth="1dp"
-            android:layout_gravity="center"
-            >
+            app:boxStrokeWidth="1dp">
+
             <EditText
                 android:id="@+id/etQuantity"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:backgroundTint="@color/gray"
+                android:inputType="number"
                 android:textColor="@color/dark_gray"
                 android:textColorHint="@color/gray"
-                android:inputType="number"
-                tools:text="@string/item"
-                />
+                tools:text="@string/item" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
@@ -108,63 +130,58 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginBottom="30dp"
-        android:padding="5dp"
-        >
+        android:orientation="horizontal"
+        android:padding="5dp">
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/avenir_black"
-            android:textSize="18sp"
-            android:paddingStart="5dp"
             android:layout_weight="1"
+            android:fontFamily="@font/avenir_black"
+            android:paddingHorizontal="5dp"
             android:text="@string/location"
+            android:layout_gravity="center_vertical"
             android:textColor="@color/black"
-            />
+            android:textSize="18sp" />
+
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tfLocationList2"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_gravity="center_vertical"
             app:boxCornerRadiusBottomEnd="30dp"
             app:boxCornerRadiusBottomStart="30dp"
             app:boxCornerRadiusTopEnd="30dp"
-            app:boxCornerRadiusTopStart="30dp"
-            android:layout_weight="2"
-            android:id="@+id/tfLocationList2"
-            >
+            app:boxCornerRadiusTopStart="30dp">
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/tfLocationList"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:textSize="14sp"
                 android:layout_margin="0dp"
                 android:padding="0dp"
-                />
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
 
 
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSaveChange"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:strokeColor="@color/black"
         android:text="@string/save"
         android:textColor="@color/black"
+        app:cornerRadius="30dp"
+        app:strokeColor="@color/black"
         app:strokeWidth="1dp"
-        app:cornerRadius="30dp"/>
+        android:layout_marginBottom="50dp"
+        android:layout_marginHorizontal="20dp"
+        />
 
-
-
-
-
-
-
-
-
-</LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

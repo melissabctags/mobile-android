@@ -16,7 +16,7 @@ data class ItemData(
     @SerializedName("categoryId") var categoryId: Int,
     @SerializedName("scanType") var scanType: Boolean,
     @SerializedName("supplierId") var supplierId: Int,
-    @SerializedName("price") var price: Float,
+    @SerializedName("price") var price: Double,
     @SerializedName("unitMeasurementId") var unitMeasurementId: Int,
     @SerializedName("updatedAt") var updatedAt: String,
     //@SerializedName("UnitMeasurement") var unitMeasurement: UnitData,

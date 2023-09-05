@@ -51,6 +51,11 @@
     <string name="description">Description</string>
     <string name="units">Units</string>
     <string name="work_order">Work order</string>
+    <string name="picking">Picking</string>
+    <string name="next">Next</string>
+    <string name="order">Order</string>
+    <string name="complete">Complete</string>
+    <string name="locations">Locations</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>

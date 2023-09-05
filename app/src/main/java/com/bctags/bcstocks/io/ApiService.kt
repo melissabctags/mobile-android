@@ -2,17 +2,21 @@ package com.bctags.bcstocks.io
 
 import com.bctags.bcstocks.io.response.CarrierResponse
 import com.bctags.bcstocks.io.response.GeneralResponse
+import com.bctags.bcstocks.io.response.InventoryResponse
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.LoginResponse
+import com.bctags.bcstocks.io.response.PartialResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderResponse
 import com.bctags.bcstocks.io.response.ReceiveResponse
 import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponse
+import com.bctags.bcstocks.io.response.WorkOrderResponseOne
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.model.ReceiveNew
+import com.bctags.bcstocks.model.WorkOrder
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -45,7 +49,14 @@ interface ApiService {
     @POST(value = "/workorder/list")
     fun workOrderList(@Body requestBody: FilterRequest): Call<WorkOrderResponse>
 
+    @POST(value = "/fillorder/create")
+    fun newPartial(@Body requestBody: WorkOrder): Call<PartialResponse>
 
+    @POST(value = "/workorder/getOne")
+    fun getWorkOrder(@Body requestBody: WorkOrder): Call<WorkOrderResponseOne>
+
+    @POST(value = "/inventory/list")
+    fun getInventory(@Body requestBody: FilterRequest): Call<InventoryResponse>
 
 
 
