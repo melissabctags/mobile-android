@@ -1,6 +1,7 @@
 package com.bctags.bcstocks.ui.workorders
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,11 +11,15 @@ import com.bctags.bcstocks.databinding.ActivityOrdersBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.WorkOrderData
+import com.bctags.bcstocks.model.ActionWorkOrder
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
+import com.bctags.bcstocks.model.ReceiveNew
 import com.bctags.bcstocks.model.TempPagination
+import com.bctags.bcstocks.model.WorkOrderStatus
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
+import com.bctags.bcstocks.ui.workorders.packing.PackingActivity
 import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.Utils
@@ -29,18 +34,34 @@ class WorkOrdersActivity : DrawerBaseActivity() {
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     private val utils = Utils()
+    val gson= Gson()
 
     val SERVER_ERROR = "Server error, try later"
     var firstRound = true
     var filters = mutableListOf(Filter("", "", mutableListOf("")))
     var pagination = TempPagination(1, 0, 2, 0)
 
+    var workOrdersPref:String= "{}"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrdersBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initWorkOrdersStatus()
         getWorkOrders()
         initUI()
+    }
+
+    private fun initWorkOrdersStatus(){
+        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+        if (sharedPreferences.contains("WORK_ORDERS")) {
+            workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
+            Log.i("WORK_ORDERS",workOrdersPref)
+        } else {
+            sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
+        }
+//        var workOrderStatus = mutableListOf<WorkOrderStatus>()
+//        workOrderStatus.add(WorkOrderStatus(116, "pick", 170))
+//        sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
     }
 
     private fun initUI() {
@@ -54,7 +75,6 @@ class WorkOrdersActivity : DrawerBaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
     }
-
     @SuppressLint("SetTextI18n")
     private fun prevPagination() {
         if (pagination.prevPage != 0) {
@@ -63,7 +83,6 @@ class WorkOrdersActivity : DrawerBaseActivity() {
             getWorkOrders()
         }
     }
-
     @SuppressLint("SetTextI18n")
     private fun NextPagination() {
         if (pagination.nextPage != 0) {
@@ -72,7 +91,6 @@ class WorkOrdersActivity : DrawerBaseActivity() {
             getWorkOrders()
         }
     }
-
     private fun getWorkOrders() {
         val pag = Pagination(pagination.currentPage, pagination.pageSize)
         val requestBody = FilterRequest(filters, pag)
@@ -95,12 +113,12 @@ class WorkOrdersActivity : DrawerBaseActivity() {
         }
 
     }
-
     private fun initRecyclerView(list: MutableList<WorkOrderData>) {
         adapter = WorkOrdersAdapter(
             list = list,
             onclickListener = { WorkOrderData -> viewWorkOrder(WorkOrderData) },
-            onSecondClickListener = { WorkOrderData -> pickWorkOrder(WorkOrderData) }
+            onSecondClickListener = { ActionWorkOrder -> actionWorkOrder(ActionWorkOrder) },
+            workordersString = workOrdersPref
         )
         binding.recyclerWorkOrders.layoutManager = LinearLayoutManager(this)
         binding.recyclerWorkOrders.adapter = adapter
@@ -113,10 +131,23 @@ class WorkOrdersActivity : DrawerBaseActivity() {
         startActivity(intent)
     }
 
-    fun pickWorkOrder(workOrderData: WorkOrderData) {
-        val intent = Intent(this, PickingListActivity::class.java)
-        intent.putExtra("WORK_ORDER_ID", workOrderData.id)
-        intent.putExtra("PARTIAL_ID", 0)
+    fun actionWorkOrder(actionWorkOrder: ActionWorkOrder) {
+        Log.i("actionWorkOrder",actionWorkOrder.toString())
+        val intent: Intent = when (actionWorkOrder.partialStatus.moduleName) {
+            "pick" -> {
+                Intent(this, PickingListActivity::class.java)
+            }
+
+            "pack" -> {
+                Intent(this, PackingActivity::class.java)
+            }
+
+            else -> {
+                Intent(this, PickingListActivity::class.java)
+            }
+        }
+        intent.putExtra("WORK_ORDER_ID", actionWorkOrder.workOrder.id)
+        intent.putExtra("PARTIAL_ID", actionWorkOrder.partialStatus.partialId)
         startActivity(intent)
     }
 

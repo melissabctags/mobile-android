@@ -6,3 +6,8 @@ class GeneralResponse(
     @SerializedName("success") var success: Boolean,
     @SerializedName("data") var data: String
 )
+
+class GeneralResponseChange(
+    @SerializedName("success") var success: Boolean,
+
+)

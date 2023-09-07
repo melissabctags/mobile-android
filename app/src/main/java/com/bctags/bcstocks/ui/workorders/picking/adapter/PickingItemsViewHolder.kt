@@ -17,7 +17,7 @@ class PickingItemsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = RvItemPickingBinding.bind(view)
 
-    fun render(item: ItemWorkOrder,onclickListener: (ItemWorkOrder) -> Unit ) {
+    fun render(item: ItemWorkOrder,onclickListener: (ItemWorkOrder) -> Unit) {
 
         binding.tvItemDescription.text= item.Item.description
         binding.tvOrderQuantity.text= item.quantity.toString()

@@ -56,6 +56,14 @@
     <string name="order">Order</string>
     <string name="complete">Complete</string>
     <string name="locations">Locations</string>
+    <string name="check_location">Scan location barcode</string>
+    <string name="packing">Packing</string>
+    <string name="finish_picking">Finish Picking</string>
+    <string name="finish_packing">Finish Packing</string>
+    <string name="qty_pack">Qty to pack</string>
+    <string name="new_pack">New pack</string>
+    <string name="packed">Packed</string>
+
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>

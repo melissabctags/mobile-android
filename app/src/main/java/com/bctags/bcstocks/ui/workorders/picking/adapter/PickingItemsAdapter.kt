@@ -21,8 +21,11 @@ class PickingItemsAdapter(val list: List<ItemWorkOrder>, private val onClickList
     //pasar por cada item y va a llamar al render
     override fun onBindViewHolder(holder: PickingItemsViewHolder, position: Int) {
         val item =list[position]
+        //TODO NECESITO QUE LA LISTA TENGA EL TOTAL PICKEADO DE TODOS LOS PARCIALES PARA SABER LA CANTIDAD RESTANTE QUE PUEDO TOMAR
         holder.render(item,onClickListener)
     }
+
+
 
 
 }

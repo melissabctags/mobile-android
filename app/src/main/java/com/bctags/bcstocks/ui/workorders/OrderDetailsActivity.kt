@@ -1,6 +1,7 @@
 package com.bctags.bcstocks.ui.workorders
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.databinding.ActivityOrderDetailsBinding
@@ -9,6 +10,7 @@ import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.ItemWorkOrder
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrderDetailsAdapter
+import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
@@ -31,7 +33,11 @@ class OrderDetailsActivity : DrawerBaseActivity() {
         binding.ivGoBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+
     }
+
+
+
     @SuppressLint("SetTextI18n")
     private fun initUI() {
         binding.tvOrderNumber.text = "Work order ${workOrder.number}"

@@ -63,7 +63,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun createSessionPreference(token: String) {
-        Log.i("TOKEN", " $token")
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("TOKEN", token).apply()
         sharedPreferences.edit().putBoolean("SESSION", true).apply()
@@ -83,12 +82,12 @@ class LoginActivity : AppCompatActivity() {
                         goToMenu()
                     },
                     onError = { error ->
-                        Toast.makeText(applicationContext, SERVER_ERROR_MESSAGE, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, SERVER_ERROR_MESSAGE, Toast.LENGTH_LONG).show()
                     }
                 )
             }
         } else {
-            Toast.makeText(applicationContext, EMPTY_CREDENTIALS, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, EMPTY_CREDENTIALS, Toast.LENGTH_LONG).show()
         }
     }
 

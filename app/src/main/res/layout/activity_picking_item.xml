@@ -117,7 +117,7 @@
                     android:layout_weight="4"
                     android:fontFamily="@font/avenir_medium"
                     android:gravity="start|center_vertical"
-                    android:paddingLeft="5dp"
+                    android:paddingHorizontal="5dp"
                     android:text="@string/item"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
@@ -168,12 +168,20 @@
 
             </ScrollView>
 
-
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDone"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginBottom="60dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/done"
+                android:textColor="@color/black"
+                app:cornerRadius="30dp"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp" />
         </LinearLayout>
-
-
-
 
     </LinearLayout>
 

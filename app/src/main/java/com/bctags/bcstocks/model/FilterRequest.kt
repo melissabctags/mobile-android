@@ -18,6 +18,10 @@ data class Filter(
     var value: MutableList<String>,
 )
 
+data class FiltersRequest(
+    var filters: MutableList<Filter>,
+)
+
 data class TempPagination(
     var currentPage:Int = 1,
     var prevPage:Int  = 0,
