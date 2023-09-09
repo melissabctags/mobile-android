@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.io
 
+import com.bctags.bcstocks.io.response.BoxResponse
 import com.bctags.bcstocks.io.response.CarrierResponse
 import com.bctags.bcstocks.io.response.GeneralResponse
 import com.bctags.bcstocks.io.response.GeneralResponseChange
@@ -19,6 +20,7 @@ import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.LoginRequest
+import com.bctags.bcstocks.model.NewPack
 import com.bctags.bcstocks.model.PartialSetStatus
 import com.bctags.bcstocks.model.PickingRequest
 import com.bctags.bcstocks.model.ReceiveNew
@@ -76,6 +78,12 @@ interface ApiService {
 
     @POST(value = "/pack/packed")
     fun getPacked(@Body requestBody: FiltersRequest): Call<PackedResponse>
+
+    @POST(value = "/box/list")
+    fun getBoxesList(@Body requestBody: FilterRequestPagination): Call<BoxResponse>
+
+    @POST(value = "/pack/pack")
+    fun saveNewPackage(@Body requestBody: NewPack): Call<GeneralResponseChange>
 
 
 }

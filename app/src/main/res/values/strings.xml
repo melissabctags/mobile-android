@@ -63,6 +63,7 @@
     <string name="qty_pack">Qty to pack</string>
     <string name="new_pack">New pack</string>
     <string name="packed">Packed</string>
+    <string name="type_package">Type of package</string>
 
 
     <string name="menu_home">Home</string>

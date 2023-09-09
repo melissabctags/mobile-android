@@ -1,8 +1,6 @@
 package com.bctags.bcstocks.ui.workorders.packing
 
 import android.content.Context
-import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.AutoTransition
@@ -12,23 +10,20 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
-import com.bctags.bcstocks.databinding.ActivityPackingBinding
+import com.bctags.bcstocks.databinding.ActivityPackedBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.Branch
 import com.bctags.bcstocks.io.response.ClientData
 import com.bctags.bcstocks.io.response.ItemWorkOrder
 import com.bctags.bcstocks.io.response.PackedData
-import com.bctags.bcstocks.io.response.PickedData
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.WorkOrder
-import com.bctags.bcstocks.model.WorkOrderStatus
-import com.bctags.bcstocks.ui.receives.ScannerReceiveActivity
-import com.bctags.bcstocks.ui.shipping.ShippingActivity
+import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
 import com.bctags.bcstocks.ui.workorders.packing.adapter.PackAdapter
-import com.bctags.bcstocks.ui.workorders.picking.adapter.PickingItemsAdapter
+import com.bctags.bcstocks.ui.workorders.packing.adapter.PackedAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
@@ -36,13 +31,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PackingActivity : DrawerBaseActivity() {
-    private lateinit var binding: ActivityPackingBinding
-    private lateinit var adapter: PackAdapter
+class PackedActivity : DrawerBaseActivity() {
+    private lateinit var binding: ActivityPackedBinding
+    private lateinit var adapter: PackedAdapter
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     private val utils = Utils()
-    private val gson=Gson()
+    private val gson= Gson()
 
     val SERVER_ERROR = "Server error, try later"
     var workOrdersPref:String= "{}"
@@ -53,7 +48,7 @@ class PackingActivity : DrawerBaseActivity() {
     private var workOrderId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPackingBinding.inflate(layoutInflater)
+        binding = ActivityPackedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
@@ -71,17 +66,23 @@ class PackingActivity : DrawerBaseActivity() {
         }
         initListeners()
     }
+
+
     private fun initRecyclerView(list: MutableList<ItemWorkOrder>) {
         var listPacked = mutableListOf<PackedData>()
         getPacked { packedList ->
             adapter = if (packedList != null) {
-                PackAdapter(list, partialId, packedList.toMutableList())
+                PackedAdapter(packedList, partialId,list,  onClickListener = { PackedData -> deletePacked(PackedData) })
             } else {
-                PackAdapter(list,partialId,listPacked)
+                PackedAdapter(listPacked,partialId,list, onClickListener = { PackedData -> deletePacked(PackedData) })
             }
             binding.recyclerList.layoutManager = LinearLayoutManager(this)
             binding.recyclerList.adapter = adapter
         }
+    }
+
+    private fun deletePacked(packedData:PackedData){
+
     }
     private fun getPacked(callback: (List<PackedData>?) -> Unit) {
         val listFilters= mutableListOf<Filter>()
@@ -101,6 +102,7 @@ class PackingActivity : DrawerBaseActivity() {
             )
         }
     }
+
     private fun initListeners() {
         binding.ivGoBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -108,48 +110,7 @@ class PackingActivity : DrawerBaseActivity() {
         binding.llAccordeon.setOnClickListener {
             expandCardView()
         }
-        binding.btnFinish.setOnClickListener {
-           finishPacking()
-        }
-        binding.btnNewPack.setOnClickListener {
-          openNewPack()
-        }
-        binding.btnPacked.setOnClickListener {
-          openPackedList()
-        }
     }
-
-    private fun openPackedList() {
-        val intent = Intent(this, PackedActivity::class.java)
-        intent.putExtra("WORK_ORDER_ID", workOrderId)
-        intent.putExtra("PARTIAL_ID", partialId)
-        startActivity(intent)
-    }
-
-    private fun finishPacking() {
-        var workOrderStatus = gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).asList().toMutableList()
-        workOrderStatus.removeAll { it.id == workOrderId && it.partialId == partialId }
-        workOrderStatus.add(WorkOrderStatus(workOrderId,"ship",partialId))
-
-        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
-
-        Log.i("WORK_ORDERS",workOrderStatus.toString())
-
-        utils.getChangeStatus(partialId,"shipping",this)
-
-        val intent = Intent(this, ShippingActivity::class.java)
-        intent.putExtra("WORK_ORDER_ID", workOrderId)
-        intent.putExtra("PARTIAL_ID", partialId)
-        startActivity(intent)
-    }
-    private fun openNewPack() {
-        val intent = Intent(this, NewPackActivity::class.java)
-        intent.putExtra("WORK_ORDER_ID", workOrderId)
-        intent.putExtra("PARTIAL_ID", partialId)
-        startActivity(intent)
-    }
-
     private fun expandCardView() {
         if (binding.llOrderDetails.visibility == View.VISIBLE) {
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
@@ -187,6 +148,9 @@ class PackingActivity : DrawerBaseActivity() {
         binding.tvDeliveryDate.text = workOrder?.dateOrderPlaced ?: ""
         binding.tvCreateDate.text = workOrder?.let { utils.dateFormatter(it.createdAt) }
     }
+
+
+
 
 
 }

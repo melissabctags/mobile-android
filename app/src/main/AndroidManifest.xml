@@ -19,6 +19,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.workorders.packing.PackedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.shipping.ShippingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.workorders.packing.NewPackActivity"
             android:exported="false" />
         <activity
