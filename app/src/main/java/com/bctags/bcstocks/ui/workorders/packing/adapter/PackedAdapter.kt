@@ -44,7 +44,17 @@ class PackedAdapter(val list: List<PackedData>, val partialId:Int, val listItems
 //        holder.childRecyclerView.adapter = childAdapter
     }
 }
-
+class PackedItemAdapter(val list: List<ItemPacked>): RecyclerView.Adapter<PackedItemViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PackedItemViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        return PackedItemViewHolder(layoutInflater.inflate(R.layout.rv_packed_item,parent,false))
+    }
+    override fun getItemCount(): Int =list.size
+    override fun onBindViewHolder(holder: PackedItemViewHolder, position: Int) {
+        val item = list[position]
+        holder.render(item)
+    }
+}
 
 //class ChildAdapter(private val childData: List<ItemPacked>, val listItems:List<ItemWorkOrder>): RecyclerView.Adapter<ChildAdapter.ChildViewHolder>() {
 //    inner class ChildViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
