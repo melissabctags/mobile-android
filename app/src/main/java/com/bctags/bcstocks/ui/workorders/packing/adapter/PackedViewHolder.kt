@@ -17,18 +17,17 @@ import com.bctags.bcstocks.util.InputFilterMinMax
 
 class PackedViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    private val binding = RvPackedBinding.bind(view)
-    private lateinit var adapter: PackedItemAdapter
+    val binding = RvPackedBinding.bind(view)
+   private lateinit var adapter : PackedItemAdapter
+
     fun render(
         item: PackedData,
         partialId:Int,
         onClickListener: (PackedData) -> Unit
     ) {
-        binding.tvTypePackaging.text = "Itemn"
+        binding.tvTypePackaging.text = "item"
         binding.tvQuantity.text = "100"
-        adapter = PackedItemAdapter(item.items)
-        binding.childRecyclerView.layoutManager = LinearLayoutManager(view)
-        binding.childRecyclerView.adapter = adapter
+
         //binding.childRecyclerView
 
     }

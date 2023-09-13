@@ -11,6 +11,7 @@ data class PackedData(
     @SerializedName("label") var label: String,
     @SerializedName("uuid") var uuid: String,
     @SerializedName("boxId") var boxId: Int,
+    @SerializedName("boxName") var boxName: String,
     @SerializedName("boxQuantity") var boxQuantity: Int,
     @SerializedName("items") var items: MutableList<ItemPacked>,
     @SerializedName("createdAt") var createdAt:String,

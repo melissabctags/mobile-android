@@ -43,7 +43,7 @@ class NewPackAdapter(val list: List<ItemWorkOrder>, val partialId:Int, val packe
 
         getPickedItem(listFilters) { pickedList ->
             val totalPickedQuantity = pickedList?.sumOf { it.quantity } ?: 0
-            val totalPackedListQuantity = packedList.sumQuantityById(itemWorkOrder.id)
+            val totalPackedListQuantity = packedList.sumQuantityById(itemWorkOrder.Item.id)
 
             onClickListener(ItemBox(itemWorkOrder.Item.id,(totalPickedQuantity-totalPackedListQuantity)))
 
@@ -52,7 +52,7 @@ class NewPackAdapter(val list: List<ItemWorkOrder>, val partialId:Int, val packe
     }
     fun List<PackedData>.sumQuantityById(idToMatch: Int): Int {
         return flatMap { it.items }
-            .filter { it.id == idToMatch }
+            .filter { it.itemId == idToMatch }
             .sumBy { it.quantity }
     }
     fun getPickedItem(listReq:MutableList<Filter>,callback: (List<PickedData>?) -> Unit){

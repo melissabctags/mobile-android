@@ -21,6 +21,7 @@ import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.model.NewPack
+import com.bctags.bcstocks.model.PackageIds
 import com.bctags.bcstocks.model.PartialSetStatus
 import com.bctags.bcstocks.model.PickingRequest
 import com.bctags.bcstocks.model.ReceiveNew
@@ -84,6 +85,9 @@ interface ApiService {
 
     @POST(value = "/pack/pack")
     fun saveNewPackage(@Body requestBody: NewPack): Call<GeneralResponseChange>
+
+    @POST(value = "/pack/unpack")
+    fun deletePack(@Body requestBody: PackageIds): Call<GeneralResponseChange>
 
 
 }

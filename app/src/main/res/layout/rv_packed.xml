@@ -5,7 +5,7 @@
     android:background="@color/white"
     app:cardCornerRadius="25dp"
     app:cardElevation="0dp"
-    android:layout_marginTop="25dp"
+    android:layout_marginTop="15dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
    <LinearLayout
@@ -24,9 +24,9 @@
                android:layout_height="wrap_content"
                tools:text="@string/type_package"
                android:gravity="center_vertical"
-               android:fontFamily="@font/avenir_medium"
+               android:fontFamily="@font/avenir_heavy"
                android:textSize="16sp"
-               android:layout_weight="3"
+               android:layout_weight="4"
                android:textColor="@color/black"
                android:layout_gravity="center_vertical"
                />
@@ -35,11 +35,11 @@
                android:layout_width="0dp"
                android:layout_height="wrap_content"
                tools:text="@string/quantity"
-               android:gravity="center_vertical"
                android:layout_gravity="center_vertical"
-               android:fontFamily="@font/avenir_medium"
+               android:gravity="end"
+               android:fontFamily="@font/avenir_heavy"
                android:textSize="16sp"
-               android:layout_weight="3"
+               android:layout_weight="2"
                android:textColor="@color/black"
                />
            <ImageView
@@ -53,15 +53,54 @@
 
        </LinearLayout>
 
-       <androidx.recyclerview.widget.RecyclerView
-           android:id="@+id/childRecyclerView"
+       <LinearLayout
+           android:id="@+id/llList"
            android:layout_width="match_parent"
-           android:layout_height="wrap_content" />
+           android:layout_height="wrap_content"
+           android:orientation="vertical"
+           android:layout_marginVertical="10dp"
+           android:visibility="gone"
+           >
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+               <TextView
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:text="@string/items"
+                   android:gravity="center_vertical"
+                   android:fontFamily="@font/avenir_medium"
+                   android:textSize="16sp"
+                   android:layout_weight="4"
+                   android:textColor="@color/black"
+                   android:layout_gravity="center_vertical"
+                   />
+               <TextView
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:text="@string/packed"
+                   android:layout_gravity="center_vertical"
+                   android:fontFamily="@font/avenir_medium"
+                   android:textSize="16sp"
+                   android:layout_weight="2"
+                   android:textColor="@color/black"
+                   />
+           </LinearLayout>
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/childRecyclerView"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+
+               />
+       </LinearLayout>
+
 
        <LinearLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:orientation="horizontal"
+           android:layout_marginTop="20dp"
            >
            <TextView
                android:id="@+id/tvCreatedAt"
@@ -69,7 +108,7 @@
                android:layout_height="wrap_content"
                tools:text="@string/type_package"
                android:gravity="center_vertical"
-               android:fontFamily="@font/avenir_medium"
+               android:fontFamily="@font/avenir_heavy"
                android:textSize="16sp"
                android:layout_weight="3"
                android:textColor="@color/black"
@@ -82,13 +121,12 @@
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
                android:textColor="@color/white"
-               android:textSize="18sp"
                app:backgroundTint="@color/black"
                app:cornerRadius="35dp"
-               app:strokeColor="@color/black"
-               app:icon="@drawable/ic_trash_white"
-               app:iconTint="@color/white"
+               app:icon="@drawable/ic_delete"
                app:iconGravity="textStart"
+               app:iconTint="@color/white"
+               app:strokeColor="@color/black"
                app:strokeWidth="1dp" />
 
        </LinearLayout>

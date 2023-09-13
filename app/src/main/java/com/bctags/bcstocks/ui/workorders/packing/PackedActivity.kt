@@ -1,6 +1,7 @@
 package com.bctags.bcstocks.ui.workorders.packing
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.AutoTransition
@@ -20,10 +21,13 @@ import com.bctags.bcstocks.io.response.PackedData
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FiltersRequest
+import com.bctags.bcstocks.model.PackageIds
 import com.bctags.bcstocks.model.WorkOrder
+import com.bctags.bcstocks.ui.workorders.OrderDetailsActivity
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
 import com.bctags.bcstocks.ui.workorders.packing.adapter.PackAdapter
 import com.bctags.bcstocks.ui.workorders.packing.adapter.PackedAdapter
+import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
@@ -50,7 +54,7 @@ class PackedActivity : DrawerBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPackedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        initListeners()
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         if (sharedPreferences.contains("WORK_ORDERS")) {
             workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
@@ -64,25 +68,40 @@ class PackedActivity : DrawerBaseActivity() {
             partialId = extras.getInt("PARTIAL_ID")
             getWorkOrder(workOrderId)
         }
-        initListeners()
+
     }
 
-
+    var listPacked = mutableListOf<PackedData>()
     private fun initRecyclerView(list: MutableList<ItemWorkOrder>) {
-        var listPacked = mutableListOf<PackedData>()
         getPacked { packedList ->
-            adapter = if (packedList != null) {
-                PackedAdapter(packedList, partialId,list,  onClickListener = { PackedData -> deletePacked(PackedData) })
-            } else {
-                PackedAdapter(listPacked,partialId,list, onClickListener = { PackedData -> deletePacked(PackedData) })
+            if(packedList!=null){
+                listPacked= packedList as MutableList<PackedData>
             }
+            adapter= PackedAdapter(listPacked, partialId,list,  onClickListener = { packedData,secondPar -> deletePacked(packedData,secondPar) })
             binding.recyclerList.layoutManager = LinearLayoutManager(this)
             binding.recyclerList.adapter = adapter
         }
     }
 
-    private fun deletePacked(packedData:PackedData){
-
+    private fun deletePacked(packedData:PackedData,position:Int){
+        val list: MutableList<Int> = mutableListOf()
+        packedData.items.forEach{ el->
+            list.add(el.id)
+        }
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.deletePack(PackageIds(list.toList())),
+                onSuccess = { response ->
+                    Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
+                },
+                onError = { error ->
+                    Log.i("ERROR", error)
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+        listPacked.removeAt(position)
+        adapter.notifyItemRemoved(position)
     }
     private fun getPacked(callback: (List<PackedData>?) -> Unit) {
         val listFilters= mutableListOf<Filter>()
@@ -105,12 +124,20 @@ class PackedActivity : DrawerBaseActivity() {
 
     private fun initListeners() {
         binding.ivGoBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+           goBack()
         }
         binding.llAccordeon.setOnClickListener {
             expandCardView()
         }
     }
+
+    private fun goBack() {
+        val intent = Intent(this, PackingActivity::class.java)
+        intent.putExtra("WORK_ORDER_ID", workOrderId)
+        intent.putExtra("PARTIAL_ID", partialId)
+        startActivity(intent)
+    }
+
     private fun expandCardView() {
         if (binding.llOrderDetails.visibility == View.VISIBLE) {
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
