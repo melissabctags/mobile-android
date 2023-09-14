@@ -64,6 +64,8 @@
     <string name="new_pack">New pack</string>
     <string name="packed">Packed</string>
     <string name="type_package">Type of package</string>
+    <string name="shipping">Shipping</string>
+    <string name="tracking_number">Tracking number</string>
 
 
     <string name="menu_home">Home</string>

@@ -2,6 +2,7 @@ package com.bctags.bcstocks.io
 
 import com.bctags.bcstocks.io.response.BoxResponse
 import com.bctags.bcstocks.io.response.CarrierResponse
+import com.bctags.bcstocks.io.response.FillOrderResponse
 import com.bctags.bcstocks.io.response.GeneralResponse
 import com.bctags.bcstocks.io.response.GeneralResponseChange
 import com.bctags.bcstocks.io.response.InventoryResponse
@@ -25,6 +26,7 @@ import com.bctags.bcstocks.model.PackageIds
 import com.bctags.bcstocks.model.PartialSetStatus
 import com.bctags.bcstocks.model.PickingRequest
 import com.bctags.bcstocks.model.ReceiveNew
+import com.bctags.bcstocks.model.ShipRequest
 import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.model.WorkOrderNewPartial
 import retrofit2.Call
@@ -88,6 +90,12 @@ interface ApiService {
 
     @POST(value = "/pack/unpack")
     fun deletePack(@Body requestBody: PackageIds): Call<GeneralResponseChange>
+
+    @POST(value = "/ship/update")
+    fun setShip(@Body requestBody: ShipRequest): Call<GeneralResponseChange>
+
+    @POST(value = "/fillorder/list")
+    fun getPartial(@Body requestBody: FiltersRequest): Call<FillOrderResponse>
 
 
 }

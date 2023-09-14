@@ -153,7 +153,6 @@ class PickingListActivity : DrawerBaseActivity() {
         startActivity(intent)
     }
 
-
     private fun initUI() {
         binding.tvOrderNum.text = "Work order ${workOrder?.number}"
         binding.tvClient.text = workOrder?.Client?.name ?: ""

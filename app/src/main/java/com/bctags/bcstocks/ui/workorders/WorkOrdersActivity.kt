@@ -18,6 +18,7 @@ import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.ReceiveNew
 import com.bctags.bcstocks.model.TempPagination
 import com.bctags.bcstocks.model.WorkOrderStatus
+import com.bctags.bcstocks.ui.shipping.ShippingActivity
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
 import com.bctags.bcstocks.ui.workorders.packing.PackingActivity
 import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
@@ -137,11 +138,15 @@ class WorkOrdersActivity : DrawerBaseActivity() {
             "pick" -> {
                 Intent(this, PickingListActivity::class.java)
             }
-
             "pack" -> {
                 Intent(this, PackingActivity::class.java)
             }
-
+            "shipping" -> {
+                Intent(this, ShippingActivity::class.java)
+            }
+            "ship" -> {
+                Intent(this, ShippingActivity::class.java)
+            }
             else -> {
                 Intent(this, PickingListActivity::class.java)
             }
