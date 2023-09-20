@@ -6,7 +6,11 @@ class BranchData(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String,
 )
-
+class BranchResponse(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: List<Branch>,
+    @SerializedName("pagination") var pagination:PaginationResponse,
+)
 data class Branch(
     @SerializedName("id") var id: Int,
     @SerializedName("bcTagsClientId") var bcTagsClientId: Int,

@@ -1,11 +1,14 @@
 package com.bctags.bcstocks.io
 
 import com.bctags.bcstocks.io.response.BoxResponse
+import com.bctags.bcstocks.io.response.BranchResponse
 import com.bctags.bcstocks.io.response.CarrierResponse
 import com.bctags.bcstocks.io.response.FillOrderResponse
 import com.bctags.bcstocks.io.response.GeneralResponse
 import com.bctags.bcstocks.io.response.GeneralResponseChange
 import com.bctags.bcstocks.io.response.InventoryResponse
+import com.bctags.bcstocks.io.response.InventoryResponsePagination
+import com.bctags.bcstocks.io.response.ItemResponse
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.LoginResponse
 import com.bctags.bcstocks.io.response.PackedResponse
@@ -17,9 +20,11 @@ import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponseOne
+import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.FiltersRequest
+import com.bctags.bcstocks.model.GetOne
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.model.NewPack
 import com.bctags.bcstocks.model.PackageIds
@@ -96,6 +101,18 @@ interface ApiService {
 
     @POST(value = "/fillorder/list")
     fun getPartial(@Body requestBody: FiltersRequest): Call<FillOrderResponse>
+
+    @POST(value = "/branch/list")
+    fun getBranches(@Body requestBody: FilterRequestPagination): Call<BranchResponse>
+
+    @POST(value = "/inventory/list")
+    fun getInventoryList(@Body requestBody: FilterRequest): Call<InventoryResponsePagination>
+
+    @POST(value = "/item/list")
+    fun getItems(@Body requestBody: FilterRequest): Call<ItemResponse>
+
+    @POST(value = "/location/getOne")
+    fun getLocation(@Body requestBody: GetOne): Call<LocationResponse>
 
 
 }

@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 class ItemResponse (
     @SerializedName("success") var success: Boolean,
-    @SerializedName("data") var list: MutableList<ItemData>
+    @SerializedName("data") var data: MutableList<ItemData>,
+    @SerializedName("pagination") var pagination: PaginationResponse
 )
 
 data class ItemData(

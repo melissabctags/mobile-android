@@ -3,7 +3,7 @@
     <string name="save">Save</string>
     <string name="settings">Settings</string>
     <string name="receives">Receiving</string>
-    <string name="inventory">Inventory count</string>
+    <string name="inventory">Inventory</string>
     <string name="transfer">Transfer</string>
     <string name="menu">Menu</string>
     <string name="changeLocation">Change of location</string>
@@ -56,6 +56,7 @@
     <string name="order">Order</string>
     <string name="complete">Complete</string>
     <string name="locations">Locations</string>
+    <string name="move_to">Move to</string>
     <string name="check_location">Scan location barcode</string>
     <string name="packing">Packing</string>
     <string name="finish_picking">Finish Picking</string>
@@ -66,6 +67,16 @@
     <string name="type_package">Type of package</string>
     <string name="shipping">Shipping</string>
     <string name="tracking_number">Tracking number</string>
+    <string name="branch">Branch</string>
+    <string name="total">Total</string>
+    <string name="page_init">Page 1</string>
+    <string name="list_items_locations">List of item locations</string>
+    <string name="selected_qty">Selected Qty</string>
+    <string name="by_location">Change by location</string>
+    <string name="by_item">Change by item</string>
+    <string name="location_origin">Origin</string>
+    <string name="location_destination">Destination</string>
+    <string name="title_location_list_items">Items in location </string>
 
 
     <string name="menu_home">Home</string>

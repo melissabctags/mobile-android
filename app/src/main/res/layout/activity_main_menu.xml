@@ -191,7 +191,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/avenir_medium"
                 android:layout_gravity="center"
-                android:text="@string/receives"
+                android:text="@string/inventory"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="14sp" />

@@ -89,7 +89,6 @@ class NewPackActivity : DrawerBaseActivity() {
         } else {
             itemsList.add(itemBox)
         }
-        Log.i("itemsList",itemsList.toString())
     }
     private fun getBoxesList() {
         val requestBody = FilterRequestPagination(Pagination(1,1000))

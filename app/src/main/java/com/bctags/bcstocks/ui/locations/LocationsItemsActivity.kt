@@ -10,28 +10,22 @@ import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
-import com.bctags.bcstocks.databinding.ActivityInventoryBinding
-import com.bctags.bcstocks.databinding.ActivityLocationsBinding
+import com.bctags.bcstocks.databinding.ActivityLocationsItemsBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.InventoryData
 import com.bctags.bcstocks.io.response.LocationBarcode
-import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
-import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.GetOne
 import com.bctags.bcstocks.model.ItemBox
 import com.bctags.bcstocks.model.Pagination
-import com.bctags.bcstocks.ui.inventory.adapter.InventoryAdapter
-import com.bctags.bcstocks.ui.locations.adapter.ItemLocationAdapter
+import com.bctags.bcstocks.ui.locations.adapter.ByLocationAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.MessageDialog
-import com.bctags.bcstocks.util.Utils
-import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
 import com.rscja.barcode.BarcodeDecoder
 import com.rscja.barcode.BarcodeFactory
@@ -39,9 +33,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class LocationsActivity : DrawerBaseActivity() {
-    private lateinit var binding: ActivityLocationsBinding
-    private lateinit var adapter: ItemLocationAdapter
+class LocationsItemsActivity : DrawerBaseActivity() {
+    private lateinit var binding: ActivityLocationsItemsBinding
+    private lateinit var adapter: ByLocationAdapter
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     private val messageDialog = MessageDialog()
@@ -49,21 +43,21 @@ class LocationsActivity : DrawerBaseActivity() {
     private val dropDown= DropDown()
     private var barcodeDecoder = BarcodeFactory.getInstance().barcodeDecoder
 
-    var mapItem: HashMap<String, String> = HashMap()
+
     var mapLocations: HashMap<String, String> = HashMap()
-    private var location: LocationBarcode = LocationBarcode(0,"","")
-    private var itemId=0
+    private var destinationLocation: LocationBarcode = LocationBarcode(0,"","")
+    private var originId=0
+
     val SERVER_ERROR = "Server error, try later"
 
     var itemsList: MutableList<ItemBox> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding =  ActivityLocationsBinding.inflate(layoutInflater)
+        binding =  ActivityLocationsItemsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initListeners()
         getLocations()
-        getItems()
     }
 
     fun close() {
@@ -83,7 +77,7 @@ class LocationsActivity : DrawerBaseActivity() {
                 stop()
             } else {
                 messageDialog.showDialog(
-                    this@LocationsActivity,
+                    this@LocationsItemsActivity,
                     R.layout.dialog_error,
                     "Error reading barcode. Scan again "
                 ) { }
@@ -109,17 +103,16 @@ class LocationsActivity : DrawerBaseActivity() {
         binding.btnSaveChange.setOnClickListener{
             Log.i("items",itemsList.toString())
             messageDialog.showDialog(
-                this@LocationsActivity,
+                this@LocationsItemsActivity,
                 R.layout.dialog_success,
                 "Saved"
             ) { }
             //TODO
         }
-        binding.btnByLocations.setOnClickListener{
-            val intent = Intent(this, LocationsItemsActivity::class.java)
+        binding.btnByItems.setOnClickListener{
+            val intent = Intent(this, LocationsActivity::class.java)
             startActivity(intent)
         }
-
     }
     private fun changeItemsLocations(){
 
@@ -138,13 +131,21 @@ class LocationsActivity : DrawerBaseActivity() {
                         list.add(i.name + " " + i.Branch.name)
                         mapLocations[i.name + " " + i.Branch.name] = i.id.toString();
                     }
-                    val autoComplete: AutoCompleteTextView = findViewById(R.id.locationsList)
+                    val autoComplete: AutoCompleteTextView = findViewById(R.id.originList)
                     dropDown.listArrange(
                         list,
                         autoComplete,
                         mapLocations,
-                        this@LocationsActivity,
-                        ::updateLocations
+                        this@LocationsItemsActivity,
+                        ::updateOrigin
+                    )
+                    val autoCompleteDestiny: AutoCompleteTextView = findViewById(R.id.destinationList)
+                    dropDown.listArrange(
+                        list,
+                        autoCompleteDestiny,
+                        mapLocations,
+                        this@LocationsItemsActivity,
+                        ::updateDestination
                     )
                 },
                 onError = { error ->
@@ -153,13 +154,22 @@ class LocationsActivity : DrawerBaseActivity() {
             )
         }
     }
-    private fun updateLocations(id: String, text: String) {
-        location.id = id.toInt()
+    private fun updateOrigin(id: String, text: String) {
+        originId = id.toInt()
+        searchInventory()
+        binding.tvListTitle.text = buildString {
+            append(binding.tvListTitle.text.toString())
+            append(" ")
+            append(text)
+        }
+    }
+    private fun updateDestination(id: String, text: String) {
+        destinationLocation.id = id.toInt()
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
-                apiClient.getLocation(GetOne( location.id )),
+                apiClient.getLocation(GetOne( destinationLocation.id )),
                 onSuccess = { response ->
-                    location.name = response.list[0].name
+                    destinationLocation.name = response.list[0].name
                     //location.barcode = response.list[0].barcode
                 },
                 onError = { error ->
@@ -167,48 +177,12 @@ class LocationsActivity : DrawerBaseActivity() {
                 }
             )
         }
+    }
 
-    }
-    private fun getItems() {
-        val pag = Pagination(1, 1000)
-        val filters: MutableList<Filter> = mutableListOf()
-        val requestBody = FilterRequest(filters,pag)
-
-        val list: MutableList<String> = mutableListOf()
-        CoroutineScope(Dispatchers.IO).launch {
-            apiCall.performApiCall(
-                apiClient.getItems(requestBody),
-                onSuccess = { response ->
-                    val dataResponse = response.data
-                    dataResponse?.forEach { i ->
-                        list.add(i.item + " " + i.description)
-                        mapItem[i.item + " " + i.description] = i.id.toString();
-                    }
-                    val autoComplete: AutoCompleteTextView = findViewById(R.id.inventoryList)
-                    dropDown.listArrange(
-                        list,
-                        autoComplete,
-                        mapItem,
-                        this@LocationsActivity,
-                        ::updateItem
-                    )
-                },
-                onError = { error ->
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
-    private fun updateItem(id: String, text: String) {
-        itemId = id.toInt()
-        if(itemId!=0){
-            searchInventory()
-        }
-    }
     private fun searchInventory() {
         val pag = Pagination(1, 1000)
         var filters:MutableList<Filter> = mutableListOf()
-        filters.add(Filter("itemId", "eq", mutableListOf(itemId.toString())))
+        filters.add(Filter("locationId", "eq", mutableListOf(originId.toString())))
         val requestBody = FilterRequest(filters,pag)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -225,7 +199,7 @@ class LocationsActivity : DrawerBaseActivity() {
         }
     }
     private fun initRecyclerView(list: MutableList<InventoryData>) {
-        adapter = ItemLocationAdapter(
+        adapter = ByLocationAdapter(
             list = list,
             onClickListener = { ItemBox -> changeSelectedTotal(ItemBox) },
         )

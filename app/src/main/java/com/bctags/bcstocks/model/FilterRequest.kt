@@ -22,6 +22,10 @@ data class FiltersRequest(
     var filters: MutableList<Filter>,
 )
 
+data class GetOne(
+    var id: Int,
+)
+
 data class TempPagination(
     var currentPage:Int = 1,
     var prevPage:Int  = 0,

@@ -70,6 +70,9 @@
             android:name=".ui.locations.LocationsActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.locations.LocationsItemsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.inventory.InventoryActivity"
             android:exported="false" />
         <activity

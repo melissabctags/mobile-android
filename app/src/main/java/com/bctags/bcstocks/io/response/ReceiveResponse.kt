@@ -32,11 +32,6 @@ data class ItemReceive(
     @SerializedName("Location") var location: LocationItemRec,
     @SerializedName("Item") var Item: ItemData,
 )
-//data class ItemRec(
-//    @SerializedName("item") var item: String,
-//    @SerializedName("description") var description: String,
-//    @SerializedName("upc") var upc: String,
-//)
 data class LocationItemRec(
     @SerializedName("name") var name: String,
 )

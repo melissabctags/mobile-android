@@ -12,6 +12,11 @@ data class InventoryResponsePagination(
     @SerializedName("data") var data: MutableList<InventoryData>,
     @SerializedName("pagination") var pagination: PaginationResponse
 )
+data class InventoryResponseNofilter(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: MutableList<InventoryData>,
+    @SerializedName("pagination") var pagination: PaginationResponse
+)
 data class InventoryData(
     @SerializedName("id") var id: Int,
     @SerializedName("branchId") var branchId: Int,

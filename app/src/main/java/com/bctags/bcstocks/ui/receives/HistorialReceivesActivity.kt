@@ -88,7 +88,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
     private fun getReceivesList() {
         val pag = Pagination(pagination.currentPage, pagination.pageSize)
         val requestBody = FilterRequest(filters, pag)
-        Log.i("REQUEST BODY",requestBody.toString())
+        Log.i("filters",filters.toString())
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.receiveList(requestBody),
@@ -245,15 +245,11 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         if (binding.cvFormSearch.visibility == View.VISIBLE) {
             // The transition of the hiddenView is carried out by the TransitionManager class.
             // Here we use an object of the AutoTransition Class to create a default transition
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            }
+            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
             binding.cvFormSearch.visibility = View.GONE
             binding.acIcon.setImageResource(R.drawable.ic_arrow_down_black)
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            }
+            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
             binding.cvFormSearch.visibility = View.VISIBLE
             binding.acIcon.setImageResource(R.drawable.ic_arrow_up_black)
         }

@@ -11,6 +11,12 @@ class LocationData(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String,
     @SerializedName("Branch") var Branch: BranchData,
+    //@SerializedName("barcode") var barcode: String,
+)
+class LocationBarcode(
+    @SerializedName("id") var id: Int,
+    @SerializedName("name") var name: String,
+    @SerializedName("barcode") var barcode: String,
 )
 
 
