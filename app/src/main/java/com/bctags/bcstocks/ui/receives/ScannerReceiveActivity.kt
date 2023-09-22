@@ -2,6 +2,7 @@ package com.bctags.bcstocks.ui.receives
 
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -26,6 +27,8 @@ import com.bctags.bcstocks.io.response.BranchData
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderData
 import com.bctags.bcstocks.io.response.SupplierData
+import com.bctags.bcstocks.model.Filter
+import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.ItemNewReceive
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
@@ -86,11 +89,14 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     val epcsList: MutableList<String> = mutableListOf()
     var isInventory: Boolean = false
+    private var branchId=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityScannerReceiveBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+        branchId = sharedPreferences.getInt("BRANCH", 0)
         initListeners()
 
         val gson = Gson()
@@ -106,8 +112,9 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun getLocations() {
         val pag = Pagination(1, 1000)
-        //val filter = mutableListOf(Filter("status", "or", mutableListOf("sent", "in_process")))
-        val requestBody = FilterRequestPagination(pag)
+        val filters:MutableList<Filter> = mutableListOf()
+        filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
+        val requestBody = FilterRequest(filters,pag)
 
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(

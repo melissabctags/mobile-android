@@ -1,6 +1,7 @@
 package com.bctags.bcstocks.ui
 
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -38,9 +39,11 @@ class MainMenuActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.getCurrentUser(),
                 onSuccess = { response ->
-                    val userResponse: UserResponse? = response
-                    val name = "Welcome " + userResponse?.userData?.firstName + " " + userResponse?.userData?.lastName
+                    val userResponse: UserResponse = response
+                    val name = "Welcome " + userResponse.userData.firstName + " " + userResponse.userData.lastName
                     binding.tvWelcome.text = name
+                    val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().putInt("BRANCH", userResponse.userData.branchId).apply()
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()

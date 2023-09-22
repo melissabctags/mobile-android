@@ -6,7 +6,10 @@ class LocationResponse(
     @SerializedName("success") var success: Boolean,
     @SerializedName("data") var list: MutableList<LocationData>
 )
-
+class LocationGetOne(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: LocationData
+)
 class LocationData(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String,

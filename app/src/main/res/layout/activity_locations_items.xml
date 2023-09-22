@@ -64,11 +64,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:backgroundTint="@color/red"
                 android:text="@string/by_item"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 app:cornerRadius="30dp"
-                app:strokeColor="@color/red"
+                app:strokeColor="@color/black"
                 app:strokeWidth="1dp" />
 
             <androidx.cardview.widget.CardView
@@ -258,7 +257,8 @@
                     android:layout_marginHorizontal="20dp"
                     android:layout_marginBottom="50dp"
                     android:text="@string/save"
-                    android:textColor="@color/black"
+                    android:backgroundTint="@color/black"
+                    android:textColor="@color/white"
                     app:cornerRadius="30dp"
                     app:strokeColor="@color/black"
                     android:visibility="invisible"

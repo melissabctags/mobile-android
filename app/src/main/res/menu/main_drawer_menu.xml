@@ -4,13 +4,11 @@
     <group android:checkableBehavior="single">
 
         <item
-            android:id="@+id/nav_item_two"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Item 2" />
+            android:id="@+id/nav_item_simple_reader"
+            android:title="@string/reader_epc" />
         <item
-            android:id="@+id/nav_item_three"
-            android:icon="@mipmap/ic_launcher"
-            android:title="Item 3" />
+            android:id="@+id/nav_item_inventory_count"
+            android:title="Inventory count" />
 
         <item
             android:id="@+id/nav_item_logOut"
@@ -18,7 +16,7 @@
 
 
     </group>
-    <item android:title="Item 1">
+   <!-- <item android:title="Item 1">
         <menu>
             <item
                 android:id="@+id/nav_item_six"
@@ -29,6 +27,6 @@
                 android:icon="@mipmap/ic_launcher"
                 android:title="Item 7" />
         </menu>
-    </item>
+    </item>-->
     <!--maindrawermenu-->
 </menu>

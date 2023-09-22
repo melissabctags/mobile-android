@@ -77,12 +77,14 @@
     <string name="location_origin">Origin</string>
     <string name="location_destination">Destination</string>
     <string name="title_location_list_items">Items in location </string>
+    <string name="inventory_count">Inventory count</string>
 
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="new_receive">New receive</string>
+    <string name="reader_epc">Read tags</string>
 
     <string name="scan">Scan</string>
     <string name="stop_scan">Stop scanning</string>

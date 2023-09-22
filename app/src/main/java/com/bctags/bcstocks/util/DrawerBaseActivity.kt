@@ -2,6 +2,7 @@ package com.bctags.bcstocks.util
 
 import android.content.Context
 import android.content.Intent
+import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
@@ -14,8 +15,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.bctags.bcstocks.R
+import com.bctags.bcstocks.ui.inventory.InventoryCountActivity
 import com.bctags.bcstocks.ui.login.LoginActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
+import com.bctags.bcstocks.ui.simplereader.TagReaderActivity
 import com.google.android.material.navigation.NavigationView
 
 open class DrawerBaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -67,9 +70,9 @@ open class DrawerBaseActivity : AppCompatActivity(), NavigationView.OnNavigation
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawerLayout.closeDrawer(GravityCompat.START)
         when (item.itemId) {
-            R.id.nav_item_logOut -> clearSessionPreference();
-            R.id.nav_item_two -> Toast.makeText(this, "Item 2 clicked", Toast.LENGTH_SHORT).show()
-            R.id.nav_item_three -> Toast.makeText(this, "Item 3 clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_item_logOut -> clearSessionPreference()
+            R.id.nav_item_simple_reader -> simpleTagReader()
+            R.id.nav_item_inventory_count -> inventoryCount()
         }
         return false;
     }
@@ -80,6 +83,17 @@ open class DrawerBaseActivity : AppCompatActivity(), NavigationView.OnNavigation
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
+
+    private fun inventoryCount(){
+        val intent = Intent(this, InventoryCountActivity::class.java)
+        startActivity(intent)
+    }
+    private fun simpleTagReader(){
+        val intent = Intent(this, TagReaderActivity::class.java)
+        startActivity(intent)
+    }
+
+
 
     private fun allocateActivityTitle(titleString: String){
         supportActionBar?.title = titleString

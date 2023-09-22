@@ -5,8 +5,12 @@ data class LocationsRequest(
     var username: String,
     var password: String,
 )
+data class locationChanges(
+   var movements: MutableList<ItemLocationsRequest>
+)
 data class ItemLocationsRequest(
+    var quantity: Int,
     var inventoryId: Int,
     var locationIdDestination: Int,
-    var quantity: Int,
 )
+

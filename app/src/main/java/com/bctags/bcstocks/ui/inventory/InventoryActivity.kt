@@ -2,6 +2,7 @@ package com.bctags.bcstocks.ui.inventory
 
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.AutoTransition
@@ -50,7 +51,7 @@ class InventoryActivity : DrawerBaseActivity() {
     private var pagination = TempPagination(1, 0, 2, 0)
     private var firstRound = true
     private var filters:MutableList<Filter> = mutableListOf()
-
+    private var branchId=0
 
     var mapItem: HashMap<String, String> = HashMap()
     var mapLocations: HashMap<String, String> = HashMap()
@@ -62,6 +63,9 @@ class InventoryActivity : DrawerBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityInventoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+        branchId = sharedPreferences.getInt("BRANCH", 0)
+
         initListeners()
         getLocations()
         getItems()
@@ -183,7 +187,10 @@ class InventoryActivity : DrawerBaseActivity() {
 
     private fun getLocations() {
         val pag = Pagination(1, 1000)
-        val requestBody = FilterRequestPagination(pag)
+        val filters:MutableList<Filter> = mutableListOf()
+        filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
+        val requestBody = FilterRequest(filters,pag)
+
         val list : MutableList<String> = mutableListOf()
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(

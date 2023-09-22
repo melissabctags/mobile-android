@@ -11,4 +11,5 @@ data class UserData(
     @SerializedName("firstName") var firstName: String,
     @SerializedName("lastName") var lastName: String,
     @SerializedName("isRoot") var isRoot: Boolean,
+    @SerializedName("branchId") var branchId: Int,
 )

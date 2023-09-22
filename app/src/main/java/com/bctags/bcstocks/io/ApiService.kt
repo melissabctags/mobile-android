@@ -9,6 +9,7 @@ import com.bctags.bcstocks.io.response.GeneralResponseChange
 import com.bctags.bcstocks.io.response.InventoryResponse
 import com.bctags.bcstocks.io.response.InventoryResponsePagination
 import com.bctags.bcstocks.io.response.ItemResponse
+import com.bctags.bcstocks.io.response.LocationGetOne
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.io.response.LoginResponse
 import com.bctags.bcstocks.io.response.PackedResponse
@@ -20,7 +21,6 @@ import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponseOne
-import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.FiltersRequest
@@ -34,6 +34,7 @@ import com.bctags.bcstocks.model.ReceiveNew
 import com.bctags.bcstocks.model.ShipRequest
 import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.model.WorkOrderNewPartial
+import com.bctags.bcstocks.model.locationChanges
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -52,7 +53,7 @@ interface ApiService {
     fun getCarrierList(): Call<CarrierResponse>
 
     @POST(value = "/location/list")
-    fun getLocationsList(@Body requestBody: FilterRequestPagination): Call<LocationResponse>
+    fun getLocationsList(@Body requestBody: FilterRequest): Call<LocationResponse>
 
     @POST(value = "/receipt/create")
     fun createReceive(@Body requestBody: ReceiveNew): Call<GeneralResponse>
@@ -112,7 +113,10 @@ interface ApiService {
     fun getItems(@Body requestBody: FilterRequest): Call<ItemResponse>
 
     @POST(value = "/location/getOne")
-    fun getLocation(@Body requestBody: GetOne): Call<LocationResponse>
+    fun getLocation(@Body requestBody: GetOne): Call<LocationGetOne>
+
+    @POST(value = "/inventory/changeLocation")
+    fun changeLocations(@Body requestBody: locationChanges): Call<GeneralResponseChange>
 
 
 }
