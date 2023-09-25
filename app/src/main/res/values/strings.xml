@@ -78,6 +78,8 @@
     <string name="location_destination">Destination</string>
     <string name="title_location_list_items">Items in location </string>
     <string name="inventory_count">Inventory count</string>
+    <string name="delete">Delete</string>
+    <string name="add_location">Add location</string>
 
 
     <string name="menu_home">Home</string>

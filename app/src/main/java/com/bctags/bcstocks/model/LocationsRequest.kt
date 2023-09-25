@@ -14,3 +14,8 @@ data class ItemLocationsRequest(
     var locationIdDestination: Int,
 )
 
+data class CountLocation(
+    var id:Int,
+    var name: String
+)
+

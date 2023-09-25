@@ -24,6 +24,7 @@ import com.bctags.bcstocks.ui.receives.adapter.ItemsReceiveAdapter
 import com.bctags.bcstocks.ui.simplereader.adapter.TagReaderAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.EPCTools
+import com.bctags.bcstocks.util.MessageDialog
 import com.bumptech.glide.Glide
 import com.rscja.deviceapi.RFIDWithUHFUART
 import com.rscja.deviceapi.entity.UHFTAGInfo
@@ -38,6 +39,7 @@ class TagReaderActivity : DrawerBaseActivity() {
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     val tools = EPCTools()
+    private val messageDialog = MessageDialog()
 
     private val DURACION: Long = 2500;
     private var isScanning = false
@@ -126,7 +128,7 @@ class TagReaderActivity : DrawerBaseActivity() {
 
     private fun getItemsRead(list: MutableList<String>) {
         val pag = Pagination(1, 1000)
-        var filters:MutableList<Filter> = mutableListOf()
+        val filters:MutableList<Filter> = mutableListOf()
         filters.add(Filter("upc", "or", upcsList))
         val requestBody = FilterRequest(filters,pag)
 
@@ -136,9 +138,15 @@ class TagReaderActivity : DrawerBaseActivity() {
                 onSuccess = { response ->
                     itemList = response.data
                     initRecyclerView()
+                    if(itemList.isEmpty()){
+                        messageDialog.showDialog(
+                            this@TagReaderActivity,
+                            R.layout.dialog_error,
+                            "UPC not found.\n ${upcsList.toString()} "
+                        ) { }
+                    }
                 },
                 onError = { error ->
-                   // Log.i("error",gson.toJson(error))
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )

@@ -347,15 +347,17 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun saveNewReceive() {
-        var newItems = mutableListOf<ItemNewReceive>()
+        val newItems = mutableListOf<ItemNewReceive>()
         var emptyLocations = "\n"
         var empty = false
         for (it in receiveItemsList) {
-            if (it.locationId != null && it.locationId != 0) {
-                newItems.add(ItemNewReceive(it.itemId, it.quantity, it.locationId))
-            } else {
-                emptyLocations = emptyLocations + " " + it.description + "\n"
-                empty = true
+            if (it.quantity != 0) {
+                if (it.locationId != null && it.locationId != 0) {
+                    newItems.add(ItemNewReceive(it.itemId, it.quantity, it.locationId))
+                } else {
+                    emptyLocations = emptyLocations + " " + it.description + "\n"
+                    empty = true
+                }
             }
         }
         if (empty) {
@@ -365,8 +367,17 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                 "Select a location for $emptyLocations"
             ) { }
         } else {
-            newReceive.items = newItems
-            sendNewReceive()
+            receiveItemsList.removeAll { it.quantity == 0 }
+            if (receiveItemsList.isNotEmpty()) {
+                newReceive.items = newItems
+                sendNewReceive()
+            } else {
+                messageDialog.showDialog(
+                    this@ScannerReceiveActivity,
+                    R.layout.dialog_error,
+                    "Please input quantities"
+                ) { }
+            }
         }
     }
 

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lighter_gray"
+    android:orientation="vertical">
+
+    <!--HEADER-->
+    <!--HEADER-->
+    <!--HEADER-->
+    <LinearLayout
+        android:id="@+id/llHeader"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/red"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivGoBack"
+            android:layout_width="20.99dp"
+            android:layout_height="25.9dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="30dp"
+            android:src="@drawable/ic_left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/avenir_medium"
+            android:gravity="center"
+            android:text="@string/inventory_count"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="23sp" />
+    </LinearLayout>
+
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+    <!--PRINCIPAL-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+            <ImageView
+                android:id="@+id/ivScanIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/scanning_bctags"
+                android:layout_weight="1"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical|center"
+                android:layout_weight="1"
+                >
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/tvScan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    app:strokeColor="@color/black"
+                    android:text="@string/stop"
+                    android:textSize="18sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="30dp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="10dp"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/light_gray"
+                android:paddingVertical="5dp"
+                >
+                <TextView
+                    android:id="@+id/tvHeadItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/item"
+                    android:gravity="start|center_vertical"
+                    android:fontFamily="@font/avenir_medium"
+                    android:textSize="16sp"
+                    android:layout_weight="4"
+                    android:textColor="@color/black"
+                    android:paddingLeft="5dp"
+                    />
+                <TextView
+                    android:id="@+id/tvHeadOrder"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/order_qty"
+                    android:gravity="start|center_vertical"
+                    android:fontFamily="@font/avenir_medium"
+                    android:textSize="16sp"
+                    android:layout_weight="3"
+                    android:textColor="@color/black"
+                    />
+                <TextView
+                    android:id="@+id/tvHeadQty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/quantity"
+                    android:gravity="start|center_vertical"
+                    android:fontFamily="@font/avenir_medium"
+                    android:textSize="16sp"
+                    android:layout_weight="2"
+                    android:textColor="@color/black"
+                    />
+                <TextView
+                    android:id="@+id/tvHeadAction"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/avenir_medium"
+                    android:textSize="16sp"
+                    android:layout_weight="1"
+                    android:textColor="@color/black"
+                    />
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="75dp"
+                >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </ScrollView>
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!---SCAN -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvScanning"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        android:background="@color/white"
+        app:cardElevation="24dp"
+        >
+
+        <ImageView
+            android:id="@+id/ivScanning"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+    </androidx.cardview.widget.CardView>
+    <!---SCAN-->
+
+
+
+    <!---FOOTER-->
+    <!---FOOTER-->
+    <!---FOOTER-->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="4dp"
+        android:layout_marginBottom="-40dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="23dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fcMenu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:name="com.bctags.bcstocks.MenuFragment"
+            />
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+

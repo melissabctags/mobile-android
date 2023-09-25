@@ -29,6 +29,13 @@ data class InventoryData(
     @SerializedName("Item") var Item: ItemData,
     @SerializedName("Location") var Location: LocationData,
 
+)
+data class InventoryCount(
+    @SerializedName("id") var id: Int,
+    @SerializedName("quantity") var quantity: Int,
+    @SerializedName("founded") var founded: Int,
+    @SerializedName("Item") var Item: ItemData,
+    @SerializedName("Location") var Location: LocationData,
 
 )
 
