@@ -2,14 +2,12 @@ package com.bctags.bcstocks.util
 
 import android.content.Context
 import android.content.Intent
-import android.nfc.Tag
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -19,6 +17,7 @@ import com.bctags.bcstocks.ui.inventory.InventoryCountActivity
 import com.bctags.bcstocks.ui.login.LoginActivity
 import com.bctags.bcstocks.ui.receives.NewReceiveActivity
 import com.bctags.bcstocks.ui.simplereader.TagReaderActivity
+import com.bctags.bcstocks.ui.testThreads.ui.TestThreadsActivity
 import com.google.android.material.navigation.NavigationView
 
 open class DrawerBaseActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -73,9 +72,16 @@ open class DrawerBaseActivity : AppCompatActivity(), NavigationView.OnNavigation
             R.id.nav_item_logOut -> clearSessionPreference()
             R.id.nav_item_simple_reader -> simpleTagReader()
             R.id.nav_item_inventory_count -> inventoryCount()
+            R.id.nav_test -> openTest()
         }
         return false;
     }
+
+    private fun openTest() {
+        val intent = Intent(this, TestThreadsActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun clearSessionPreference(){
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("TOKEN", "").apply()

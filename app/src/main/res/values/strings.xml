@@ -68,6 +68,7 @@
     <string name="shipping">Shipping</string>
     <string name="tracking_number">Tracking number</string>
     <string name="branch">Branch</string>
+    <string name="branch_change">Branch change</string>
     <string name="total">Total</string>
     <string name="page_init">Page 1</string>
     <string name="list_items_locations">List of item locations</string>
@@ -80,6 +81,8 @@
     <string name="inventory_count">Inventory count</string>
     <string name="delete">Delete</string>
     <string name="add_location">Add location</string>
+    <string name="qty">Qty</string>
+    <string name="s_qty">S. Qty</string>
 
 
     <string name="menu_home">Home</string>
@@ -102,6 +105,7 @@
     <string name="error">Error</string>
     <string name="success">Success</string>
     <string name="success_message">Data successfully saved.</string>
+    <string name="test">Test</string>
 
 
 </resources>

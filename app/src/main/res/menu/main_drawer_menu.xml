@@ -6,9 +6,14 @@
         <item
             android:id="@+id/nav_item_simple_reader"
             android:title="@string/reader_epc" />
+
+        <item
+            android:id="@+id/nav_test"
+            android:title="@string/test" />
+
         <item
             android:id="@+id/nav_item_inventory_count"
-            android:title="Inventory count" />
+            android:title="@string/inventory_count" />
 
         <item
             android:id="@+id/nav_item_logOut"

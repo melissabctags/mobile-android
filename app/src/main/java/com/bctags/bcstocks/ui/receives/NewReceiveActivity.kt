@@ -133,7 +133,6 @@ class NewReceiveActivity : DrawerBaseActivity() {
                 }
             )
         }
-
     }
 
     private fun getPurchaseOrderList() {

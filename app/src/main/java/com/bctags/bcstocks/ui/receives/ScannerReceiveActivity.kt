@@ -18,18 +18,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityScannerReceiveBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.BranchData
-import com.bctags.bcstocks.io.response.LocationResponse
+import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.io.response.PurchaseOrderData
 import com.bctags.bcstocks.io.response.SupplierData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
-import com.bctags.bcstocks.model.FilterRequestPagination
 import com.bctags.bcstocks.model.ItemNewReceive
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
 import com.bctags.bcstocks.model.Pagination
@@ -39,7 +39,6 @@ import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.EPCTools
 import com.bctags.bcstocks.util.MessageDialog
-import com.bctags.bcstocks.util.ReaderRFID
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
@@ -47,21 +46,20 @@ import com.rscja.deviceapi.RFIDWithUHFUART
 import com.rscja.deviceapi.entity.UHFTAGInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.withContext
 
 
 class ScannerReceiveActivity : DrawerBaseActivity() {
     private lateinit var binding: ActivityScannerReceiveBinding
-
+    private lateinit var adapter: ItemsReceiveAdapter
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
-
     val dropDown = DropDown()
     val tools = EPCTools()
-    val messageDialog = MessageDialog()
-    val reader: ReaderRFID = ReaderRFID()
 
+    val messageDialog = MessageDialog()
     var newReceive: ReceiveNew = ReceiveNew(0, 0, "", mutableListOf(), "")
     var purchaseOrder: PurchaseOrderData = PurchaseOrderData(
         0,
@@ -76,20 +74,19 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         SupplierData(0, "")
     )
     val DURACION: Long = 2500;
+    val SERVER_ERROR = "Server error, try later"
 
     val mapLocation: HashMap<String, String> = HashMap()
-    var hashUpcs: MutableMap<String, Int> = mutableMapOf()
-    var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
-
-    private lateinit var adapter: ItemsReceiveAdapter
-    val SERVER_ERROR = "Server error, try later"
     var locationList: MutableList<String> = mutableListOf()
+    var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
+
+    private var branchId = 0
 
     private var isScanning = true
-    var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     val epcsList: MutableList<String> = mutableListOf()
-    var isInventory: Boolean = false
-    private var branchId=0
+    var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
+
+    var hashUpcs: MutableMap<String, Int> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,76 +102,119 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
             gson.fromJson(intent.getStringExtra("PURCHASE_ORDER"), PurchaseOrderData::class.java)
         getLocations()
         scannerGif()
-        initItemsList()
-        initRecyclerView()
-        readTag()
+
+        lifecycleScope.launch {
+            initItemsList()
+            initRecyclerView()
+            readTag()
+        }
+
     }
 
     private fun getLocations() {
         val pag = Pagination(1, 1000)
-        val filters:MutableList<Filter> = mutableListOf()
+        val filters: MutableList<Filter> = mutableListOf()
         filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
-        val requestBody = FilterRequest(filters,pag)
+        val requestBody = FilterRequest(filters, pag)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             apiCall.performApiCall(
                 apiClient.getLocationsList(requestBody),
                 onSuccess = { response ->
-                    val locationResponse: LocationResponse? = response
-                    locationResponse?.list?.forEach { i ->
-                        locationList.add(i.name + " " + i.Branch.name)
-                        mapLocation[i.name + " " + i.Branch.name] = i.id.toString();
-                    }
+                    setLocations(response.list)
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
         }
+
+    }
+
+    private fun setLocations(locations: MutableList<LocationData>) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            locations.forEach { i ->
+                locationList.add(i.name + " " + i.Branch.name)
+                mapLocation[i.name + " " + i.Branch.name] = i.id.toString();
+            }
+        }
     }
 
     private fun initItemsList() {
-        (purchaseOrder.ItemsPo).forEach {
-            var itemReceiving = ItemsNewReceiveTempo(
-                it.Item.id,
-                0,
-                it.quantity,
-                0,
-                it.Item.description,
-                it.Item.upc,
-                it.receivedQuantity,
-                0,
-                0
-            )
-            receiveItemsList.add(itemReceiving)
+        lifecycleScope.launch(Dispatchers.Default) {
+            (purchaseOrder.ItemsPo).forEach {
+                var itemReceiving = ItemsNewReceiveTempo(
+                    it.Item.id,
+                    0,
+                    it.quantity,
+                    0,
+                    it.Item.description,
+                    it.Item.upc,
+                    it.receivedQuantity,
+                    0,
+                    0
+                )
+                receiveItemsList.add(itemReceiving)
+            }
         }
     }
 
-    private fun readTag() {
-        var result: Boolean = rfid.init();
-        if (!result) {
-            Log.i("DIDN'T WORK", "DIDN'T WORK")
-            rfid.stopInventory()
-            rfid.free()
+    private fun initListeners() {
+        binding.tvScan.setOnClickListener {
+            lifecycleScope.launch {
+                if (isScanning) {
+                    stopInventory()
+                } else {
+                    val btnText = "Stop reading"
+                    binding.tvScan.text = btnText
+                    isScanning = true
+                    receiveItemsList.clear()
+                    hashUpcs.clear()
+                    initItemsList()
+                    initRecyclerView()
+                    readTag()
+                }
+            }
         }
-        if (rfid.startInventoryTag()) {
-            Log.i("WORKS", "WORKS")
-            isInventory = true
-            tagsReader()
-        } else {
-            stopInventory()
+        binding.ivGoBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        binding.btnSaveReceive.setOnClickListener {
+            saveNewReceive()
+        }
+    }
+
+    private var rfidContext = newSingleThreadContext("RFIDThread")
+    private var stopThread = false
+    private fun readTag() {
+        lifecycleScope.launch(rfidContext) {
+            withContext(Dispatchers.IO) {
+                val result: Boolean = rfid.init()
+                if (!result) {
+                    Log.i("DIDN'T WORK", "DIDN'T WORK")
+                    rfid.stopInventory()
+                    rfid.free()
+                }
+                if (rfid.startInventoryTag()) {
+                    Log.i("WORKS", "WORKS")
+                    isScanning = true
+                    tagsReader()
+                } else {
+                    rfid.stopInventory()
+                    rfid.free()
+                    // stopInventory()
+                }
+            }
         }
     }
 
     private fun tagsReader() {
-        CoroutineScope(Dispatchers.Default).launch {
-            while (isInventory) {
-                val uhftagInfo: UHFTAGInfo? = rfid.readTagFromBuffer();
-                Log.i("EPC", uhftagInfo.toString())
-                if (uhftagInfo != null) {
-                    epcsList.add(uhftagInfo.epc.toString())
-                } else {
-                    delay(300)
+        lifecycleScope.launch(rfidContext) {
+            while (isScanning && !stopThread) {
+                val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
+                if (uhfTagInfo != null) {
+                    epcsList.add(uhfTagInfo.epc.toString())
+                    Log.i("EPC", uhfTagInfo.epc.toString())
                 }
             }
         }
@@ -182,7 +222,6 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun stopInventory() {
         isScanning = false
-        isInventory = false
         rfid.stopInventory()
         rfid.free()
         val btnText = "Scan"
@@ -193,24 +232,28 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun countUpcs(epcsList: MutableList<String>) {
-        epcsList.forEach { i ->
-            val upc = tools.getGTIN(i).toString()
-            if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
-                hashUpcs[upc] = 1
-            } else {
-                hashUpcs[upc] = hashUpcs[upc]!! + 1
+        lifecycleScope.launch {
+            epcsList.forEach { i ->
+                val upc = tools.getGTIN(i).toString()
+                if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
+                    hashUpcs[upc] = 1
+                } else {
+                    hashUpcs[upc] = hashUpcs[upc]!! + 1
+                }
             }
         }
     }
 
     private fun checkReceivesUpcs() {
-        receiveItemsList.forEach {
-            if (hashUpcs.containsKey(it.upc)) {
-                it.quantity = hashUpcs[it.upc]?.toInt() ?: 0
+        lifecycleScope.launch {
+            receiveItemsList.forEach {
+                if (hashUpcs.containsKey(it.upc)) {
+                    it.quantity = hashUpcs[it.upc]?.toInt() ?: 0
+                }
             }
+            initRecyclerView()
+            binding.btnSaveReceive.visibility = View.VISIBLE
         }
-        initRecyclerView()
-        binding.btnSaveReceive.visibility = View.VISIBLE;
     }
 
     private fun initRecyclerView() {
@@ -224,25 +267,24 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun onItemSelected(item: ItemsNewReceiveTempo) {
         //var dialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        var dialog = Dialog(this)
+        val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_receive_item)
 
-        val autoComplete: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
+        val tfLocationList: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
         dropDown.listArrangeWithId(
             locationList,
-            autoComplete,
+            tfLocationList,
             mapLocation,
             this,
             item.itemId.toString(),
             ::updateLocation
         )
-
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val tvItemDescription: TextView = dialog.findViewById(R.id.tvItemDescription)
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
         val btnStatus: MaterialButton = dialog.findViewById(R.id.btnStatus)
-        val tfLocationList: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
+
         val llStatus: LinearLayout = dialog.findViewById(R.id.llStatus)
 
         if (item.quantity == 0) {
@@ -275,13 +317,12 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         tvItemDescription.text = item.description
         etQuantity.setText(item.quantity.toString())
 
-        Log.i("onItemSelected", item.locationId.toString())
-        if (item.locationId != null && item.locationId != 0) {
+        if (item.locationId != 0) {
             val key = mapLocation.entries.find { it.value == item.locationId.toString() }?.key
             tfLocationList.setText(key)
         }
 
-        var btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
+        val btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
         btnSaveChange.setOnClickListener {
             updateItemList(item, dialog)
         }
@@ -300,7 +341,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private fun updateItemList(item: ItemsNewReceiveTempo, dialog: Dialog) {
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
         var newValue = 0
-        if (!etQuantity.text.toString().isNullOrEmpty()) {
+        if (etQuantity.text.toString().isNotEmpty()) {
             newValue = etQuantity.text.toString().toInt()
         }
         receiveItemsList.forEach {
@@ -323,28 +364,6 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         btn.setIconTintResource(color)
     }
 
-    private fun initListeners() {
-        binding.tvScan.setOnClickListener {
-            if (isScanning) {
-                stopInventory()
-            } else {
-                val btnText = "Stop"
-                binding.tvScan.text = btnText
-                isScanning = true
-                receiveItemsList.clear()
-                hashUpcs.clear()
-                initItemsList()
-                initRecyclerView()
-                readTag()
-            }
-        }
-        binding.ivGoBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
-        binding.btnSaveReceive.setOnClickListener {
-            saveNewReceive()
-        }
-    }
 
     private fun saveNewReceive() {
         val newItems = mutableListOf<ItemNewReceive>()
@@ -403,7 +422,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
-    fun goMainReceive() {
+    private fun goMainReceive() {
         val intent = Intent(this, NewReceiveActivity::class.java)
         startActivity(intent)
     }

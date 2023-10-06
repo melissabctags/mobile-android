@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.testThreads.ui.TestThreadsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.inventory.CountInventoryActivity"
             android:exported="false" />
         <activity
