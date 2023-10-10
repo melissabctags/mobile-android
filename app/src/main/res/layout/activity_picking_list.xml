@@ -45,15 +45,21 @@
     <!--PRINCIPAL-->
     <!--PRINCIPAL-->
 
+
+    <!---FOOTER-->
+    <!---FOOTER-->
+    <!---FOOTER-->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="70dp"
-        app:layout_constraintTop_toBottomOf="@+id/llHeader">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/llHeader"
+        tools:layout_editor_absoluteX="0dp"
+        android:layout_marginBottom="80dp"
+        >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="60dp"
             android:orientation="vertical">
 
             <LinearLayout
@@ -114,8 +120,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:visibility="gone"
-                            >
+                            android:visibility="gone">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -382,12 +387,6 @@
 
     </androidx.core.widget.NestedScrollView>
 
-
-
-
-    <!---FOOTER-->
-    <!---FOOTER-->
-    <!---FOOTER-->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="100dp"

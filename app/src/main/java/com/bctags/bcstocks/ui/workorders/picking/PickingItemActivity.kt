@@ -29,6 +29,7 @@ import com.bctags.bcstocks.model.PickingRequest
 import com.bctags.bcstocks.ui.workorders.picking.adapter.LocationPickAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.InputFilterMinMax
+import com.bctags.bcstocks.util.MessageDialog
 import com.google.android.material.button.MaterialButton
 import com.google.gson.Gson
 import com.rscja.barcode.BarcodeDecoder
@@ -43,16 +44,15 @@ class PickingItemActivity : DrawerBaseActivity() {
     private lateinit var adapter: LocationPickAdapter
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
-
+    private val messageDialog = MessageDialog()
     var barcodeDecoder = BarcodeFactory.getInstance().barcodeDecoder
-
-
     val SERVER_ERROR = "Server error, try later"
 
     private val itemData:ItemData= ItemData(0,"","","",false,0,false,0,1.1,0,"")
     private var itemWorkOrder: ItemWorkOrder= ItemWorkOrder(0,0,"","",itemData)
     private var partialId: Int =0
     private var workOrderId: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPickingItemBinding.inflate(layoutInflater)
@@ -63,8 +63,8 @@ class PickingItemActivity : DrawerBaseActivity() {
         if (extras != null) {
             workOrderId = extras.getInt("WORK_ORDER_ID")
             partialId = extras.getInt("PARTIAL_ID")
-            Log.i("partialId", partialId.toString())
-            Log.i("workOrderId", workOrderId.toString())
+//            Log.i("partialId", partialId.toString())
+//            Log.i("workOrderId", workOrderId.toString())
             initUI()
             getLocations()
         }
@@ -83,7 +83,11 @@ class PickingItemActivity : DrawerBaseActivity() {
                     var btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
                     btnSaveChange.visibility = View.VISIBLE
                 }else{
-                    Toast.makeText(applicationContext, "Location doesn't match. Try again.", Toast.LENGTH_LONG).show()
+                    messageDialog.showDialog(
+                        this@PickingItemActivity,
+                        R.layout.dialog_error,
+                        "Location doesn't match. Try again."
+                    ) { }
                 }
                 stop()
             } else {
@@ -154,10 +158,19 @@ class PickingItemActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.pickingItem(requestBody),
                 onSuccess = { response ->
-                    Toast.makeText(applicationContext, "SAVED", Toast.LENGTH_LONG).show()
+                    messageDialog.showDialog(
+                        this@PickingItemActivity,
+                        R.layout.dialog_success,
+                        "Saved "
+                    ) { }
                 },
                 onError = { error ->
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                    messageDialog.showDialog(
+                        this@PickingItemActivity,
+                        R.layout.dialog_error,
+                        SERVER_ERROR
+                    ) { }
+                   // Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
         }
@@ -194,7 +207,7 @@ class PickingItemActivity : DrawerBaseActivity() {
         binding.tvQty.text = itemWorkOrder.quantity.toString()
     }
     private fun initListeners() {
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnDone.setOnClickListener{

@@ -14,6 +14,7 @@ import com.bctags.bcstocks.databinding.ActivityInventoryCountBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.InventoryData
+import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.model.CountLocation
 import com.bctags.bcstocks.model.Filter
@@ -52,7 +53,6 @@ class InventoryCountActivity : DrawerBaseActivity() {
 
         getLocations()
         initListeners()
-       // initRecyclerView()
     }
     private fun initListeners() {
         binding.btnAdd.setOnClickListener{
@@ -60,6 +60,9 @@ class InventoryCountActivity : DrawerBaseActivity() {
         }
         binding.btnNext.setOnClickListener{
             goInventoryCount()
+        }
+        binding.llHeader.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
     }
     private fun goInventoryCount() {
@@ -74,24 +77,11 @@ class InventoryCountActivity : DrawerBaseActivity() {
         filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
         val requestBody = FilterRequest(filters,pag)
 
-        val list : MutableList<String> = mutableListOf()
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getLocationsList(requestBody),
                 onSuccess = { response ->
-                    val locationResponse: LocationResponse? = response
-                    locationResponse?.list?.forEach { i ->
-                        list.add(i.name + " " + i.Branch.name)
-                        mapLocations[i.name + " " + i.Branch.name] = i.id.toString();
-                    }
-                    val autoComplete: AutoCompleteTextView = findViewById(com.bctags.bcstocks.R.id.locationsList)
-                    dropDown.listArrange(
-                        list,
-                        autoComplete,
-                        mapLocations,
-                        this@InventoryCountActivity,
-                        ::updateLocations
-                    )
+                    initLocations(response.list)
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
@@ -99,14 +89,31 @@ class InventoryCountActivity : DrawerBaseActivity() {
             )
         }
     }
+
+    private fun initLocations(locationResponse: MutableList<LocationData>) {
+        val list : MutableList<String> = mutableListOf()
+        locationResponse.forEach { i ->
+            list.add(i.name + " " + i.Branch.name)
+            mapLocations[i.name + " " + i.Branch.name] = i.id.toString();
+        }
+        val autoComplete: AutoCompleteTextView = findViewById(com.bctags.bcstocks.R.id.locationsList)
+        dropDown.listArrange(
+            list,
+            autoComplete,
+            mapLocations,
+            this@InventoryCountActivity,
+            ::updateLocations
+        )
+    }
+
     private fun updateLocations(id: String, text: String) {
         tempLocation.id = id.toInt()
         tempLocation.name = text
         binding.btnNext.visibility= View.VISIBLE;
     }
     private fun addLocationToList() {
-        Log.i("tempLocation",tempLocation.toString())
-        Log.i("selectedLocations",selectedLocations.toString())
+//        Log.i("tempLocation",tempLocation.toString())
+//        Log.i("selectedLocations",selectedLocations.toString())
         val existingItem = selectedLocations.find { it.id == tempLocation.id }
         if (existingItem == null) {
             selectedLocations.add(CountLocation(tempLocation.id,tempLocation.name))

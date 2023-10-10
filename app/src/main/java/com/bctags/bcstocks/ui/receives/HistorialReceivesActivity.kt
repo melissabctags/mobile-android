@@ -2,7 +2,6 @@ package com.bctags.bcstocks.ui.receives
 
 import android.app.DatePickerDialog
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -16,15 +15,14 @@ import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityHistorialReceivesBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
-import com.bctags.bcstocks.io.response.CarrierResponse
+import com.bctags.bcstocks.io.response.CarrierData
 import com.bctags.bcstocks.io.response.ReceiveData
-import com.bctags.bcstocks.io.response.WorkOrderData
+import com.bctags.bcstocks.io.response.ReceiveResponse
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.TempPagination
 import com.bctags.bcstocks.ui.receives.adapter.ReceivesAdapter
-import com.bctags.bcstocks.ui.workorders.OrderDetailsActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.Utils
@@ -32,14 +30,12 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.math.log
 
-class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSetListener {
+class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateSetListener {
     private lateinit var binding: ActivityHistorialReceivesBinding
     private lateinit var adapter: ReceivesAdapter
     private val apiClient = ApiClient().apiService
@@ -60,45 +56,42 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         binding = ActivityHistorialReceivesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         getCarrierList()
-        //getSupplierList()
         initUI()
         getReceivesList()
 
     }
-    var day=0
-    var month=0
-    var year=0
 
-    var savedDay=0
-    var savedMonth=0
-    var savedYear=0
-    private fun getDateTimeCalendar(){
-        val cal=Calendar.getInstance()
-        day=cal.get(Calendar.DAY_OF_MONTH)
-        month=cal.get(Calendar.MONTH)
-        year=cal.get(Calendar.YEAR)
+    var day = 0
+    var month = 0
+    var year = 0
+
+    var savedDay = 0
+    var savedMonth = 0
+    var savedYear = 0
+    private fun getDateTimeCalendar() {
+        val cal = Calendar.getInstance()
+        day = cal.get(Calendar.DAY_OF_MONTH)
+        month = cal.get(Calendar.MONTH)
+        year = cal.get(Calendar.YEAR)
     }
+
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        savedDay= dayOfMonth
-        savedMonth = month+1
+        savedDay = dayOfMonth
+        savedMonth = month + 1
         savedYear = year
-        val newDate="${savedYear}-${utils.convertDate(savedMonth)}-${utils.convertDate(savedDay)}"
+        val newDate = "${savedYear}-${utils.convertDate(savedMonth)}-${utils.convertDate(savedDay)}"
         binding.tvDate.text = newDate
     }
+
     private fun getReceivesList() {
         val pag = Pagination(pagination.currentPage, pagination.pageSize)
         val requestBody = FilterRequest(filters, pag)
-        Log.i("filters",filters.toString())
+        Log.i("filters", filters.toString())
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.receiveList(requestBody),
                 onSuccess = { response ->
-                    if (firstRound) {
-                        pagination = utils.ínitPagination(response.pagination.totals, pagination)
-                        firstRound = false
-                    }
-                    initRecyclerView(response.data)
-
+                    useReceiveList(response)
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -108,10 +101,21 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         }
     }
 
+    private fun useReceiveList(response: ReceiveResponse) {
+        if (firstRound) {
+            pagination = utils.ínitPagination(response.pagination.totals, pagination)
+            firstRound = false
+        }
+        initRecyclerView(response.data)
+    }
+
     private fun prevPagination() {
         if (pagination.prevPage != 0) {
             pagination = utils.prevPagination(pagination)
-            binding.tvPage.text = "Page ${pagination.currentPage.toString()}"
+            binding.tvPage.text = buildString {
+                append("Page ")
+                append(pagination.currentPage.toString())
+            }
             getReceivesList()
         }
     }
@@ -119,14 +123,16 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
     private fun NextPagination() {
         if (pagination.nextPage != 0) {
             pagination = utils.NextPagination(pagination)
-            binding.tvPage.text = "Page " + pagination.currentPage.toString()
+            binding.tvPage.text = buildString {
+                append("Page ")
+                append(pagination.currentPage.toString())
+            }
             getReceivesList()
         }
     }
 
-
     private fun initRecyclerView(receiveList: MutableList<ReceiveData>) {
-        Log.i("receiveList",receiveList.toString())
+        Log.i("receiveList", receiveList.toString())
         adapter = ReceivesAdapter(
             receivesList = receiveList,
             onClickListener = { receiveData -> viewReceive(receiveData) },
@@ -134,6 +140,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         binding.recyclerReceives.layoutManager = LinearLayoutManager(this)
         binding.recyclerReceives.adapter = adapter
     }
+
     fun viewReceive(receiveData: ReceiveData) {
         val intent = Intent(this, ReceiveDetailsActivity::class.java)
         val gson = Gson()
@@ -162,9 +169,9 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         }
         binding.tvDate.setOnClickListener {
             getDateTimeCalendar()
-            DatePickerDialog(this,this,year,month, day).show()
+            DatePickerDialog(this, this, year, month, day).show()
         }
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
     }
@@ -172,18 +179,15 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
     private fun resetForm() {
         pagination = TempPagination(1, 0, 2, 0)
         binding.etNumber.text.clear()
-        // binding.supplierList.text.clear()
         binding.carrierList.text.clear()
         carrierId = 0
-        // supplierId=0
         binding.tvDate.text = " "
         filters.clear()
         filters = mutableListOf(Filter("", "", mutableListOf("")))
         firstRound = true
-        savedDay= 0
+        savedDay = 0
         savedMonth = 0
         savedYear = 0
-        //getReceivesList()
         getReceivesList()
     }
 
@@ -199,7 +203,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
                 )
             )
         }
-        if (savedDay!=0 && savedMonth!=0&& savedYear!=0) {
+        if (savedDay != 0 && savedMonth != 0 && savedYear != 0) {
             var fecha = binding.tvDate.text.toString()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val start = Calendar.getInstance().apply {
@@ -231,9 +235,9 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         if (carrierId != 0) {
             filters.add(Filter("carrierId", "eq", mutableListOf(carrierId.toString())))
         }
-        if(filters.isNotEmpty()){
+        if (filters.isNotEmpty()) {
             getReceivesList()
-        }else{
+        } else {
             filters = mutableListOf(Filter("", "", mutableListOf("")))
             getReceivesList()
         }
@@ -243,8 +247,6 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
 
     private fun expandCardView() {
         if (binding.cvFormSearch.visibility == View.VISIBLE) {
-            // The transition of the hiddenView is carried out by the TransitionManager class.
-            // Here we use an object of the AutoTransition Class to create a default transition
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
             binding.cvFormSearch.visibility = View.GONE
             binding.acIcon.setImageResource(R.drawable.ic_arrow_down_black)
@@ -254,7 +256,6 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
             binding.acIcon.setImageResource(R.drawable.ic_arrow_up_black)
         }
     }
-
 
     private fun toNewReceive() {
         val intent = Intent(this, NewReceiveActivity::class.java)
@@ -266,20 +267,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
             apiCall.performApiCall(
                 apiClient.getCarrierList(),
                 onSuccess = { response ->
-                    val carrierResponse: CarrierResponse? = response
-                    var list: MutableList<String> = mutableListOf()
-                    carrierResponse?.list?.forEach { i ->
-                        list.add(i.name)
-                        mapCarriers[i.name] = i.id.toString()
-                    }
-                    val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
-                    dropDown.listArrange(
-                        list,
-                        autoComplete,
-                        mapCarriers,
-                        this@HistorialReceivesActivity,
-                        ::updateCarriers
-                    )
+                    useCarriers(response.list)
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
@@ -288,13 +276,25 @@ class HistorialReceivesActivity : DrawerBaseActivity(),DatePickerDialog.OnDateSe
         }
     }
 
+    private fun useCarriers(carrierResponse: MutableList<CarrierData>) {
+        val list: MutableList<String> = mutableListOf()
+        carrierResponse.forEach { i ->
+            list.add(i.name)
+            mapCarriers[i.name] = i.id.toString()
+        }
+        val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
+        dropDown.listArrange(
+            list,
+            autoComplete,
+            mapCarriers,
+            this@HistorialReceivesActivity,
+            ::updateCarriers
+        )
+    }
+
     private fun updateCarriers(id: String, text: String) {
         carrierId = id.toInt()
     }
-
-
-
-
 
 
 }

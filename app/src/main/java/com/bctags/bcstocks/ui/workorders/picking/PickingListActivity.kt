@@ -2,7 +2,6 @@ package com.bctags.bcstocks.ui.workorders.picking
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -17,6 +16,7 @@ import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.Branch
 import com.bctags.bcstocks.io.response.ClientData
 import com.bctags.bcstocks.io.response.ItemWorkOrder
+import com.bctags.bcstocks.io.response.PartialResponse
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.model.WorkOrderNewPartial
@@ -29,9 +29,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 class PickingListActivity : DrawerBaseActivity() {
     private lateinit var binding: ActivityPickingListBinding
@@ -42,13 +39,41 @@ class PickingListActivity : DrawerBaseActivity() {
     val gson = Gson()
 
     val SERVER_ERROR = "Server error, try later"
-    private val client: ClientData =ClientData(0,"","","","","","","","","","","","","")
-    private val branch:Branch= Branch(0,0,"","","","","","","","")
-    private var workOrder: WorkOrderData? = WorkOrderData(0,0,"",0,0,0,"","","","","","","","","","","","","",0,"","","",client,branch,mutableListOf())
-    private var partialId: Int=0
+    private val client: ClientData =
+        ClientData(0, "", "", "", "", "", "", "", "", "", "", "", "", "")
+    private val branch: Branch = Branch(0, 0, "", "", "", "", "", "", "", "")
+    private var workOrder: WorkOrderData? = WorkOrderData(
+        0,
+        0,
+        "",
+        0,
+        0,
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        "",
+        "",
+        client,
+        branch,
+        mutableListOf()
+    )
+    private var partialId: Int = 0
     private var workOrderId: Int = 0
 
-    var workOrdersPref:String= "{}"
+    var workOrdersPref: String = "{}"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +83,7 @@ class PickingListActivity : DrawerBaseActivity() {
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         if (sharedPreferences.contains("WORK_ORDERS")) {
             workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
-            Log.i("WORK_ORDERS Pickinlist",workOrdersPref)
+            Log.i("WORK_ORDERS Pickinlist", workOrdersPref)
         } else {
             sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
         }
@@ -67,9 +92,9 @@ class PickingListActivity : DrawerBaseActivity() {
         if (extras != null) {
             workOrderId = extras.getInt("WORK_ORDER_ID")
             partialId = extras.getInt("PARTIAL_ID")
-            Log.i("PARTIAL_ID",partialId.toString())
+            Log.i("PARTIAL_ID", partialId.toString())
             getWorkOrder(workOrderId)
-            if(partialId==0){
+            if (partialId == 0) {
                 createPartial(workOrderId)
             }
         }
@@ -100,17 +125,7 @@ class PickingListActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.newPartial(requestBody),
                 onSuccess = { response ->
-                    partialId = response.data.id
-                    var workOrderStatus = mutableListOf<WorkOrderStatus>()
-                    if(workOrdersPref.isNotEmpty()&& workOrdersPref!="{}") {
-                        workOrderStatus =gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).toMutableList()
-                        workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
-                    }else{
-                        workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
-                    }
-                    val sharedPreferences =getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
-                    sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
-
+                    initPartial(response)
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -120,8 +135,22 @@ class PickingListActivity : DrawerBaseActivity() {
         }
     }
 
+    private fun initPartial(response: PartialResponse) {
+        partialId = response.data.id
+        var workOrderStatus = mutableListOf<WorkOrderStatus>()
+        if (workOrdersPref.isNotEmpty() && workOrdersPref != "{}") {
+            workOrderStatus =
+                gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).toMutableList()
+            workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
+        } else {
+            workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
+        }
+        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
+    }
+
     private fun initListeners() {
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.llAccordeon.setOnClickListener {
@@ -130,22 +159,22 @@ class PickingListActivity : DrawerBaseActivity() {
         binding.btnFinish.setOnClickListener {
             finishPicking()
         }
-
     }
 
     private fun finishPicking() {
-
         //var workOrderStatus = Json.decodeFromString<Array<WorkOrderStatus>>(workOrdersPref).toMutableList()
-        var workOrderStatus = gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).asList().toMutableList()
+        var workOrderStatus =
+            gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).asList()
+                .toMutableList()
         workOrderStatus.removeAll { it.id == workOrderId && it.partialId == partialId }
-        workOrderStatus.add(WorkOrderStatus(workOrderId,"pack",partialId))
+        workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", partialId))
 
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
 
-        Log.i("WORK_ORDERS",workOrderStatus.toString())
+        Log.i("WORK_ORDERS", workOrderStatus.toString())
 
-        utils.getChangeStatus(partialId,"packing",this)
+        utils.getChangeStatus(partialId, "packing", this)
 
         val intent = Intent(this, PackingActivity::class.java)
         intent.putExtra("WORK_ORDER_ID", workOrderId)
@@ -154,7 +183,10 @@ class PickingListActivity : DrawerBaseActivity() {
     }
 
     private fun initUI() {
-        binding.tvOrderNum.text = "Work order ${workOrder?.number}"
+        binding.tvOrderNum.text = buildString {
+            append("Work order ")
+            append(workOrder?.number)
+        }
         binding.tvClient.text = workOrder?.Client?.name ?: ""
         binding.tvPoReference.text = workOrder?.poReference ?: ""
         binding.tvPo.text = workOrder?.po ?: ""
@@ -180,9 +212,7 @@ class PickingListActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.getWorkOrder(requestBody),
                 onSuccess = { response ->
-                    workOrder = response.data
-                    initRecyclerView(response.data.Items)
-                    initUI()
+                    useWorkOrder(response.data)
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -190,6 +220,12 @@ class PickingListActivity : DrawerBaseActivity() {
                 }
             )
         }
+    }
+
+    private fun useWorkOrder(data: WorkOrderData) {
+        workOrder = data
+        initRecyclerView(data.Items)
+        initUI()
     }
 
 

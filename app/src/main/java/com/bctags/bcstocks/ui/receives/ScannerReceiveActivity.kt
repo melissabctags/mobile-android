@@ -56,12 +56,13 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private lateinit var adapter: ItemsReceiveAdapter
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
-    val dropDown = DropDown()
-    val tools = EPCTools()
+    private val dropDown = DropDown()
+    private val tools = EPCTools()
+    private val messageDialog = MessageDialog()
+    private val gson = Gson()
 
-    val messageDialog = MessageDialog()
-    var newReceive: ReceiveNew = ReceiveNew(0, 0, "", mutableListOf(), "")
-    var purchaseOrder: PurchaseOrderData = PurchaseOrderData(
+    private var newReceive: ReceiveNew = ReceiveNew(0, 0, "", mutableListOf(), "")
+    private var purchaseOrder: PurchaseOrderData = PurchaseOrderData(
         0,
         "",
         0,
@@ -76,17 +77,14 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     val DURACION: Long = 2500;
     val SERVER_ERROR = "Server error, try later"
 
-    val mapLocation: HashMap<String, String> = HashMap()
-    var locationList: MutableList<String> = mutableListOf()
-    var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
-
+    private val mapLocation: HashMap<String, String> = HashMap()
+    private var locationList: MutableList<String> = mutableListOf()
+    private var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     private var branchId = 0
-
     private var isScanning = true
-    val epcsList: MutableList<String> = mutableListOf()
-    var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
-
-    var hashUpcs: MutableMap<String, Int> = mutableMapOf()
+    private val epcsList: MutableList<String> = mutableListOf()
+    private var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
+    private var hashUpcs: MutableMap<String, Int> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +94,6 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         branchId = sharedPreferences.getInt("BRANCH", 0)
         initListeners()
 
-        val gson = Gson()
         newReceive = gson.fromJson(intent.getStringExtra("RECEIVE"), ReceiveNew::class.java)
         purchaseOrder =
             gson.fromJson(intent.getStringExtra("PURCHASE_ORDER"), PurchaseOrderData::class.java)
@@ -128,7 +125,6 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                 }
             )
         }
-
     }
 
     private fun setLocations(locations: MutableList<LocationData>) {
@@ -143,7 +139,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private fun initItemsList() {
         lifecycleScope.launch(Dispatchers.Default) {
             (purchaseOrder.ItemsPo).forEach {
-                var itemReceiving = ItemsNewReceiveTempo(
+                val itemReceiving = ItemsNewReceiveTempo(
                     it.Item.id,
                     0,
                     it.quantity,
@@ -176,8 +172,10 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                 }
             }
         }
-        binding.ivGoBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+        binding.llHeader.setOnClickListener {
+            val intent = Intent(this, NewReceiveActivity::class.java)
+            startActivity(intent)
+            //onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSaveReceive.setOnClickListener {
             saveNewReceive()
@@ -284,7 +282,6 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         val tvItemDescription: TextView = dialog.findViewById(R.id.tvItemDescription)
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
         val btnStatus: MaterialButton = dialog.findViewById(R.id.btnStatus)
-
         val llStatus: LinearLayout = dialog.findViewById(R.id.llStatus)
 
         if (item.quantity == 0) {
@@ -371,7 +368,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         var empty = false
         for (it in receiveItemsList) {
             if (it.quantity != 0) {
-                if (it.locationId != null && it.locationId != 0) {
+                if (it.locationId != 0) {
                     newItems.add(ItemNewReceive(it.itemId, it.quantity, it.locationId))
                 } else {
                     emptyLocations = emptyLocations + " " + it.description + "\n"

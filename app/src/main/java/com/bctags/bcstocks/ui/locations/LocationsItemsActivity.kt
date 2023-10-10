@@ -16,6 +16,7 @@ import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.InventoryData
 import com.bctags.bcstocks.io.response.LocationBarcode
+import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.io.response.LocationResponse
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
@@ -79,17 +80,18 @@ class LocationsItemsActivity : DrawerBaseActivity() {
                 if( barcodeEntity.barcodeData!=""){
                     binding.btnSaveChange.visibility = View.VISIBLE
                 }else{
-                    Toast.makeText(applicationContext, "Location doesn't match. Try again.", Toast.LENGTH_LONG).show()
+                    messageDialog.showDialog(
+                        this@LocationsItemsActivity,
+                        R.layout.dialog_error,
+                        "Location doesn't match. Try again."
+                    ) {  stop() }
                 }
-                stop()
             } else {
                 messageDialog.showDialog(
                     this@LocationsItemsActivity,
                     R.layout.dialog_error,
                     "Error reading barcode. Scan again "
                 ) { }
-                //Toast.makeText(applicationContext, "Scanning error", Toast.LENGTH_LONG).show()
-                Log.i("BARCODE", "FAILED")
             }
         }
     }
@@ -101,7 +103,7 @@ class LocationsItemsActivity : DrawerBaseActivity() {
         barcodeDecoder.stopScan()
     }
     private fun initListeners() {
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnScanBarCode.setOnClickListener {
@@ -117,7 +119,6 @@ class LocationsItemsActivity : DrawerBaseActivity() {
     }
     private fun changeItemsLocations(){
         itemsList.removeAll { it.quantity == 0 }
-
         if (itemsList.isNotEmpty()) {
             val moveList: MutableList<ItemLocationsRequest> = mutableListOf()
             itemsList.forEach {
@@ -164,32 +165,11 @@ class LocationsItemsActivity : DrawerBaseActivity() {
         filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
         val requestBody = FilterRequest(filters,pag)
 
-        val list : MutableList<String> = mutableListOf()
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getLocationsList(requestBody),
                 onSuccess = { response ->
-                    val locationResponse: LocationResponse? = response
-                    locationResponse?.list?.forEach { i ->
-                        list.add(i.name + " " + i.Branch.name)
-                        mapLocations[i.name + " " + i.Branch.name] = i.id.toString();
-                    }
-                    val autoComplete: AutoCompleteTextView = findViewById(R.id.originList)
-                    dropDown.listArrange(
-                        list,
-                        autoComplete,
-                        mapLocations,
-                        this@LocationsItemsActivity,
-                        ::updateOrigin
-                    )
-                    val autoCompleteDestiny: AutoCompleteTextView = findViewById(R.id.destinationList)
-                    dropDown.listArrange(
-                        list,
-                        autoCompleteDestiny,
-                        mapLocations,
-                        this@LocationsItemsActivity,
-                        ::updateDestination
-                    )
+                    initLocations(response.list)
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
@@ -197,6 +177,31 @@ class LocationsItemsActivity : DrawerBaseActivity() {
             )
         }
     }
+
+    private fun initLocations(locationResponse: MutableList<LocationData>) {
+        val list : MutableList<String> = mutableListOf()
+        locationResponse.forEach { i ->
+            list.add(i.name + " " + i.Branch.name)
+            mapLocations[i.name + " " + i.Branch.name] = i.id.toString();
+        }
+        val autoComplete: AutoCompleteTextView = findViewById(R.id.originList)
+        dropDown.listArrange(
+            list,
+            autoComplete,
+            mapLocations,
+            this@LocationsItemsActivity,
+            ::updateOrigin
+        )
+        val autoCompleteDestiny: AutoCompleteTextView = findViewById(R.id.destinationList)
+        dropDown.listArrange(
+            list,
+            autoCompleteDestiny,
+            mapLocations,
+            this@LocationsItemsActivity,
+            ::updateDestination
+        )
+    }
+
     private fun updateOrigin(id: String, text: String) {
         originId = id.toInt()
         searchInventory()

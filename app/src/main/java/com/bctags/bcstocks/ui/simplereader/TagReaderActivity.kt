@@ -79,7 +79,7 @@ class TagReaderActivity : DrawerBaseActivity() {
                 }
             }
         }
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             val intent = Intent(this, MainMenuActivity::class.java)
             startActivity(intent)
         }
@@ -149,12 +149,11 @@ class TagReaderActivity : DrawerBaseActivity() {
 
     private fun getItemsRead(list: MutableList<String>) {
         val pag = Pagination(1, 1000)
-        val filters:MutableList<Filter> = mutableListOf()
+        val filters: MutableList<Filter> = mutableListOf()
         filters.add(Filter("upc", "or", upcsList))
-        val requestBody = FilterRequest(filters,pag)
-        runBlocking {
-            launch{
-                apiCall.performApiCall(
+        val requestBody = FilterRequest(filters, pag)
+        lifecycleScope.launch {
+            apiCall.performApiCall(
                 apiClient.getItems(requestBody),
                 onSuccess = { response ->
                     useItems(response.data)
@@ -163,8 +162,8 @@ class TagReaderActivity : DrawerBaseActivity() {
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
-            }
         }
+
     }
 
     private fun useItems(data: MutableList<ItemData>) {

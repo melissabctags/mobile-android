@@ -1,18 +1,13 @@
 package com.bctags.bcstocks.ui.workorders
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.databinding.ActivityOrderDetailsBinding
-import com.bctags.bcstocks.io.ApiCall
-import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.ItemWorkOrder
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrderDetailsAdapter
-import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
-import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
 
 class OrderDetailsActivity : DrawerBaseActivity() {
@@ -29,13 +24,12 @@ class OrderDetailsActivity : DrawerBaseActivity() {
         initUI()
         initListener()
     }
+
     private fun initListener() {
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-
     }
-
 
 
     @SuppressLint("SetTextI18n")
@@ -47,6 +41,7 @@ class OrderDetailsActivity : DrawerBaseActivity() {
         binding.tvDeliveryDate.text = workOrder.dateOrderPlaced
         initRecyclerView(workOrder.Items)
     }
+
     private fun initRecyclerView(list: MutableList<ItemWorkOrder>) {
         adapter = WorkOrderDetailsAdapter(
             list = list

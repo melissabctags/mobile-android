@@ -68,14 +68,13 @@ class CountInventoryActivity : DrawerBaseActivity() {
             Log.i("location",selectedLocations.id.toString())
             getInventory()
         }
-
         scannerGif()
         initListeners()
         readTag()
 
     }
     private fun readTag() {
-        var result: Boolean = rfid.init();
+        val result: Boolean = rfid.init();
         if (!result) {
             Log.i("DIDN'T WORK", "DIDN'T WORK")
             rfid.stopInventory()
@@ -152,16 +151,19 @@ class CountInventoryActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.getInventory(FilterRequest(filters,pag)),
                 onSuccess = { response ->
-                    Log.i("RESPONSE",response.data.toString())
-                    response.data.forEach { i ->
-                        listInventory.add(InventoryCount(i.id,i.quantity,0,i.Item,i.Location))
-                    }
+                    initInventory(response.data)
                 },
                 onError = { error ->
                     Log.i("error",gson.toJson(error))
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
+        }
+    }
+
+    private fun initInventory(data: MutableList<InventoryData>) {
+        data.forEach { i ->
+            listInventory.add(InventoryCount(i.id,i.quantity,0,i.Item,i.Location))
         }
     }
 
@@ -191,7 +193,7 @@ class CountInventoryActivity : DrawerBaseActivity() {
                 readTag()
             }
         }
-        binding.ivGoBack.setOnClickListener {
+        binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
     }

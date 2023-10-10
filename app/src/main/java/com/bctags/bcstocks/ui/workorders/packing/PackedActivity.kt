@@ -2,7 +2,6 @@ package com.bctags.bcstocks.ui.workorders.packing
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -23,12 +22,9 @@ import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.PackageIds
 import com.bctags.bcstocks.model.WorkOrder
-import com.bctags.bcstocks.ui.workorders.OrderDetailsActivity
-import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
-import com.bctags.bcstocks.ui.workorders.packing.adapter.PackAdapter
 import com.bctags.bcstocks.ui.workorders.packing.adapter.PackedAdapter
-import com.bctags.bcstocks.ui.workorders.picking.PickingListActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
+import com.bctags.bcstocks.util.MessageDialog
 import com.bctags.bcstocks.util.Utils
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -41,14 +37,43 @@ class PackedActivity : DrawerBaseActivity() {
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     private val utils = Utils()
-    private val gson= Gson()
+    private val messageDialog = MessageDialog()
+    private val gson = Gson()
 
     val SERVER_ERROR = "Server error, try later"
-    var workOrdersPref:String= "{}"
-    private val client: ClientData = ClientData(0,"","","","","","","","","","","","","")
-    private val branch: Branch = Branch(0,0,"","","","","","","","")
-    private var workOrder: WorkOrderData? = WorkOrderData(0,0,"",0,0,0,"","","","","","","","","","","","","",0,"","","",client,branch,mutableListOf())
-    private var partialId: Int=0
+    var workOrdersPref: String = "{}"
+    private val client: ClientData =
+        ClientData(0, "", "", "", "", "", "", "", "", "", "", "", "", "")
+    private val branch: Branch = Branch(0, 0, "", "", "", "", "", "", "", "")
+    private var workOrder: WorkOrderData? = WorkOrderData(
+        0,
+        0,
+        "",
+        0,
+        0,
+        0,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        0,
+        "",
+        "",
+        "",
+        client,
+        branch,
+        mutableListOf()
+    )
+    private var partialId: Int = 0
     private var workOrderId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +83,7 @@ class PackedActivity : DrawerBaseActivity() {
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         if (sharedPreferences.contains("WORK_ORDERS")) {
             workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
-            Log.i("WORK_ORDERS pack",workOrdersPref)
+            Log.i("WORK_ORDERS pack", workOrdersPref)
         } else {
             sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
         }
@@ -74,25 +99,33 @@ class PackedActivity : DrawerBaseActivity() {
     var listPacked = mutableListOf<PackedData>()
     private fun initRecyclerView(list: MutableList<ItemWorkOrder>) {
         getPacked { packedList ->
-            if(packedList!=null){
-                listPacked= packedList as MutableList<PackedData>
+            if (packedList != null) {
+                listPacked = packedList as MutableList<PackedData>
             }
-            adapter= PackedAdapter(listPacked, partialId,list,  onClickListener = { packedData,secondPar -> deletePacked(packedData,secondPar) })
+            adapter = PackedAdapter(
+                listPacked,
+                partialId,
+                list,
+                onClickListener = { packedData, secondPar -> deletePacked(packedData, secondPar) })
             binding.recyclerList.layoutManager = LinearLayoutManager(this)
             binding.recyclerList.adapter = adapter
         }
     }
 
-    private fun deletePacked(packedData:PackedData,position:Int){
+    private fun deletePacked(packedData: PackedData, position: Int) {
         val list: MutableList<Int> = mutableListOf()
-        packedData.items.forEach{ el->
+        packedData.items.forEach { el ->
             list.add(el.id)
         }
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.deletePack(PackageIds(list.toList())),
                 onSuccess = { response ->
-                    Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
+                    messageDialog.showDialog(
+                        this@PackedActivity,
+                        R.layout.dialog_success,
+                        "Pack deleted"
+                    ) { }
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -103,16 +136,16 @@ class PackedActivity : DrawerBaseActivity() {
         listPacked.removeAt(position)
         adapter.notifyItemRemoved(position)
     }
+
     private fun getPacked(callback: (List<PackedData>?) -> Unit) {
-        val listFilters= mutableListOf<Filter>()
-        listFilters.add(Filter("fillOrderId","eq", mutableListOf(partialId.toString())))
+        val listFilters = mutableListOf<Filter>()
+        listFilters.add(Filter("fillOrderId", "eq", mutableListOf(partialId.toString())))
 
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getPacked(FiltersRequest(listFilters)),
                 onSuccess = { response ->
-                    val packedList = response.data
-                    callback(packedList)
+                    callback(response.data)
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -123,8 +156,8 @@ class PackedActivity : DrawerBaseActivity() {
     }
 
     private fun initListeners() {
-        binding.ivGoBack.setOnClickListener {
-           goBack()
+        binding.llHeader.setOnClickListener {
+            goBack()
         }
         binding.llAccordeon.setOnClickListener {
             expandCardView()
@@ -149,16 +182,14 @@ class PackedActivity : DrawerBaseActivity() {
             binding.acIcon.setImageResource(R.drawable.ic_arrow_up_black)
         }
     }
+
     private fun getWorkOrder(id: Int) {
         val requestBody = WorkOrder(id)
-
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getWorkOrder(requestBody),
                 onSuccess = { response ->
-                    workOrder = response.data
-                    initRecyclerView(response.data.Items)
-                    initUI()
+                    initWorkOrder(response.data)
                 },
                 onError = { error ->
                     Log.i("ERROR", error)
@@ -167,17 +198,25 @@ class PackedActivity : DrawerBaseActivity() {
             )
         }
     }
+
+    private fun initWorkOrder(data: WorkOrderData) {
+        workOrder = data
+        initRecyclerView(data.Items)
+        initUI()
+    }
+
+
     private fun initUI() {
-        binding.tvOrderNum.text = "Work order ${workOrder?.number}"
+        binding.tvOrderNum.text = buildString {
+            append("Work order ")
+            append(workOrder?.number)
+        }
         binding.tvClient.text = workOrder?.Client?.name ?: ""
         binding.tvPoReference.text = workOrder?.poReference ?: ""
         binding.tvPo.text = workOrder?.po ?: ""
         binding.tvDeliveryDate.text = workOrder?.dateOrderPlaced ?: ""
         binding.tvCreateDate.text = workOrder?.let { utils.dateFormatter(it.createdAt) }
     }
-
-
-
 
 
 }

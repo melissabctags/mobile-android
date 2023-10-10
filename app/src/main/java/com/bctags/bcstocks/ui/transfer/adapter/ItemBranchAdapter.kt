@@ -11,7 +11,7 @@ import com.bctags.bcstocks.model.ItemBox
 //adapter: se encarga de coger la info
 class ItemBranchAdapter(
     val list: MutableList<InventoryData>,
-    private val onClickListener: (ItemBox) -> Unit,private val onClickListenerScan: (InventoryData) -> Unit
+    private val onClickListener: (ItemBox) -> Unit,private val onClickListenerScan: (InventoryData,Int) -> Unit
 ) : RecyclerView.Adapter<ItemBranchViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemBranchViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -27,7 +27,7 @@ class ItemBranchAdapter(
     override fun getItemCount(): Int = list.size
     override fun onBindViewHolder(holder: ItemBranchViewHolder, position: Int) {
         val item = list[position]
-        holder.render(item, onClickListener,onClickListenerScan)
+        holder.render(item, onClickListener,onClickListenerScan,position)
     }
 
 }
