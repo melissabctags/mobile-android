@@ -19,6 +19,7 @@ import com.bctags.bcstocks.io.response.PurchaseOrderResponse
 import com.bctags.bcstocks.io.response.ReceiveResponse
 import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.UserResponse
+import com.bctags.bcstocks.io.response.WorkOrderPickedResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponseOne
 import com.bctags.bcstocks.model.FilterRequest
@@ -117,6 +118,9 @@ interface ApiService {
 
     @POST(value = "/inventory/changeLocation")
     fun changeLocations(@Body requestBody: locationChanges): Call<GeneralResponseChange>
+
+    @POST(value = "/workorder/picked")
+    fun getPickedWorkOrder(@Body requestBody: WorkOrder): Call<WorkOrderPickedResponse>
 
 
 }

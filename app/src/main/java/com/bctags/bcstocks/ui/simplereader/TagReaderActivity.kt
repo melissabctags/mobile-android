@@ -1,11 +1,11 @@
 package com.bctags.bcstocks.ui.simplereader
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -19,9 +19,8 @@ import com.bctags.bcstocks.io.response.ItemData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
+import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.ui.MainMenuActivity
-import com.bctags.bcstocks.ui.receives.NewReceiveActivity
-import com.bctags.bcstocks.ui.receives.adapter.ItemsReceiveAdapter
 import com.bctags.bcstocks.ui.simplereader.adapter.TagReaderAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.EPCTools
@@ -31,11 +30,8 @@ import com.rscja.deviceapi.RFIDWithUHFUART
 import com.rscja.deviceapi.entity.UHFTAGInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class TagReaderActivity : DrawerBaseActivity() {
@@ -62,22 +58,32 @@ class TagReaderActivity : DrawerBaseActivity() {
         setContentView(binding.root)
         initListeners()
 
+      //getPicked()
     }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == 294) {
+            initRead()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+    private fun getPicked() {
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.getPickedWorkOrder(WorkOrder(19)),
+                onSuccess = { response ->
+                    Log.i("Picked info",response.toString())
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
+
     private fun initListeners() {
         binding.tvScan.setOnClickListener {
-            lifecycleScope.launch {
-                if (isScanning) {
-                  stopInventory()
-                } else {
-                    itemList.clear()
-                    initRecyclerView()
-                    val btnText = "Stop reading"
-                    binding.tvScan.text = btnText
-                    isScanning = true
-                    upcsList.clear()
-                    readTag()
-                }
-            }
+            initRead()
         }
         binding.llHeader.setOnClickListener {
             val intent = Intent(this, MainMenuActivity::class.java)
@@ -85,6 +91,21 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
     }
 
+    private fun initRead(){
+        lifecycleScope.launch {
+            if (isScanning) {
+                stopInventory()
+            } else {
+                itemList.clear()
+                initRecyclerView()
+                val btnText = "Stop reading"
+                binding.tvScan.text = btnText
+                isScanning = true
+                upcsList.clear()
+                readTag()
+            }
+        }
+    }
 
     private var rfidContext = newSingleThreadContext("RFIDThread")
     private fun readTag() {

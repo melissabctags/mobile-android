@@ -9,3 +9,4 @@ data class PickingItem(
     var inventoryId: Int,
     var quantity: Int,
 )
+

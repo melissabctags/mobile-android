@@ -3,6 +3,7 @@ package com.bctags.bcstocks.ui.receives
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.view.KeyEvent
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import com.bctags.bcstocks.R
@@ -64,6 +65,13 @@ class NewReceiveActivity : DrawerBaseActivity() {
         getPurchaseOrderList()
         getCarrierList()
         initUI()
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == 294) {
+            checkForm()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun initUI() {

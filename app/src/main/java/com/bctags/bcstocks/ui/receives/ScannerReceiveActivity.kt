@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
@@ -107,7 +108,13 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
 
     }
-
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == 294) {
+            initReading()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
     private fun getLocations() {
         val pag = Pagination(1, 1000)
         val filters: MutableList<Filter> = mutableListOf()
@@ -157,20 +164,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun initListeners() {
         binding.tvScan.setOnClickListener {
-            lifecycleScope.launch {
-                if (isScanning) {
-                    stopInventory()
-                } else {
-                    val btnText = "Stop reading"
-                    binding.tvScan.text = btnText
-                    isScanning = true
-                    receiveItemsList.clear()
-                    hashUpcs.clear()
-                    initItemsList()
-                    initRecyclerView()
-                    readTag()
-                }
-            }
+            initReading()
         }
         binding.llHeader.setOnClickListener {
             val intent = Intent(this, NewReceiveActivity::class.java)
@@ -179,6 +173,22 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
         binding.btnSaveReceive.setOnClickListener {
             saveNewReceive()
+        }
+    }
+    private fun initReading(){
+        lifecycleScope.launch {
+            if (isScanning) {
+                stopInventory()
+            } else {
+                val btnText = "Stop reading"
+                binding.tvScan.text = btnText
+                isScanning = true
+                receiveItemsList.clear()
+                hashUpcs.clear()
+                initItemsList()
+                initRecyclerView()
+                readTag()
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
@@ -79,6 +80,13 @@ class TransferActivity : DrawerBaseActivity() {
         initListeners()
         getLocations()
         getItems()
+    }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == 294) {
+            initRead()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun initListeners() {
@@ -226,6 +234,9 @@ class TransferActivity : DrawerBaseActivity() {
         currentUpc = item.Item.upc
         currentPosition = position
         currentId = item.id
+
+    }
+    private fun initRead(){
         lifecycleScope.launch {
             if (isScanning) {
                 stopInventory()

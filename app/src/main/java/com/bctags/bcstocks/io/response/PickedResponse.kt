@@ -18,6 +18,9 @@ data class PickedData(
     @SerializedName("createdAt") var createdAt:String,
 )
 
-
+data class WorkOrderPickedResponse(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: String,
+)
 
 
