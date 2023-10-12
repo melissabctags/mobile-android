@@ -81,13 +81,6 @@ class TransferActivity : DrawerBaseActivity() {
         getLocations()
         getItems()
     }
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == 294) {
-            initRead()
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
 
     private fun initListeners() {
         binding.llHeader.setOnClickListener {
@@ -226,7 +219,7 @@ class TransferActivity : DrawerBaseActivity() {
         binding.recyclerList.adapter = adapter
     }
 
-    private var rfidContext = newSingleThreadContext("RFIDThread")
+    //private var rfidContext = newSingleThreadContext("RFIDThread")
     private var currentUpc = ""
     private var currentId = 0
     private var currentPosition = 0
@@ -234,9 +227,10 @@ class TransferActivity : DrawerBaseActivity() {
         currentUpc = item.Item.upc
         currentPosition = position
         currentId = item.id
-
+        initRead()
     }
-    private fun initRead(){
+
+    private fun initRead() {
         lifecycleScope.launch {
             if (isScanning) {
                 stopInventory()
@@ -251,32 +245,31 @@ class TransferActivity : DrawerBaseActivity() {
         }
     }
 
-    private var stopThread = false
     private fun readTag() {
-        lifecycleScope.launch(rfidContext) {
+        lifecycleScope.launch(newSingleThreadContext("readTagTransfer")) {
             withContext(Dispatchers.IO) {
                 val result: Boolean = rfid.init()
                 if (!result) {
                     Log.i("DIDN'T WORK", "DIDN'T WORK")
                     rfid.stopInventory()
                     rfid.free()
-                }
-                if (rfid.startInventoryTag()) {
-                    Log.i("WORKS", "WORKS")
-                    isScanning = true
-                    tagsReader()
-                } else {
-                    rfid.stopInventory()
-                    rfid.free()
-                    // stopInventory()
+                }else{
+                    if (rfid.startInventoryTag()) {
+                        Log.i("WORKS", "WORKS")
+                        isScanning = true
+                        tagsReader()
+                    } else {
+                        rfid.stopInventory()
+                        rfid.free()
+                    }
                 }
             }
         }
     }
 
     private fun tagsReader() {
-        lifecycleScope.launch(rfidContext) {
-            while (isScanning && !stopThread) {
+        lifecycleScope.launch(newSingleThreadContext("tagsReaderTransfer")) {
+            while (isScanning) {
                 val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
                 if (uhfTagInfo != null) {
                     epcsList.add(uhfTagInfo.epc.toString())
@@ -288,25 +281,31 @@ class TransferActivity : DrawerBaseActivity() {
 
     private suspend fun stopInventory() {
         isScanning = false
-        stopThread = true
         rfid.stopInventory()
         rfid.free()
         withContext(Dispatchers.Main) {
-            val list = epcsList.distinct() as MutableList<String>
-            getUpcs(list)
+            if (epcsList.isNotEmpty()) {
+                val list = epcsList.distinct() as MutableList<String>
+                getUpcs(list)
+            } else {
+                messageDialog.showDialog(
+                    this@TransferActivity,
+                    R.layout.dialog_error,
+                    "An error occurred.\nTry again."
+                ) { }
+            }
         }
     }
 
     private fun getUpcs(epcsList: MutableList<String>) {
-        runOnUiThread {
+        lifecycleScope.launch {
             epcsList.forEach { i ->
                 val upc = tools.getGTIN(i).toString()
                 upcsList.add(upc)
             }
             upcsList.removeAll { it != currentUpc }
             val totalElements: Int = upcsList.size
-            val viewHolder =
-                binding.recyclerList.findViewHolderForAdapterPosition(currentPosition) as ItemBranchViewHolder
+            val viewHolder = binding.recyclerList.findViewHolderForAdapterPosition(currentPosition) as ItemBranchViewHolder
             val totalString = totalElements.toString()
             viewHolder.binding.etSelectedQty.setText(totalString)
             changeSelectedTotal(ItemBox(currentId, totalString.toInt()))
@@ -331,7 +330,7 @@ class TransferActivity : DrawerBaseActivity() {
         } else {
             itemsList.add(itemBox)
         }
-        Log.i("itemsList",itemsList.toString())
+        Log.i("itemsList", itemsList.toString())
     }
 
     private fun changeItemsLocations() {

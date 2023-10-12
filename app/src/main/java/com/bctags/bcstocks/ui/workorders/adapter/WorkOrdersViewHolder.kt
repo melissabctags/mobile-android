@@ -27,6 +27,10 @@ class WorkOrdersViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         if (item.status == "created" || item.status == "in_progress") {
             binding.mbIcon.visibility = View.VISIBLE
+            binding.btnAction.visibility = View.VISIBLE
+        }else{
+            binding.mbIcon.visibility = View.INVISIBLE
+            binding.btnAction.visibility = View.INVISIBLE
         }
 
         if (moduleName.isEmpty()) {

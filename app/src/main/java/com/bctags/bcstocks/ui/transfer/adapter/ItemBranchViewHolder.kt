@@ -1,5 +1,7 @@
 package com.bctags.bcstocks.ui.transfer.adapter
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.text.InputFilter
 import android.view.View
 import androidx.core.widget.addTextChangedListener

@@ -110,7 +110,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == 294) {
-            initReading()
+            initRead()
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -164,18 +164,17 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun initListeners() {
         binding.tvScan.setOnClickListener {
-            initReading()
+            initRead()
         }
         binding.llHeader.setOnClickListener {
             val intent = Intent(this, NewReceiveActivity::class.java)
             startActivity(intent)
-            //onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSaveReceive.setOnClickListener {
             saveNewReceive()
         }
     }
-    private fun initReading(){
+    private fun initRead(){
         lifecycleScope.launch {
             if (isScanning) {
                 stopInventory()
@@ -192,33 +191,32 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
-    private var rfidContext = newSingleThreadContext("RFIDThread")
-    private var stopThread = false
+
     private fun readTag() {
-        lifecycleScope.launch(rfidContext) {
+        lifecycleScope.launch(newSingleThreadContext("readTagReceive")) {
             withContext(Dispatchers.IO) {
                 val result: Boolean = rfid.init()
                 if (!result) {
                     Log.i("DIDN'T WORK", "DIDN'T WORK")
                     rfid.stopInventory()
                     rfid.free()
-                }
-                if (rfid.startInventoryTag()) {
-                    Log.i("WORKS", "WORKS")
-                    isScanning = true
-                    tagsReader()
-                } else {
-                    rfid.stopInventory()
-                    rfid.free()
-                    // stopInventory()
+                }else{
+                    if (rfid.startInventoryTag()) {
+                        Log.i("WORKS", "WORKS")
+                        isScanning = true
+                        tagsReader()
+                    } else {
+                        rfid.stopInventory()
+                        rfid.free()
+                    }
                 }
             }
         }
     }
 
     private fun tagsReader() {
-        lifecycleScope.launch(rfidContext) {
-            while (isScanning && !stopThread) {
+        lifecycleScope.launch(newSingleThreadContext("tagsReaderReceive")) {
+            while (isScanning) {
                 val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
                 if (uhfTagInfo != null) {
                     epcsList.add(uhfTagInfo.epc.toString())
@@ -228,15 +226,24 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
-    private fun stopInventory() {
+    private suspend fun stopInventory() {
         isScanning = false
         rfid.stopInventory()
         rfid.free()
         val btnText = "Scan"
-        binding.tvScan.text = btnText
-        val list = epcsList.distinct() as MutableList<String>
-        countUpcs(list)
-        checkReceivesUpcs()
+        withContext(Dispatchers.Main) {
+            binding.tvScan.text = btnText
+            if (epcsList.isNotEmpty()) {
+                val list = epcsList.distinct() as MutableList<String>
+                countUpcs(list)
+            } else {
+                messageDialog.showDialog(
+                    this@ScannerReceiveActivity,
+                    R.layout.dialog_error,
+                    "An error occurred.\nTry again."
+                ) { }
+            }
+        }
     }
 
     private fun countUpcs(epcsList: MutableList<String>) {
@@ -249,6 +256,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                     hashUpcs[upc] = hashUpcs[upc]!! + 1
                 }
             }
+            checkReceivesUpcs()
         }
     }
 

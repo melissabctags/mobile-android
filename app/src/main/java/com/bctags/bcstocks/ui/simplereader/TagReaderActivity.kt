@@ -19,7 +19,6 @@ import com.bctags.bcstocks.io.response.ItemData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
-import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.ui.MainMenuActivity
 import com.bctags.bcstocks.ui.simplereader.adapter.TagReaderAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
@@ -28,7 +27,6 @@ import com.bctags.bcstocks.util.MessageDialog
 import com.bumptech.glide.Glide
 import com.rscja.deviceapi.RFIDWithUHFUART
 import com.rscja.deviceapi.entity.UHFTAGInfo
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -49,17 +47,15 @@ class TagReaderActivity : DrawerBaseActivity() {
     private val epcsList: MutableList<String> = mutableListOf()
     private val upcsList: MutableList<String> = mutableListOf()
     val SERVER_ERROR = "Server error, try later"
-    private var itemList:MutableList<ItemData> = mutableListOf()
-    private var stopThread = false
+    private var itemList: MutableList<ItemData> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTagReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initListeners()
-
-
     }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == 294) {
             initRead()
@@ -67,7 +63,6 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
         return super.onKeyDown(keyCode, event)
     }
-
 
     private fun initListeners() {
         binding.tvScan.setOnClickListener {
@@ -79,81 +74,114 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
     }
 
-    private fun initRead(){
-        lifecycleScope.launch {
-            if (isScanning) {
-                stopInventory()
-            } else {
-                itemList.clear()
-                initRecyclerView()
-                val btnText = "Stop reading"
-                binding.tvScan.text = btnText
-                isScanning = true
-                upcsList.clear()
-                readTag()
+    private fun initRead() {
+        lifecycleScope.launch() {
+            try {
+                if (isScanning) {
+                    stopInventory()
+                } else {
+                    itemList.clear()
+                    initRecyclerView()
+                    val btnText = "Stop"
+                    binding.tvScan.text = btnText
+                    isScanning = true
+                    upcsList.clear()
+                    readTag()
+                }
+            } catch (e: Exception) {
+                Log.e("initRead ", "Error initRead: ${e.message}")
+            } finally {
+
             }
         }
     }
 
-    private var rfidContext = newSingleThreadContext("RFIDThread")
+    //private var rfidContext = newSingleThreadContext("RFIDThread")
     private fun readTag() {
-        lifecycleScope.launch(rfidContext) {
-            withContext(Dispatchers.IO) {
-                val result: Boolean = rfid.init()
-                if (!result) {
-                    Log.i("DIDN'T WORK", "DIDN'T WORK")
-                    rfid.stopInventory()
-                    rfid.free()
+        lifecycleScope.launch(newSingleThreadContext("readTagTagsReader")) {
+            try {
+                withContext(Dispatchers.IO) {
+                    val result: Boolean = rfid.init()
+                    if (!result) {
+                        Log.i("DIDN'T WORK", "DIDN'T WORK")
+                        rfid.stopInventory()
+                        rfid.free()
+                    }else{
+                        if (rfid.startInventoryTag()) {
+                            Log.i("WORKS", "WORKS")
+                            isScanning = true
+                            tagsReader()
+                        } else {
+                            rfid.stopInventory()
+                            rfid.free()
+                        }
+                    }
+
                 }
-                if (rfid.startInventoryTag()) {
-                    Log.i("WORKS", "WORKS")
-                    isScanning = true
-                    tagsReader()
-                } else {
-                    rfid.stopInventory()
-                    rfid.free()
-                   // stopInventory()
-                }
+            } catch (e: Exception) {
+                Log.e("readTag", "Error en la lectura de etiquetas: ${e.message}")
+            } finally {
+
             }
         }
-
     }
 
     private fun tagsReader() {
-        lifecycleScope.launch(rfidContext) {
-            while (isScanning && !stopThread) {
-                val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
-                if (uhfTagInfo != null) {
-                    epcsList.add(uhfTagInfo.epc.toString())
-                    Log.i("EPC", uhfTagInfo.epc.toString())
+        lifecycleScope.launch(newSingleThreadContext("tagsReaderTagsReader")) {
+            try {
+                while (isScanning) {
+                    val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
+                    if (uhfTagInfo != null) {
+                        epcsList.add(uhfTagInfo.epc.toString())
+                        Log.i("EPC", uhfTagInfo.epc.toString())
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("tagsReader", "Error en la lectura de etiquetas: ${e.message}")
+            } finally {
+
             }
         }
     }
 
     private suspend fun stopInventory() {
-        isScanning = false
-        stopThread = true
-        rfid.stopInventory()
-        rfid.free()
-        val btnText = "Read tags"
-        // Puedes actualizar la interfaz de usuario en el hilo principal
-        withContext(Dispatchers.Main) {
-            binding.tvScan.text = btnText
-            val list = epcsList.distinct() as MutableList<String>
-            getUpcs(list)
+        try {
+            isScanning = false
+            rfid.stopInventory()
+            rfid.free()
+            val btnText = "Read tags"
+            withContext(Dispatchers.Main) {
+                binding.tvScan.text = btnText
+                if (epcsList.isNotEmpty()) {
+                    val list = epcsList.distinct() as MutableList<String>
+                    Log.i("stopInventory", list.toString())
+                    getUpcs(list)
+                } else {
+                    messageDialog.showDialog(
+                        this@TagReaderActivity,
+                        R.layout.dialog_error,
+                        "An error occurred.\nTry again."
+                    ) { }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("stopInventory", "Error: ${e.message}")
+        } finally {
+
         }
     }
 
 
     private fun getUpcs(epcsList: MutableList<String>) {
-        epcsList.forEach { i ->
-            val upc = tools.getGTIN(i).toString()
-            upcsList.add(upc)
+        lifecycleScope.launch {
+            epcsList.forEach { i ->
+                val upc = tools.getGTIN(i).toString()
+                upcsList.add(upc)
+            }
+            val list = upcsList.distinct() as MutableList<String>
+            Log.i("UPC", list.toString())
+            getItemsRead(list)
         }
-        val list = upcsList.distinct() as MutableList<String>
-        Log.i("UPC",list.toString())
-        getItemsRead(list)
     }
 
     private fun getItemsRead(list: MutableList<String>) {
@@ -178,7 +206,7 @@ class TagReaderActivity : DrawerBaseActivity() {
     private fun useItems(data: MutableList<ItemData>) {
         itemList = data
         initRecyclerView()
-        if(itemList.isEmpty()){
+        if (itemList.isEmpty()) {
             messageDialog.showDialog(
                 this@TagReaderActivity,
                 R.layout.dialog_error,
@@ -203,7 +231,6 @@ class TagReaderActivity : DrawerBaseActivity() {
             binding.cvScanning.visibility = View.GONE;
         }, DURACION)
     }
-
 
 
 }

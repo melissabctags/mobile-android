@@ -42,9 +42,7 @@
         <activity
             android:name=".ui.workorders.packing.PackingActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.workorders.packing.adapter.PackingActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.workorders.picking.PickingItemActivity"
             android:exported="false" />

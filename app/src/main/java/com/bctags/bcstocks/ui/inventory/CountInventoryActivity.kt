@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -22,6 +23,7 @@ import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.ui.inventory.adapterInventoryCount.CounterAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.EPCTools
+import com.bctags.bcstocks.util.MessageDialog
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.rscja.deviceapi.RFIDWithUHFUART
@@ -35,6 +37,7 @@ import kotlinx.coroutines.withContext
 class CountInventoryActivity : DrawerBaseActivity() {
     private lateinit var binding: ActivityCountInventoryBinding
     private lateinit var adapter: CounterAdapter
+    private val messageDialog = MessageDialog()
     private val apiClient = ApiClient().apiService
     private val apiCall = ApiCall()
     val gson = Gson()
@@ -45,7 +48,6 @@ class CountInventoryActivity : DrawerBaseActivity() {
     private var isScanning = true
     var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     val epcsList: MutableList<String> = mutableListOf()
-    var isInventory: Boolean = false
     var hashUpcs: MutableMap<String, Int> = mutableMapOf()
     private var filters: MutableList<Filter> = mutableListOf()
     val SERVER_ERROR = "Server error, try later"
@@ -73,30 +75,31 @@ class CountInventoryActivity : DrawerBaseActivity() {
 
     }
 
-    private var rfidContext = newSingleThreadContext("RFIDThread")
+    //private var rfidContext = newSingleThreadContext("RFIDThread")
     private fun readTag() {
-        lifecycleScope.launch(rfidContext) {
+        lifecycleScope.launch(newSingleThreadContext("readTagCountInventory")) {
             withContext(Dispatchers.IO) {
                 val result: Boolean = rfid.init();
                 if (!result) {
                     Log.i("DIDN'T WORK", "DIDN'T WORK")
                     rfid.stopInventory()
                     rfid.free()
-                }
-                if (rfid.startInventoryTag()) {
-                    Log.i("WORKS", "WORKS")
-                    isInventory = true
-                    tagsReader()
                 } else {
-                    stopInventory()
+                    if (rfid.startInventoryTag()) {
+                        Log.i("WORKS", "WORKS")
+                        isScanning = true
+                        tagsReader()
+                    } else {
+                        stopInventory()
+                    }
                 }
             }
         }
     }
 
     private fun tagsReader() {
-        lifecycleScope.launch(rfidContext) {
-            while (isInventory) {
+        lifecycleScope.launch(newSingleThreadContext("tagsReaderCountInventory")) {
+            while (isScanning) {
                 val uhftagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
                 if (uhftagInfo != null) {
                     epcsList.add(uhftagInfo.epc.toString())
@@ -108,28 +111,37 @@ class CountInventoryActivity : DrawerBaseActivity() {
 
     private suspend fun stopInventory() {
         isScanning = false
-        isInventory = false
         rfid.stopInventory()
         rfid.free()
         val btnText = "Scan"
-        binding.tvScan.text = btnText
         withContext(Dispatchers.Main) {
-            val list = epcsList.distinct() as MutableList<String>
-            Log.i("epcsList", list.toString())
-            countUpcs(list)
+            binding.tvScan.text = btnText
+            if (epcsList.isNotEmpty()) {
+                val list = epcsList.distinct() as MutableList<String>
+                Log.i("epcsList", list.toString())
+                countUpcs(list)
+            } else {
+                messageDialog.showDialog(
+                    this@CountInventoryActivity,
+                    R.layout.dialog_error,
+                    "An error occurred.\nTry again."
+                ) { }
+            }
         }
     }
 
     private fun countUpcs(epcsList: MutableList<String>) {
-        epcsList.forEach { i ->
-            val upc = tools.getGTIN(i).toString()
-            if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
-                hashUpcs[upc] = 1
-            } else {
-                hashUpcs[upc] = hashUpcs[upc]!! + 1
+        lifecycleScope.launch {
+            epcsList.forEach { i ->
+                val upc = tools.getGTIN(i).toString()
+                if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
+                    hashUpcs[upc] = 1
+                } else {
+                    hashUpcs[upc] = hashUpcs[upc]!! + 1
+                }
             }
+            checkReceivesUpcs()
         }
-        checkReceivesUpcs()
     }
 
     private fun checkReceivesUpcs() {
@@ -139,7 +151,6 @@ class CountInventoryActivity : DrawerBaseActivity() {
                 it.founded = hashUpcs[it.Item.upc]?.toInt() ?: 0
             }
         }
-
         initRecyclerView()
     }
 
@@ -195,7 +206,15 @@ class CountInventoryActivity : DrawerBaseActivity() {
         }
     }
 
-    private fun initRead(){
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == 294) {
+            initRead()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    private fun initRead() {
         lifecycleScope.launch {
             if (isScanning) {
                 stopInventory()
