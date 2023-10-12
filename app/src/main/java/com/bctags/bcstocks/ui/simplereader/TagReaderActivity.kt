@@ -58,7 +58,7 @@ class TagReaderActivity : DrawerBaseActivity() {
         setContentView(binding.root)
         initListeners()
 
-      //getPicked()
+
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == 294) {
@@ -67,19 +67,7 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
         return super.onKeyDown(keyCode, event)
     }
-    private fun getPicked() {
-        CoroutineScope(Dispatchers.IO).launch {
-            apiCall.performApiCall(
-                apiClient.getPickedWorkOrder(WorkOrder(19)),
-                onSuccess = { response ->
-                    Log.i("Picked info",response.toString())
-                },
-                onError = { error ->
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
+
 
     private fun initListeners() {
         binding.tvScan.setOnClickListener {

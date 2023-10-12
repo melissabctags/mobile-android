@@ -41,11 +41,12 @@ class WorkOrdersAdapter(val list: List<WorkOrderData>, private val onclickListen
 
         if(workordersString.isNotEmpty() && workordersString!="{}"){
             val gson= Gson()
-            var workOrderStatus = gson.fromJson(workordersString, Array<WorkOrderStatus>::class.java).asList()
+            val workOrderStatus = gson.fromJson(workordersString, Array<WorkOrderStatus>::class.java).asList()
            // var workOrderStatus = Json.decodeFromString<Array<WorkOrderStatus>>(workordersString).asList()
 
             Log.i("WORK_ORDER_ADAPTER",workOrderStatus.toString())
-            Log.i("WORK_ORDER_ADAPTER2",workOrderStatus.toList().toString())
+//            Log.i("WORK_ORDER_ADAPTER2",workOrderStatus.toList().toString())
+
             val result = workOrderStatus.find { it.id == item.id }
             if (result != null) {
                 holder.render(item,onclickListener,onSecondClickListener,result.partialId,result.moduleName)

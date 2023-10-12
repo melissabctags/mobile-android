@@ -20,7 +20,15 @@ data class PickedData(
 
 data class WorkOrderPickedResponse(
     @SerializedName("success") var success: Boolean,
-    @SerializedName("data") var data: String,
+    @SerializedName("data") var data: PickedWorkOrderData,
 )
-
-
+data class PickedItem(
+    val quantity: Int,
+    val itemId: Int,
+    val item: String,
+    val upc: String,
+    val description: String
+)
+data class PickedWorkOrderData(
+    val picked: List<PickedItem>
+)

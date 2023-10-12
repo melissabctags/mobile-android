@@ -53,6 +53,7 @@ class WorkOrdersActivity : DrawerBaseActivity() {
 
     private fun initWorkOrdersStatus() {
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+//        sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
         if (sharedPreferences.contains("WORK_ORDERS")) {
             workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
             Log.i("WORK_ORDERS", workOrdersPref)

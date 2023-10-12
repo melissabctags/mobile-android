@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityPickingItemBinding
@@ -21,11 +22,13 @@ import com.bctags.bcstocks.io.response.InventoryData
 import com.bctags.bcstocks.io.response.ItemData
 import com.bctags.bcstocks.io.response.ItemWorkOrder
 import com.bctags.bcstocks.io.response.LocationData
+import com.bctags.bcstocks.io.response.PickedItem
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.PickingItem
 import com.bctags.bcstocks.model.PickingRequest
+import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.ui.workorders.picking.adapter.LocationPickAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.InputFilterMinMax
@@ -48,41 +51,70 @@ class PickingItemActivity : DrawerBaseActivity() {
     var barcodeDecoder = BarcodeFactory.getInstance().barcodeDecoder
     val SERVER_ERROR = "Server error, try later"
 
-    private val itemData:ItemData= ItemData(0,"","","",false,0,false,0,1.1,0,"")
-    private var itemWorkOrder: ItemWorkOrder= ItemWorkOrder(0,0,"","",itemData)
-    private var partialId: Int =0
+    private val itemData: ItemData = ItemData(0, "", "", "", false, 0, false, 0, 1.1, 0, "")
+    private var itemWorkOrder: ItemWorkOrder = ItemWorkOrder(0, 0, "", "", itemData)
+    private var partialId: Int = 0
     private var workOrderId: Int = 0
-
+    private var pickedList: List<PickedItem> = listOf()
+    private var totalPicked=0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPickingItemBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val gson = Gson()
-        itemWorkOrder = gson.fromJson(intent.getStringExtra("ITEM"), ItemWorkOrder::class.java)
-        val extras = intent.extras
-        if (extras != null) {
-            workOrderId = extras.getInt("WORK_ORDER_ID")
-            partialId = extras.getInt("PARTIAL_ID")
+        CoroutineScope(Dispatchers.Default).launch {
+            val gson = Gson()
+            itemWorkOrder = gson.fromJson(intent.getStringExtra("ITEM"), ItemWorkOrder::class.java)
+            val extras = intent.extras
+            if (extras != null) {
+                workOrderId = extras.getInt("WORK_ORDER_ID")
+                getPicked(workOrderId)
+                partialId = extras.getInt("PARTIAL_ID")
 //            Log.i("partialId", partialId.toString())
 //            Log.i("workOrderId", workOrderId.toString())
-            initUI()
-            getLocations()
+
+                getLocations()
+            }
+            initListeners()
         }
-        initListeners()
     }
+
+    private fun getPicked(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.getPickedWorkOrder(WorkOrder(id)),
+                onSuccess = { response ->
+                    initPicked(response.data.picked)
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
+
+    private fun initPicked(picked: List<PickedItem>) {
+        pickedList = picked
+        val foundItem = picked.find { it.itemId == itemWorkOrder.Item.id }
+        if (foundItem != null) {
+            totalPicked = foundItem.quantity
+        }
+        initUI()
+    }
+
     fun close() {
         barcodeDecoder.close()
     }
-    fun open(dialog:Dialog,location:LocationData) {
+
+    fun open(dialog: Dialog, location: LocationData) {
         barcodeDecoder.open(this)
         barcodeDecoder.setDecodeCallback { barcodeEntity ->
             if (barcodeEntity.resultCode == BarcodeDecoder.DECODE_SUCCESS) {
                 //todo: ask barcode and locations relation
                 // barcodeEntity.barcodeData==location.name
-                if( barcodeEntity.barcodeData!=""){
+                if (barcodeEntity.barcodeData != "") {
                     var btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
                     btnSaveChange.visibility = View.VISIBLE
-                }else{
+                } else {
                     messageDialog.showDialog(
                         this@PickingItemActivity,
                         R.layout.dialog_error,
@@ -96,13 +128,16 @@ class PickingItemActivity : DrawerBaseActivity() {
             }
         }
     }
-    fun start(dialog:Dialog,location:LocationData) {
-        open(dialog,location)
+
+    fun start(dialog: Dialog, location: LocationData) {
+        open(dialog, location)
     }
+
     fun stop() {
         close()
         barcodeDecoder.stopScan()
     }
+
     @SuppressLint("SetTextI18n")
     fun selectItem(inventoryData: InventoryData) {
         var dialog = Dialog(this)
@@ -114,46 +149,67 @@ class PickingItemActivity : DrawerBaseActivity() {
         val tvQuantity: TextView = dialog.findViewById(R.id.tvQuantity)
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
 
-        if(inventoryData.quantity>itemWorkOrder.quantity){
-            etQuantity.filters = arrayOf<InputFilter>(InputFilterMinMax("1", itemWorkOrder.quantity.toString()))
-        }else{
-            etQuantity.filters = arrayOf<InputFilter>(InputFilterMinMax("1", inventoryData.quantity.toString()))
+        if (inventoryData.quantity > itemWorkOrder.quantity) {
+            etQuantity.filters =
+                arrayOf<InputFilter>(InputFilterMinMax("1", itemWorkOrder.quantity.toString()))
+        } else {
+            etQuantity.filters =
+                arrayOf<InputFilter>(InputFilterMinMax("1", inventoryData.quantity.toString()))
         }
 
-        tvItemDescription.text= inventoryData.Item.item+" - "+inventoryData.Item.description
-        tvLocation.text= inventoryData.Location.name+" - "+inventoryData.Branch.name
-        tvQuantity.text= inventoryData.quantity.toString()
+        tvItemDescription.text = inventoryData.Item.item + " - " + inventoryData.Item.description
+        tvLocation.text = inventoryData.Location.name + " - " + inventoryData.Branch.name
+        tvQuantity.text = inventoryData.quantity.toString()
 
         val btnScanBarCode: MaterialButton = dialog.findViewById(R.id.btnScanBarCode)
         btnScanBarCode.setOnClickListener {
-            start(dialog,inventoryData.Location)
+            start(dialog, inventoryData.Location)
         }
 
         val btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
         btnSaveChange.setOnClickListener {
-            pickInventory(dialog,inventoryData)
+            pickInventory(dialog, inventoryData)
         }
         dialog.show()
     }
+
     @SuppressLint("SetTextI18n")
     private fun pickInventory(dialog: Dialog, inventoryData: InventoryData) {
         val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
-        if(etQuantity.text.toString().isNullOrEmpty() || etQuantity.text.toString()=="0"){
-            Toast.makeText(applicationContext, "Must enter a quantity to pick", Toast.LENGTH_LONG).show()
-        }else{
-            val pickingItem = PickingItem(partialId,inventoryData.itemId,inventoryData.id,etQuantity.text.toString().toInt())
-            val list:MutableList<PickingItem> = mutableListOf()
+        if (etQuantity.text.toString().isEmpty() || etQuantity.text.toString() == "0") {
+            Toast.makeText(applicationContext, "Must enter a quantity to pick", Toast.LENGTH_LONG)
+                .show()
+        } else {
+            val pickingItem = PickingItem(
+                partialId,
+                inventoryData.itemId,
+                inventoryData.id,
+                etQuantity.text.toString().toInt()
+            )
+            val list: MutableList<PickingItem> = mutableListOf()
             list.add(pickingItem)
             saveItemPicked(list)
             getLocations()
             val myNewInt: Int = etQuantity.text.toString().toInt()
-            binding.tvQty.text = (itemWorkOrder.quantity + myNewInt).toString()
+//            val myNewInt: Int = 0
+//
+//            val foundItem = pickedList.find { it.itemId == itemWorkOrder.Item.id }
+//            if (foundItem != null) {
+//                binding.tvQty.text = foundItem.quantity.toString()
+//            } else {
+//                binding.tvQty.text = "0"
+//            }
+
+            totalPicked= totalPicked+myNewInt
+            binding.tvQty.text = (totalPicked).toString()
+            //getPicked(workOrderId)
             dialog.hide()
         }
 
     }
+
     private fun saveItemPicked(list: MutableList<PickingItem>) {
-       val requestBody = PickingRequest(list)
+        val requestBody = PickingRequest(list)
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.pickingItem(requestBody),
@@ -170,11 +226,12 @@ class PickingItemActivity : DrawerBaseActivity() {
                         R.layout.dialog_error,
                         SERVER_ERROR
                     ) { }
-                   // Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
         }
     }
+
     private fun initRecyclerView(list: MutableList<InventoryData>) {
         adapter = LocationPickAdapter(
             list = list,
@@ -183,10 +240,12 @@ class PickingItemActivity : DrawerBaseActivity() {
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter
     }
+
     private fun getLocations() {
         val pag = Pagination(1, 100)
-        val filter = mutableListOf(Filter("itemId", "eq", mutableListOf(itemWorkOrder.Item.id.toString())))
-        val requestBody = FilterRequest(filter,pag)
+        val filter =
+            mutableListOf(Filter("itemId", "eq", mutableListOf(itemWorkOrder.Item.id.toString())))
+        val requestBody = FilterRequest(filter, pag)
 
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
@@ -204,14 +263,22 @@ class PickingItemActivity : DrawerBaseActivity() {
     private fun initUI() {
         binding.tvItem.text = itemWorkOrder.Item.description
         binding.tvOrder.text = itemWorkOrder.quantity.toString()
-        binding.tvQty.text = itemWorkOrder.quantity.toString()
+        Log.i("picked",pickedList.toString())
+        val foundItem = pickedList.find { it.itemId == itemWorkOrder.Item.id }
+        if (foundItem != null) {
+            binding.tvQty.text = foundItem.quantity.toString()
+        } else {
+            binding.tvQty.text = "0"
+        }
+        //binding.tvQty.text = itemWorkOrder.quantity.toString()
     }
+
     private fun initListeners() {
         binding.llHeader.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        binding.btnDone.setOnClickListener{
-               backToMainPicking()
+        binding.btnDone.setOnClickListener {
+            backToMainPicking()
         }
     }
 

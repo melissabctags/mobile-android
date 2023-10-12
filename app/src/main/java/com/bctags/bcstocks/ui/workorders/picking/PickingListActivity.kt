@@ -8,6 +8,7 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityPickingListBinding
@@ -17,6 +18,9 @@ import com.bctags.bcstocks.io.response.Branch
 import com.bctags.bcstocks.io.response.ClientData
 import com.bctags.bcstocks.io.response.ItemWorkOrder
 import com.bctags.bcstocks.io.response.PartialResponse
+import com.bctags.bcstocks.io.response.PickedData
+import com.bctags.bcstocks.io.response.PickedItem
+import com.bctags.bcstocks.io.response.PickedWorkOrderData
 import com.bctags.bcstocks.io.response.WorkOrderData
 import com.bctags.bcstocks.model.WorkOrder
 import com.bctags.bcstocks.model.WorkOrderNewPartial
@@ -74,38 +78,55 @@ class PickingListActivity : DrawerBaseActivity() {
     private var workOrderId: Int = 0
 
     var workOrdersPref: String = "{}"
+    var pickedList: List<PickedItem> = listOf()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPickingListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
-        if (sharedPreferences.contains("WORK_ORDERS")) {
-            workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
-            Log.i("WORK_ORDERS Pickinlist", workOrdersPref)
-        } else {
-            sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
-        }
-
-        val extras = intent.extras
-        if (extras != null) {
-            workOrderId = extras.getInt("WORK_ORDER_ID")
-            partialId = extras.getInt("PARTIAL_ID")
-            Log.i("PARTIAL_ID", partialId.toString())
-            getWorkOrder(workOrderId)
-            if (partialId == 0) {
-                createPartial(workOrderId)
+// val scope =
+        CoroutineScope(Dispatchers.Default).launch {
+            val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
+            if (sharedPreferences.contains("WORK_ORDERS")) {
+                workOrdersPref = sharedPreferences.getString("WORK_ORDERS", "{}").toString()
+                Log.i("WORK_ORDERS Pickinlist", workOrdersPref)
+            } else {
+                sharedPreferences.edit().putString("WORK_ORDERS", "{}").apply()
             }
-        }
-        initListeners()
-    }
 
+            val extras = intent.extras
+            if (extras != null) {
+                workOrderId = extras.getInt("WORK_ORDER_ID")
+                partialId = extras.getInt("PARTIAL_ID")
+                getPicked(workOrderId)
+                if (partialId == 0) {
+                    createPartial(workOrderId)
+                }
+            }
+            initListeners()
+        }
+    }
+    private fun getPicked(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.getPickedWorkOrder(WorkOrder(id)),
+                onSuccess = { response ->
+                    pickedList = response.data.picked
+                    getWorkOrder(workOrderId)
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
 
     private fun initRecyclerView(list: MutableList<ItemWorkOrder>) {
         adapter = PickingItemsAdapter(
             list = list,
-            onClickListener = { ItemWorkOrder -> viewItemLocations(ItemWorkOrder) }
+            onClickListener = { ItemWorkOrder -> viewItemLocations(ItemWorkOrder) },
+            pickedItems = pickedList
         )
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter
@@ -139,11 +160,10 @@ class PickingListActivity : DrawerBaseActivity() {
         partialId = response.data.id
         var workOrderStatus = mutableListOf<WorkOrderStatus>()
         if (workOrdersPref.isNotEmpty() && workOrdersPref != "{}") {
-            workOrderStatus =
-                gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).toMutableList()
-            workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
+            workOrderStatus = gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).toMutableList()
+            workOrderStatus.add(WorkOrderStatus(workOrderId, "pick", response.data.id))
         } else {
-            workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", response.data.id))
+            workOrderStatus.add(WorkOrderStatus(workOrderId, "pick", response.data.id))
         }
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("WORK_ORDERS", gson.toJson(workOrderStatus)).apply()
@@ -162,10 +182,8 @@ class PickingListActivity : DrawerBaseActivity() {
     }
 
     private fun finishPicking() {
-        //var workOrderStatus = Json.decodeFromString<Array<WorkOrderStatus>>(workOrdersPref).toMutableList()
-        var workOrderStatus =
-            gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).asList()
-                .toMutableList()
+
+        val workOrderStatus = gson.fromJson(workOrdersPref, Array<WorkOrderStatus>::class.java).asList().toMutableList()
         workOrderStatus.removeAll { it.id == workOrderId && it.partialId == partialId }
         workOrderStatus.add(WorkOrderStatus(workOrderId, "pack", partialId))
 
