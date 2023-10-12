@@ -97,6 +97,7 @@
                     android:layout_height="45dp"
                     android:backgroundTint="@color/gray"
                     android:textColor="@color/dark_gray"
+                    android:singleLine="true"
                     android:textColorHint="@color/gray" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -126,6 +127,7 @@
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
+                    android:singleLine="true"
                     android:backgroundTint="@color/gray"
                     android:inputType="textPassword"
                     android:textColor="@color/dark_gray"
