@@ -106,6 +106,7 @@
     <string name="success">Success</string>
     <string name="success_message">Data successfully saved.</string>
     <string name="test">Test</string>
+    <string name="scanned">Scanned</string>
 
 
 </resources>

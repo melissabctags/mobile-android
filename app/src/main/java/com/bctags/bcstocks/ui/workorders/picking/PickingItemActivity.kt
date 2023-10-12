@@ -275,7 +275,8 @@ class PickingItemActivity : DrawerBaseActivity() {
 
     private fun initListeners() {
         binding.llHeader.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+           // onBackPressedDispatcher.onBackPressed()
+            backToMainPicking()
         }
         binding.btnDone.setOnClickListener {
             backToMainPicking()
