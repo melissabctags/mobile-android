@@ -2,6 +2,7 @@ package com.bctags.bcstocks.ui.inventory
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.KeyEvent
@@ -46,6 +47,7 @@ class CountInventoryActivity : DrawerBaseActivity() {
 
     val DURACION: Long = 2500;
     private var isScanning = true
+    private var triggerEnabled = true
     var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     val epcsList: MutableList<String> = mutableListOf()
     var hashUpcs: MutableMap<String, Int> = mutableMapOf()
@@ -69,12 +71,20 @@ class CountInventoryActivity : DrawerBaseActivity() {
             Log.i("location", selectedLocations.id.toString())
             getInventory()
         }
+        lockScanButton()
         scannerGif()
         initListeners()
         readTag()
 
     }
-
+    private fun lockScanButton(){
+        binding.tvScan.isEnabled = false
+        triggerEnabled=false
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.tvScan.isEnabled = true
+            triggerEnabled=true
+        }, 1000)
+    }
     //private var rfidContext = newSingleThreadContext("RFIDThread")
     private fun readTag() {
         lifecycleScope.launch(newSingleThreadContext("readTagCountInventory")) {
@@ -109,13 +119,15 @@ class CountInventoryActivity : DrawerBaseActivity() {
         }
     }
 
-    private suspend fun stopInventory() {
-        isScanning = false
-        rfid.stopInventory()
-        rfid.free()
-        val btnText = "Scan"
-        withContext(Dispatchers.Main) {
+    private fun stopInventory() {
+        lifecycleScope.launch {
+            isScanning = false
+            rfid.stopInventory()
+            rfid.free()
+            val btnText = "Scan"
+            //withContext(Dispatchers.Main) {
             binding.tvScan.text = btnText
+            lockScanButton()
             if (epcsList.isNotEmpty()) {
                 val list = epcsList.distinct() as MutableList<String>
                 Log.i("epcsList", list.toString())
@@ -128,16 +140,23 @@ class CountInventoryActivity : DrawerBaseActivity() {
                 ) { }
             }
         }
+        //}
     }
 
     private fun countUpcs(epcsList: MutableList<String>) {
+        //USABA UN HILO PROPIO, SOLO EL HILO PRINCIPAL PUEDE MODIFICAR LA UI, POR ESO TRONABA
         lifecycleScope.launch {
             epcsList.forEach { i ->
-                val upc = tools.getGTIN(i).toString()
-                if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
-                    hashUpcs[upc] = 1
-                } else {
-                    hashUpcs[upc] = hashUpcs[upc]!! + 1
+                try{
+                    val upc = tools.getGTIN(i).toString()
+                    hashUpcs[upc] = (hashUpcs[upc] ?: 0) + 1
+//                    if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
+//                        hashUpcs[upc] = 1
+//                    } else {
+//                        hashUpcs[upc] = hashUpcs[upc]!! + 1
+//                    }
+                }catch (e: Exception) {
+                    Log.e("Error", "Error Scanner: ${e.message}")
                 }
             }
             checkReceivesUpcs()
@@ -146,12 +165,17 @@ class CountInventoryActivity : DrawerBaseActivity() {
 
     private fun checkReceivesUpcs() {
         Log.i("hashUpcs", hashUpcs.toString())
-        listInventory.forEach {
-            if (hashUpcs.containsKey(it.Item.upc)) {
-                it.founded = hashUpcs[it.Item.upc]?.toInt() ?: 0
+        if(listInventory.isNotEmpty()) {
+            listInventory.forEach {
+                it.founded = hashUpcs.getOrDefault(it.Item.upc, 0).toInt()
+//            if(hashUpcs.isNotEmpty()) {
+//                if (hashUpcs.containsKey(it.Item.upc)) {
+//                    it.founded = hashUpcs[it.Item.upc]?.toInt() ?: 0
+//                }
+//            }
             }
+            initRecyclerView()
         }
-        initRecyclerView()
     }
 
     private fun initRecyclerView() {
@@ -181,9 +205,12 @@ class CountInventoryActivity : DrawerBaseActivity() {
     }
 
     private fun initInventory(data: MutableList<InventoryData>) {
-        data.forEach { i ->
-            listInventory.add(InventoryCount(i.id, i.quantity, 0, i.Item, i.Location))
-        }
+        listInventory.addAll(data.map { i -> InventoryCount(i.id, i.quantity, 0, i.Item, i.Location) })
+//        if(data.isNotEmpty()) {
+//            data.forEach { i ->
+//                listInventory.add(InventoryCount(i.id, i.quantity, 0, i.Item, i.Location))
+//            }
+//        }
     }
 
     private fun scannerGif() {
@@ -207,7 +234,7 @@ class CountInventoryActivity : DrawerBaseActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == 294) {
+        if (keyCode == 294 && triggerEnabled) {
             initRead()
             return true
         }
@@ -221,6 +248,7 @@ class CountInventoryActivity : DrawerBaseActivity() {
             } else {
                 val btnText = "Stop"
                 binding.tvScan.text = btnText
+                lockScanButton()
                 isScanning = true
                 listInventory.clear()
                 hashUpcs.clear()

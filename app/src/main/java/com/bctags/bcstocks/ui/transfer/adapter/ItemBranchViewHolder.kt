@@ -4,8 +4,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.text.InputFilter
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.RvItemBranchBinding
 import com.bctags.bcstocks.io.response.InventoryData
 import com.bctags.bcstocks.model.ItemBox
@@ -16,7 +18,6 @@ import com.bctags.bcstocks.util.InputFilterMinMax
 class ItemBranchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     val binding = RvItemBranchBinding.bind(view)
-
     fun render(
         item: InventoryData,
         onClickListener: (ItemBox) -> Unit,
@@ -41,8 +42,12 @@ class ItemBranchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         binding.btnAction.setOnClickListener {
+            binding.tvLocation.setTextColor(Color.parseColor("#EC1C24"))
+            binding.tvQuantity.setTextColor(Color.parseColor("#EC1C24"))
+            binding.etSelectedQty.setText("0")
             onClickListenerScan(item,position)
         }
+
     }
 
 

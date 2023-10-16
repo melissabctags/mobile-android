@@ -3,6 +3,7 @@ package com.bctags.bcstocks.ui.simplereader
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.KeyEvent
@@ -43,6 +44,7 @@ class TagReaderActivity : DrawerBaseActivity() {
     private val DURACION: Long = 2500;
 
     private var isScanning = false
+    private var triggerEnabled = true
     private var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     private val epcsList: MutableList<String> = mutableListOf()
     private val upcsList: MutableList<String> = mutableListOf()
@@ -57,7 +59,7 @@ class TagReaderActivity : DrawerBaseActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == 294) {
+        if (keyCode == 294 && triggerEnabled) {
             initRead()
             return true
         }
@@ -84,6 +86,7 @@ class TagReaderActivity : DrawerBaseActivity() {
                     initRecyclerView()
                     val btnText = "Stop"
                     binding.tvScan.text = btnText
+                    lockScanButton()
                     isScanning = true
                     upcsList.clear()
                     readTag()
@@ -95,8 +98,15 @@ class TagReaderActivity : DrawerBaseActivity() {
             }
         }
     }
+    private fun lockScanButton(){
+        binding.tvScan.isEnabled = false
+        triggerEnabled=false
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.tvScan.isEnabled = true
+            triggerEnabled=true
+        }, 1000)
+    }
 
-    //private var rfidContext = newSingleThreadContext("RFIDThread")
     private fun readTag() {
         lifecycleScope.launch(newSingleThreadContext("readTagTagsReader")) {
             try {
@@ -144,13 +154,14 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
     }
 
-    private suspend fun stopInventory() {
-        try {
-            isScanning = false
-            rfid.stopInventory()
-            rfid.free()
-            val btnText = "Read tags"
-            withContext(Dispatchers.Main) {
+    private fun stopInventory() {
+        lifecycleScope.launch {
+            try {
+                isScanning = false
+                rfid.stopInventory()
+                rfid.free()
+                val btnText = "Read tags"
+                lockScanButton()
                 binding.tvScan.text = btnText
                 if (epcsList.isNotEmpty()) {
                     val list = epcsList.distinct() as MutableList<String>
@@ -163,31 +174,37 @@ class TagReaderActivity : DrawerBaseActivity() {
                         "An error occurred.\nTry again."
                     ) { }
                 }
-            }
-        } catch (e: Exception) {
-            Log.e("stopInventory", "Error: ${e.message}")
-        } finally {
+            } catch (e: Exception) {
+                Log.e("stopInventory", "Error: ${e.message}")
+            } finally {
 
+            }
         }
     }
 
 
     private fun getUpcs(epcsList: MutableList<String>) {
-        lifecycleScope.launch {
+        lifecycleScope.launch(newSingleThreadContext("getUpcsTagReader")) {
             epcsList.forEach { i ->
-                val upc = tools.getGTIN(i).toString()
-                upcsList.add(upc)
+                try {
+                    val upc = tools.getGTIN(i).toString()
+                    upcsList.add(upc)
+                } catch (e: Exception) {
+                    Log.e("Error", "Error Scanner: ${e.message}")
+                }
             }
-            val list = upcsList.distinct() as MutableList<String>
-            Log.i("UPC", list.toString())
-            getItemsRead(list)
+            if (upcsList.isNotEmpty()) {
+                val list = upcsList.distinct() as MutableList<String>
+                Log.i("UPC", list.toString())
+                getItemsRead(list)
+            }
         }
     }
 
     private fun getItemsRead(list: MutableList<String>) {
         val pag = Pagination(1, 1000)
         val filters: MutableList<Filter> = mutableListOf()
-        filters.add(Filter("upc", "or", upcsList))
+        filters.add(Filter("upc", "or", list))
         val requestBody = FilterRequest(filters, pag)
         lifecycleScope.launch {
             apiCall.performApiCall(
@@ -200,7 +217,6 @@ class TagReaderActivity : DrawerBaseActivity() {
                 }
             )
         }
-
     }
 
     private fun useItems(data: MutableList<ItemData>) {

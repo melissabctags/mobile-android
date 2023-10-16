@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="white_transparent">#70FFFFFF</color>
+    <color name="total_transparent">#00FFFFFF</color>
     <color name="dark_gray">#323232</color>
     <color name="gray">#858485</color>
     <color name="light_gray">#ECECEC</color>
@@ -10,4 +11,7 @@
     <color name="red">#EC1C24</color>
     <color name="green_success">#1CEC49</color>
     <color name="yellow_alert">#FFE600</color>
+    <color name="pastel_red">#fa9393</color>
+
+
 </resources>

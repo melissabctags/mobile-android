@@ -274,6 +274,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             />
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvWhiteBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:cardCornerRadius="0dp"
+        app:contentPadding="0dp"
+        app:cardBackgroundColor="@color/total_transparent"
+        app:cardElevation="0dp"
+        android:padding="0dp"
+        android:layout_margin="0dp"
+        >
+
+
+    </androidx.cardview.widget.CardView>
     <!---SCAN-->
 
     <!---FOOTER-->

@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.KeyEvent
@@ -52,6 +53,7 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 
 
+
 class ScannerReceiveActivity : DrawerBaseActivity() {
     private lateinit var binding: ActivityScannerReceiveBinding
     private lateinit var adapter: ItemsReceiveAdapter
@@ -83,6 +85,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private var rfid: RFIDWithUHFUART = RFIDWithUHFUART.getInstance()
     private var branchId = 0
     private var isScanning = true
+    private var triggerEnabled = true
     private val epcsList: MutableList<String> = mutableListOf()
     private var receiveItemsList: MutableList<ItemsNewReceiveTempo> = mutableListOf()
     private var hashUpcs: MutableMap<String, Int> = mutableMapOf()
@@ -104,12 +107,13 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         lifecycleScope.launch {
             initItemsList()
             initRecyclerView()
+            lockScanButton()
             readTag()
         }
 
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == 294) {
+        if (keyCode == 294 && triggerEnabled) {
             initRead()
             return true
         }
@@ -181,6 +185,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
             } else {
                 val btnText = "Stop reading"
                 binding.tvScan.text = btnText
+                lockScanButton()
                 isScanning = true
                 receiveItemsList.clear()
                 hashUpcs.clear()
@@ -191,6 +196,14 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
+    private fun lockScanButton(){
+        binding.tvScan.isEnabled = false
+        triggerEnabled=false
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.tvScan.isEnabled = true
+            triggerEnabled=true
+        }, 1000)
+    }
 
     private fun readTag() {
         lifecycleScope.launch(newSingleThreadContext("readTagReceive")) {
@@ -226,13 +239,15 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         }
     }
 
-    private suspend fun stopInventory() {
-        isScanning = false
-        rfid.stopInventory()
-        rfid.free()
-        val btnText = "Scan"
-        withContext(Dispatchers.Main) {
+    private fun stopInventory() {
+        lifecycleScope.launch {
+            isScanning = false
+            rfid.stopInventory()
+            rfid.free()
+            val btnText = "Scan"
             binding.tvScan.text = btnText
+            lockScanButton()
+
             if (epcsList.isNotEmpty()) {
                 val list = epcsList.distinct() as MutableList<String>
                 countUpcs(list)
@@ -249,12 +264,18 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private fun countUpcs(epcsList: MutableList<String>) {
         lifecycleScope.launch {
             epcsList.forEach { i ->
-                val upc = tools.getGTIN(i).toString()
-                if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
-                    hashUpcs[upc] = 1
-                } else {
-                    hashUpcs[upc] = hashUpcs[upc]!! + 1
+                try {
+                    val upc = tools.getGTIN(i).toString()
+                    hashUpcs[upc] = (hashUpcs[upc] ?: 0) + 1
+//                    if (hashUpcs.isEmpty() || !hashUpcs.containsKey(upc)) {
+//                        hashUpcs[upc] = 1
+//                    } else {
+//                        hashUpcs[upc] = hashUpcs[upc]!! + 1
+//                    }
+                } catch (e: Exception) {
+                    Log.e("Error", "Error Scanner: ${e.message}")
                 }
+
             }
             checkReceivesUpcs()
         }
@@ -263,9 +284,12 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     private fun checkReceivesUpcs() {
         lifecycleScope.launch {
             receiveItemsList.forEach {
-                if (hashUpcs.containsKey(it.upc)) {
-                    it.quantity = hashUpcs[it.upc]?.toInt() ?: 0
-                }
+                it.quantity = hashUpcs[it.upc]?.toInt() ?: 0
+//                if (hashUpcs.isNotEmpty()) {
+//                    if (hashUpcs.containsKey(it.upc)) {
+//                        it.quantity = hashUpcs[it.upc]?.toInt() ?: 0
+//                    }
+//                }
             }
             initRecyclerView()
             binding.btnSaveReceive.visibility = View.VISIBLE
@@ -346,11 +370,12 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
 
     private fun updateLocation(idSelect: String, text: String, identifierId: String) {
-        receiveItemsList.forEach {
-            if (it.itemId == identifierId.toInt()) {
-                it.locationId = idSelect.toInt()
-            }
-        }
+        receiveItemsList.find { it.itemId == identifierId.toInt() }?.locationId = idSelect.toInt()
+//        receiveItemsList.forEach {
+//            if (it.itemId == identifierId.toInt()) {
+//                it.locationId = idSelect.toInt()
+//            }
+//        }
     }
 
     private fun updateItemList(item: ItemsNewReceiveTempo, dialog: Dialog) {
@@ -454,51 +479,3 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
     }
 
 }
-
-/*
-public class TestParseSGTINWithRfidTag {
-//val people = intent.getSerializableExtra("purchaseOrderId") as Int?
-    @Test
-    public void whenRfidTagIsNotGS1_thenParseExceptionIsRaised() {
-        assertThrows(EPCParseException.class, () -> Builder().withRFIDTag("F45349FB11DF49FA935AB6FF").build());
-    }
-
-    @Test
-    public void whenPartitionIsWrong_thenParseExceptionIsRaised() {
-        assertThrows(EPCParseException.class, () -> Builder().withRFIDTag("303C83F1B7DD441678901234").build());
-    }
-
-    @Test
-    public void parseEpcSerialTest() throws EPCParseException {
-        SGTIN sgtin = Builder().withRFIDTag("3024698E2CB1005678901234").build().getSGTIN();
-
-        assertEquals("96511988276", sgtin.getSerial());
-    }
-
-    @Test
-    public void parseEpcEanTest() throws EPCParseException {
-        SGTIN sgtin = Builder().withRFIDTag("3024698E2CB1005678901234").build().getSGTIN();
-
-        assertEquals("141674018641", sgtin.getCompanyPrefix() + sgtin.getItemReference());
-    }
-
-    @Test
-    public void parseEpcFilterTest() throws EPCParseException {
-        SGTIN sgtin = Builder().withRFIDTag("3024698E2CB1005678901234").build().getSGTIN();
-
-        assertEquals("1", sgtin.getFilterValue());
-    }
-
-    @Test
-    public void parseEpcPartitionTest() throws EPCParseException {
-        SGTIN sgtin = Builder().withRFIDTag("30285471BD5A0A5678901234").build().getSGTIN();
-
-        assertEquals("2", sgtin.getPartitionValue());
-    }
-
-    @Test
-    public void parseNonHexEpc() {
-        assertThrows(IllegalArgumentException.class, () -> Builder().withRFIDTag("30285471BD5A0A56789G1234").build());
-    }
-}
- */

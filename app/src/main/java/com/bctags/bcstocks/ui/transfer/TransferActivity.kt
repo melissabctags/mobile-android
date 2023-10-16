@@ -2,8 +2,10 @@ package com.bctags.bcstocks.ui.transfer
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.KeyEvent
@@ -237,6 +239,7 @@ class TransferActivity : DrawerBaseActivity() {
             } else {
                 binding.cvScanning.visibility = View.VISIBLE
                 scannerGif()
+                lockScanButton()
                 isScanning = true
                 epcsList.clear()
                 upcsList.clear()
@@ -279,11 +282,12 @@ class TransferActivity : DrawerBaseActivity() {
         }
     }
 
-    private suspend fun stopInventory() {
-        isScanning = false
-        rfid.stopInventory()
-        rfid.free()
-        withContext(Dispatchers.Main) {
+    private  fun stopInventory() {
+        lifecycleScope.launch {
+            isScanning = false
+            rfid.stopInventory()
+            rfid.free()
+            lockScanButton()
             if (epcsList.isNotEmpty()) {
                 val list = epcsList.distinct() as MutableList<String>
                 getUpcs(list)
@@ -300,16 +304,42 @@ class TransferActivity : DrawerBaseActivity() {
     private fun getUpcs(epcsList: MutableList<String>) {
         lifecycleScope.launch {
             epcsList.forEach { i ->
-                val upc = tools.getGTIN(i).toString()
-                upcsList.add(upc)
+                try {
+                    val upc = tools.getGTIN(i).toString()
+                    upcsList.add(upc)
+                } catch (e: Exception) {
+                    Log.e("Error", "Error Transfer: ${e.message}")
+                }
             }
-            upcsList.removeAll { it != currentUpc }
-            val totalElements: Int = upcsList.size
-            val viewHolder = binding.recyclerList.findViewHolderForAdapterPosition(currentPosition) as ItemBranchViewHolder
-            val totalString = totalElements.toString()
-            viewHolder.binding.etSelectedQty.setText(totalString)
-            changeSelectedTotal(ItemBox(currentId, totalString.toInt()))
+            upcsList.takeIf { it.isNotEmpty() }?.apply {
+                removeAll { it != currentUpc }
+                takeIf { it.isNotEmpty() }?.let {
+                    val totalElements = it.size
+                    val viewHolder = binding.recyclerList.findViewHolderForAdapterPosition(currentPosition) as ItemBranchViewHolder
+                    viewHolder.binding.etSelectedQty.setText(totalElements.toString())
+                    viewHolder.binding.tvLocation.setTextColor(Color.parseColor("#000000"))
+                    viewHolder.binding.tvQuantity.setTextColor(Color.parseColor("#000000"))
+                    changeSelectedTotal(ItemBox(currentId, totalElements))
+                }
+            }
+//            if (upcsList.isNotEmpty()) {
+//                upcsList.removeAll { it != currentUpc }
+//                if (upcsList.isNotEmpty()) {
+//                    val totalElements: Int = upcsList.size
+//                    val viewHolder =
+//                        binding.recyclerList.findViewHolderForAdapterPosition(currentPosition) as ItemBranchViewHolder
+//                    val totalString = totalElements.toString()
+//                    viewHolder.binding.etSelectedQty.setText(totalString)
+//                    changeSelectedTotal(ItemBox(currentId, totalString.toInt()))
+//                }
+//            }
         }
+    }
+    private fun lockScanButton(){
+        binding.cvWhiteBackground.visibility = View.VISIBLE;
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.cvWhiteBackground.visibility = View.GONE;
+        }, 1000)
     }
 
     private fun scannerGif() {
