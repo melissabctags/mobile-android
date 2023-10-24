@@ -153,6 +153,7 @@ class LocationsActivity : DrawerBaseActivity() {
     }
 
     private fun moveItemsLocation(requestBody:locationChanges){
+        Log.i("location",requestBody.toString())
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.changeLocations(requestBody),

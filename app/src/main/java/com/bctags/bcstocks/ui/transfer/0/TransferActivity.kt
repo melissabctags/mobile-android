@@ -1,4 +1,4 @@
-package com.bctags.bcstocks.ui.transfer
+package com.bctags.bcstocks.ui.transfer.`0`
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.KeyEvent
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView

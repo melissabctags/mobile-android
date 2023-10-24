@@ -109,4 +109,29 @@
     <string name="scanned">Scanned</string>
 
 
+
+
+    <string name="common_settings">Common settings</string>
+    <string name="working_mode">Working mode</string>
+    <string name="set_frequency">Set frequency</string>
+    <string name="get_frequency">Get frequency</string>
+    <string name="output_power">Output power(dBm)</string>
+    <string name="set_power">Set power</string>
+    <string name="get_power">Get power</string>
+    <string name="protocol">Protocol (Only R2000)</string>
+    <string name="set_protocol">Set protocol</string>
+    <string name="rflink">RFLink</string>
+    <string name="set_link">Set link parameters</string>
+    <string name="get_link">Get link parameters</string>
+
+
+
+
+
+
+
+
+
+
+
 </resources>
