@@ -3,12 +3,13 @@ package com.bctags.bcstocks.ui.settings
 import android.os.Bundle
 import android.util.Log
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivitySettingsBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
-import com.bctags.bcstocks.model.Frecuency
+import com.bctags.bcstocks.model.Frequency
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.MessageDialog
@@ -25,26 +26,26 @@ class SettingsActivity : DrawerBaseActivity() {
     private val apiCall = ApiCall()
     private val dropDown = DropDown()
 
-    private val modeList:List<Frecuency> = listOf(Frecuency(0x01, "China Standard(840~845MHz)"),
-        Frecuency(0x02,"China Standard(920~925MHz)"),
-        Frecuency(0x04,"ETSI Standard(865~868MHz)"),
-        Frecuency(0x08,"United States Standard(902~928MHz)"),
-        Frecuency(0x16,"Korea"),
-        Frecuency(0x32,"Japan"),
-        Frecuency(0x33,"South Africa(915~919MHz)"),
-        Frecuency(0x34,"New Zealand"),
-        Frecuency(0x80,"Morocco"),
-        Frecuency(0x08,"Fixed Frequency(915MHz)"))
-
-    private val protocolList = listOf("ISO 18000-6C","GB/T 29768","GJB 7377.1","ISO 18000-6B")
+    private val modeList:List<Frequency> = listOf(Frequency(0x01, "China Standard(840~845MHz)"),
+        Frequency(0x02,"China Standard(920~925MHz)"),
+        Frequency(0x04,"ETSI Standard(865~868MHz)"),
+        Frequency(0x08,"United States Standard(902~928MHz)"),
+        Frequency(0x16,"Korea"),
+        Frequency(0x32,"Japan"),
+        Frequency(0x33,"South Africa(915~919MHz)"),
+        Frequency(0x34,"New Zealand"),
+        Frequency(0x80,"Morocco"),
+        Frequency(0x08,"Fixed Frequency(915MHz)"))
+    private var powerList: MutableList<String> = mutableListOf()
+//    private var protocolList:MutableList<String> = mutableListOf("ISO 18000-6C","GB/T 29768","GJB 7377.1","ISO 18000-6B")
     private val linkList = listOf("DSB_ASK/FM0/40KHz","PR_ASK/Miller4/250KHz","PR_ASK/Miller4/300KHz","DSB_ASK/FM0/400KHz")
-//power list 5-24
+
     private var mapMode: HashMap<String, String> = HashMap()
     private var mapProtocol: HashMap<String, String> = HashMap()
     private var mapPower: HashMap<String, String> = HashMap()
     private var mapLink: HashMap<String, String> = HashMap()
 
-    private var selectedMode = Frecuency(0,"")
+    private var selectedMode = Frequency(0,"")
     private var selectedPower=""
     private var selectedProtocol=""
     private var selectedLink=""
@@ -59,7 +60,7 @@ class SettingsActivity : DrawerBaseActivity() {
 
         initUI()
         setDropdownModes()
-        setDropdownProtocol()
+//        setDropdownProtocol()
         setDropdownPower()
         setDropdownLink()
     }
@@ -69,17 +70,36 @@ class SettingsActivity : DrawerBaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnSetFrequency.setOnClickListener {
-            setFrecuencyMode()
+            setFrequencyMode()
         }
         binding.btnGetFrequency.setOnClickListener {
-            getFrecuencyMode()
+            getFrequencyMode()
         }
+        binding.btnSetPower.setOnClickListener {
+           setPower()
+        }
+        binding.btnGetPower.setOnClickListener {
+           getPower()
+        }
+        binding.btnSetRFLink.setOnClickListener {
+           setRfLink()
+        }
+        binding.btnGetRFLink.setOnClickListener {
+            getRfLink()
+        }
+//        binding.btnSetProtocol.setOnClickListener {
+//           setProtocol()
+//        }
+
+
     }
+
+
     private fun setDropdownModes() {
         val list: MutableList<String> = mutableListOf()
         modeList.forEach { i ->
-            list.add(i.frecuency)
-            mapMode[i.frecuency] = i.frecuencyId.toString()
+            list.add(i.frequency)
+            mapMode[i.frequency] = i.frequencyId.toString()
         }
         val autoComplete: AutoCompleteTextView = findViewById(R.id.modeList)
         dropDown.listArrange(
@@ -91,37 +111,64 @@ class SettingsActivity : DrawerBaseActivity() {
         )
     }
     private fun updateSelectedMode(id: String, text: String){
-        selectedMode.frecuencyId = id.toInt()
-        selectedMode.frecuency = text
-        Log.d("selectedMode", selectedMode.toString())
+        selectedMode.frequencyId = id.toInt()
+        selectedMode.frequency = text
     }
-    private fun setDropdownProtocol() {
-        val list: MutableList<String> = mutableListOf()
-        protocolList.forEach { i ->
-            list.add(i)
-            mapProtocol[i] = i
-        }
-        val autoComplete: AutoCompleteTextView = findViewById(R.id.protocolList)
-        dropDown.listArrange(
-            list,
-            autoComplete,
-            mapProtocol,
-            this@SettingsActivity,
-            ::updateSelectedProtocol
-        )
-    }
-    private fun updateSelectedProtocol(id: String, text: String){
-        selectedProtocol = id
-    }
+//    private fun setDropdownProtocol() {
+//        protocolList.forEach { i ->
+//            mapProtocol[i] = i
+//        }
+//        val autoComplete: AutoCompleteTextView = findViewById(R.id.protocolList)
+//        dropDown.listArrange(
+//            protocolList,
+//            autoComplete,
+//            mapProtocol,
+//            this@SettingsActivity,
+//            ::updateSelectedProtocol
+//        )
+//    }
+//    private fun updateSelectedProtocol(id: String, text: String){
+//        selectedProtocol = id
+//        Log.i("selectedProtocol",selectedProtocol)
+//    }
+//    private fun setProtocol() {
+//        if (!selectedProtocol.isNullOrEmpty()) {
+//            lifecycleScope.launch {
+//                withContext(Dispatchers.IO) {
+//                    val result: Boolean = rfid.init()
+//                    if (!result) {
+//                        rfid.free()
+//                    } else {
+//                        try {
+//                            val index = protocolList.indexOfFirst { it == selectedProtocol }
+//                            Log.i("index",index.toString())
+//                            if (rfid.setProtocol(index)) {
+//                                showSuccessMsg("Protocol saved")
+//                            } else {
+//                                showErrorMsg("An error occurred.\nTry again.")
+//                            }
+//                            rfid.free()
+//                        } catch (e: Exception) {
+//                            e.message?.let { Log.e("ERROR", it) }
+//                            showErrorMsg("An error occurred.\nTry again.")
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
+//            showErrorMsg("Must select a protocol.")
+//        }
+//    }
+
+
     private fun setDropdownPower() {
-        val list: MutableList<String> = mutableListOf()
-        for (i in 5..24) {
-            list.add(i.toString())
+        for (i in 1..30) {
+            powerList.add(i.toString())
             mapPower[i.toString()] = i.toString()
         }
         val autoComplete: AutoCompleteTextView = findViewById(R.id.powerList)
         dropDown.listArrange(
-            list,
+            powerList,
             autoComplete,
             mapPower,
             this@SettingsActivity,
@@ -131,13 +178,71 @@ class SettingsActivity : DrawerBaseActivity() {
     private fun updateSelectedPower(id: String, text: String){
         selectedPower = id
     }
+    private fun setPower() {
+        if (selectedPower.toInt() in 1..30) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val result: Boolean = rfid.init()
+                    if (!result) {
+                        rfid.free()
+                    } else {
+                        try {
+                            if (rfid.setPower(selectedPower.toInt())) {
+                                showSuccessMsg("Power saved.")
+                            } else {
+                                showErrorMsg("An error occurred.\nTry again.")
+                            }
+                            rfid.free()
+                        } catch (e: Exception) {
+                            showErrorMsg("An error occurred.\nTry again.")
+                            e.message?.let { Log.e("ERROR", it) }
+                        }
+                    }
+                }
+            }
+        }else{
+            showErrorMsg("Must select a number between 1 - 30.")
+        }
+    }
+    private fun getPower() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val result: Boolean = rfid.init()
+                if (!result) {
+                    Log.i("DOESNT WORK", "DOESNT WORK")
+                    rfid.free()
+                }else{
+                    Log.i("WORKS", "WORKS")
+                    val power = rfid.getPower()
+                    Log.i("GET", "$power")
+                    if (power != -1) {
+                        val index = powerList.indexOfFirst { it == power.toString() }
+                        setPowerList(index)
+                    } else {
+                        Log.i("Falla", "getFrequencyMode mode=$power")
+                    }
+                    rfid.free()
+                }
+            }
+        }
+    }
+    private fun setPowerList(index: Int) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                if (index != -1) {
+                    binding.powerList.setText(powerList[index])
+                }
+            }
+        }
+    }
+
     private fun setDropdownLink() {
         val list: MutableList<String> = mutableListOf()
         linkList.forEach { i ->
             list.add(i)
             mapLink[i] = i
         }
-        val autoComplete: AutoCompleteTextView = findViewById(R.id.powerList)
+        val autoComplete: AutoCompleteTextView = findViewById(R.id.linkList)
         dropDown.listArrange(
             list,
             autoComplete,
@@ -149,76 +254,148 @@ class SettingsActivity : DrawerBaseActivity() {
     private fun updateSelectedLink(id: String, text: String){
         selectedLink = id
     }
-    private fun setFrecuencyMode() {
-        //val mode: Int = selectedMode.frecuencyId
-//        val mode = getMode("")
-//        Log.d("selectedMode", "setFrequencyMode mode=$mode")
-//        if (rfid.setFrequencyMode(0x08.toByte().toInt())) {
-//            Log.d("Exito", "setFrequencyMode mode=$mode")
-//        } else {
-//            Log.d("Falla", "setFrequencyMode mode=$mode")
-//        }
-
-        lifecycleScope.launch(newSingleThreadContext("readTagReceive")) {
+    private fun getRfLink() {
+        lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                val mode = getMode("")
                 val result: Boolean = rfid.init()
                 if (!result) {
-                    Log.i("DIDN'T WORK", "DIDN'T WORK")
+                    Log.i("DOESNT WORK", "DOESNT WORK")
                     rfid.free()
                 }else{
                     Log.i("WORKS", "WORKS")
-                    if (rfid.setFrequencyMode(0x08)) {
-                        Log.d("Exito", "setFrequencyMode mode=$mode")
+                    val link = rfid.getRFLink()
+                    Log.i("GET", "$link")
+                    if (link != -1) {
+                        setLinkList(link)
                     } else {
-                        Log.d("Falla", "setFrequencyMode mode=$mode")
+                        Log.i("Falla", "getFrequencyMode mode=$link")
                     }
                     rfid.free()
                 }
             }
         }
     }
-    private fun getMode(modeName: String): Int {
-//        if (modeName == getString(R.string.China_Standard_840_845MHz)) {
-//            return 0x01
-//        } else if (modeName == getString(R.string.China_Standard_920_925MHz)) {
-//            return 0x02
-//        } else if (modeName == getString(R.string.ETSI_Standard)) {
-//            return 0x04
-//        } else if (modeName == getString(R.string.United_States_Standard)) {
-//            return 0x08
-//        } else if (modeName == getString(R.string.Korea)) {
-//            return 0x16
-//        } else if (modeName == getString(R.string.Japan)) {
-//            return 0x32
-//        } else if (modeName == getString(R.string.South_Africa_915_919MHz)) {
-//            return 0x33
-//        } else if (modeName == getString(R.string.New_Zealand)) {
-//            return 0x34
-//        } else if (modeName == getString(R.string.Morocco)) {
-//            return 0x80
-//        }
-        return 0x08
+    private fun setLinkList(index: Int) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                if (index != -1) {
+                    binding.linkList.setText(linkList[index])
+                }
+            }
+        }
     }
-    private fun getFrecuencyMode() {
-        val mode: Int = rfid.frequencyMode
-        Log.e("getFrec", "getFrequencyMode()=$mode")
-        if (mode != -1) {
-            val foundFrecuency = modeList.find { it.frecuencyId == mode }
-            selectedMode = foundFrecuency ?: Frecuency(0, "")
-            binding.modeList.setText(foundFrecuency?.frecuency ?: "Elemento no encontrado")
-            Log.e("getFrec", foundFrecuency.toString())
+
+    private fun setRfLink() {
+        if (!selectedLink.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val result: Boolean = rfid.init()
+                    if (!result) {
+                        rfid.free()
+                    } else {
+                        try {
+                            val index = linkList.indexOfFirst { it == selectedLink }
+                            Log.i("index",index.toString())
+                            if (rfid.setRFLink(index)) {
+                                showSuccessMsg("RFLink saved")
+                            } else {
+                                showErrorMsg("An error occurred.\nTry again.")
+                            }
+                            rfid.free()
+                        } catch (e: Exception) {
+                            e.message?.let { Log.e("ERROR", it) }
+                            showErrorMsg("An error occurred.\nTry again.")
+                        }
+                    }
+                }
+            }
         } else {
-            Log.d("Falla", "getFrequencyMode mode=$mode")
+            showErrorMsg("Must select a RFLink.")
         }
     }
 
 
 
 
-
-
-
+    private fun setFrequencyMode() {
+        if (selectedMode.frequencyId != 0) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val result: Boolean = rfid.init()
+                    if (!result) {
+                        rfid.free()
+                    } else {
+                        try {
+                            if (rfid.setFrequencyMode(selectedMode.frequencyId)) {
+                                showSuccessMsg("Frequency saved")
+                            } else {
+                                showErrorMsg("An error occurred.\nTry again.")
+                            }
+                            rfid.free()
+                        } catch (e: Exception) {
+                            e.message?.let { Log.e("ERROR", it) }
+                            showErrorMsg("An error occurred.\nTry again.")
+                        }
+                    }
+                }
+            }
+        } else {
+            showErrorMsg("Must select a working mode.")
+        }
+    }
+    private fun getFrequencyMode() {
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                val result: Boolean = rfid.init()
+                if (!result) {
+                    Log.i("DOESNT WORK", "DOESNT WORK")
+                    rfid.free()
+                }else{
+                    Log.i("WORKS", "WORKS")
+                    val mode = rfid.getFrequencyMode()
+                    Log.i("GET", "$mode")
+                    if (mode != -1) {
+                        val index = modeList.indexOfFirst { it.frequencyId == mode }
+                        setFrequencyList(index)
+                    } else {
+                        Log.i("Falla", "getFrequencyMode mode=$mode")
+                    }
+                    rfid.free()
+                }
+            }
+        }
+    }
+    private fun setFrequencyList(index: Int) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                if (index != -1) {
+                    binding.modeList.setText(modeList[index].frequency)
+                }
+            }
+        }
+    }
+    private fun showErrorMsg(message:String) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                messageDialog.showDialog(
+                    this@SettingsActivity,
+                    R.layout.dialog_error,
+                    message
+                ) { }
+            }
+        }
+    }
+    private fun showSuccessMsg(message:String) {
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                messageDialog.showDialog(
+                    this@SettingsActivity,
+                    R.layout.dialog_success,
+                    message
+                ) { }
+            }
+        }
+    }
 
 
 

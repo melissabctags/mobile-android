@@ -145,6 +145,13 @@
                     app:strokeWidth="1dp" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
+                android:background="@color/light_gray"
+                 />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -223,7 +230,15 @@
                     app:strokeColor="@color/black"
                     app:strokeWidth="1dp" />
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
+                android:background="@color/light_gray"
+                />
 
+           <!--
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,16 +246,17 @@
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginTop="10dp"
                 >
+
                 <TextView
-                    android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:fontFamily="@font/avenir_medium"
                     android:gravity="start"
+                    android:text="@string/protocol"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:text="@string/protocol" />
+                    android:textSize="16sp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -286,6 +302,14 @@
                     app:strokeColor="@color/black"
                     app:strokeWidth="1dp" />
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
+                android:background="@color/light_gray"
+                />
+           -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -335,7 +359,7 @@
                 android:layout_marginTop="5dp"
                 >
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSetLink"
+                    android:id="@+id/btnSetRFLink"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -350,7 +374,7 @@
                     app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnGetLink"
+                    android:id="@+id/btnGetRFLink"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

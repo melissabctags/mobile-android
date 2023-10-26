@@ -182,12 +182,13 @@ class TagReaderActivity : DrawerBaseActivity() {
         }
     }
 
-
+    private var hashUpcs: MutableMap<String, Int> = mutableMapOf()
     private fun getUpcs(epcsList: MutableList<String>) {
         lifecycleScope.launch(newSingleThreadContext("getUpcsTagReader")) {
             epcsList.forEach { i ->
                 try {
                     val upc = tools.getGTIN(i).toString()
+                    hashUpcs[upc] = (hashUpcs[upc] ?: 0) + 1
                     upcsList.add(upc)
                 } catch (e: Exception) {
                     Log.e("Error", "Error Scanner: ${e.message}")
@@ -232,7 +233,7 @@ class TagReaderActivity : DrawerBaseActivity() {
     }
 
     private fun initRecyclerView() {
-        adapter = TagReaderAdapter(itemList)
+        adapter = TagReaderAdapter(itemList,hashUpcs)
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter
     }

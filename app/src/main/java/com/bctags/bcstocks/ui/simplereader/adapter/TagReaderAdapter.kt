@@ -9,7 +9,7 @@ import com.bctags.bcstocks.io.response.ReceiveData
 
 
 //adapter: se encarga de coger la info
-class TagReaderAdapter(val list: MutableList<ItemData>) :
+class TagReaderAdapter(val list: MutableList<ItemData>,var hashUpcs: MutableMap<String, Int>) :
     RecyclerView.Adapter<TagReaderViewHolder>() {
 
     //pasar el item, layout a modificar
@@ -30,7 +30,7 @@ class TagReaderAdapter(val list: MutableList<ItemData>) :
     //pasar por cada item y va a llamar al render
     override fun onBindViewHolder(holder: TagReaderViewHolder, position: Int) {
         val item = list[position]
-        holder.render(item)
+        holder.render(item,hashUpcs)
     }
 
 

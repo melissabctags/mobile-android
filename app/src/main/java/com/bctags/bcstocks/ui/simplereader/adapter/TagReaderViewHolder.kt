@@ -14,10 +14,11 @@ import com.bctags.bcstocks.util.Utils
 class TagReaderViewHolder(view: View):RecyclerView.ViewHolder(view)  {
 
     private val binding = RvSimpleReaderTagBinding.bind(view)
-    fun render(item: ItemData){
+    fun render(item: ItemData,hashUpcs: MutableMap<String, Int>){
         binding.tvName.text= item.item
         binding.tvDescription.text= item.description
         binding.tvUpc.text= item.upc
+        binding.tvTotal.text = hashUpcs[item.upc].toString()
 
 //        itemView.setOnClickListener{
 //

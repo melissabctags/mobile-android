@@ -8,9 +8,9 @@ data class SettingsRequest(
     var trackingNumber: String
 )
 
-data class Frecuency(
-    var frecuencyId:Int,
-    var frecuency: String
+data class Frequency(
+    var frequencyId:Int,
+    var frequency: String
 )
 
 
