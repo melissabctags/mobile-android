@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.transfer.NewTransferActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.testThreads.ui.TestThreadsActivity"
             android:exported="false" />
         <activity
@@ -42,7 +45,6 @@
         <activity
             android:name=".ui.workorders.packing.PackingActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.workorders.picking.PickingItemActivity"
             android:exported="false" />

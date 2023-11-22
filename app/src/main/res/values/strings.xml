@@ -73,8 +73,8 @@
     <string name="page_init">Page 1</string>
     <string name="list_items_locations">List of item locations</string>
     <string name="selected_qty">Selected Qty</string>
-    <string name="by_location">Change by location</string>
-    <string name="by_item">Change by item</string>
+    <string name="by_location">By location</string>
+    <string name="by_item">By item</string>
     <string name="location_origin">Origin</string>
     <string name="location_destination">Destination</string>
     <string name="title_location_list_items">Items in location </string>
@@ -83,6 +83,12 @@
     <string name="add_location">Add location</string>
     <string name="qty">Qty</string>
     <string name="s_qty">S. Qty</string>
+    <string name="transfers">Transfers</string>
+    <string name="transfers_list">Transfers list</string>
+    <string name="new_transfer">New transfer</string>
+    <string name="transfer_to">Transfer to</string>
+    <string name="select_items">Select items</string>
+    <string name="list_of">List of</string>
 
 
     <string name="menu_home">Home</string>
@@ -109,8 +115,6 @@
     <string name="scanned">Scanned</string>
 
 
-
-
     <string name="common_settings">Common settings</string>
     <string name="working_mode">Working mode</string>
     <string name="set_frequency">Set frequency</string>
@@ -123,15 +127,6 @@
     <string name="rflink">RFLink</string>
     <string name="set_link">Set link parameters</string>
     <string name="get_link">Get link parameters</string>
-
-
-
-
-
-
-
-
-
 
 
 </resources>

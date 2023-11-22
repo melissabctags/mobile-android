@@ -204,7 +204,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
             )
         }
         if (savedDay != 0 && savedMonth != 0 && savedYear != 0) {
-            var fecha = binding.tvDate.text.toString()
+            val fecha = binding.tvDate.text.toString()
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val start = Calendar.getInstance().apply {
                 time = dateFormat.parse(fecha)!!

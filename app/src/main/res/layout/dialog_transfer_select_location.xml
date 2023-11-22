@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="350dp"
+        android:layout_height="500dp"
+    android:layout_margin="0dp"
+    android:maxHeight="350dp"
+    android:background="@drawable/dialog_bg"
+    android:orientation="vertical"
+    android:padding="0dp"
+    app:cardCornerRadius="25dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/llStatus"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/red"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvMainTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                android:fontFamily="@font/avenir_heavy"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="5dp"
+                android:text="@string/select_items"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/light_gray"
+                        android:orientation="horizontal"
+                        android:paddingVertical="5dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/avenir_medium"
+                            android:gravity="start|center_vertical"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="5dp"
+                            android:text="@string/item"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/avenir_medium"
+                            android:gravity="start|center_vertical"
+                            android:text="@string/quantity"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/avenir_medium"
+                            android:gravity="start|center_vertical"
+                            android:text="@string/selected_qty"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="10dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerLocationList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </ScrollView>
+
+
+                </LinearLayout>
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveLocation"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:backgroundTint="@color/black"
+                    android:text="@string/save"
+                    android:textColor="@color/white"
+                    app:cornerRadius="30dp"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="1dp" />
+
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
