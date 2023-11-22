@@ -89,6 +89,8 @@
     <string name="transfer_to">Transfer to</string>
     <string name="select_items">Select items</string>
     <string name="list_of">List of</string>
+    <string name="finish">Finish</string>
+    <string name="status">Status</string>
 
 
     <string name="menu_home">Home</string>

@@ -274,8 +274,9 @@ class LocationsActivity : DrawerBaseActivity() {
     }
     private fun searchInventory() {
         val pag = Pagination(1, 1000)
-        var filters:MutableList<Filter> = mutableListOf()
+        val filters:MutableList<Filter> = mutableListOf()
         filters.add(Filter("itemId", "eq", mutableListOf(itemId.toString())))
+        filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
         val requestBody = FilterRequest(filters,pag)
 
         CoroutineScope(Dispatchers.IO).launch {

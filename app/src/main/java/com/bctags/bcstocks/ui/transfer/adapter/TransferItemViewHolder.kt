@@ -16,16 +16,17 @@ import com.bctags.bcstocks.util.InputFilterMinMax
 
 //ViewHolder:  se encarga de pintar las celdas
 
-class TransferLocationViewHolder(view: View):RecyclerView.ViewHolder(view)  {
+class TransferItemViewHolder(view: View):RecyclerView.ViewHolder(view)  {
 
     private val binding = RvTransferLocationBinding.bind(view)
        @SuppressLint("SetTextI18n")
        fun render(item: InventoryData, onClickListener: (TempInventoryData) -> Unit) {
            Log.i("item",item.toString())
-           binding.tvLocation.text = item.Item.item + "\n" + item.Item.description
+           binding.tvLocation.text = item.Location.name
            binding.tvQuantity.text = item.quantity.toString()
 
            binding.etSelectedQty.filters = arrayOf<InputFilter>(InputFilterMinMax("0",  item.quantity.toString()))
+
            binding.etSelectedQty.addTextChangedListener {
                var newQuantity = binding.etSelectedQty.text.toString()
                if (newQuantity.isEmpty()) {

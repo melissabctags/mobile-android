@@ -2,6 +2,7 @@ package com.bctags.bcstocks.ui.transfer
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
 import android.widget.AutoCompleteTextView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,14 +23,17 @@ import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.Branch
 import com.bctags.bcstocks.io.response.InventoryData
-import com.bctags.bcstocks.io.response.LocationBarcode
+import com.bctags.bcstocks.io.response.ItemData
 import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.FilterRequestPagination
+import com.bctags.bcstocks.model.NewTransfer
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.TempInventoryData
+import com.bctags.bcstocks.model.TransferItemRequest
 import com.bctags.bcstocks.ui.transfer.adapter.NewTransferAdapter
+import com.bctags.bcstocks.ui.transfer.adapter.TransferItemAdapter
 import com.bctags.bcstocks.ui.transfer.adapter.TransferLocationAdapter
 import com.bctags.bcstocks.util.DropDown
 import com.bctags.bcstocks.util.EPCTools
@@ -50,15 +55,14 @@ class NewTransferActivity : AppCompatActivity() {
     val tools = EPCTools()
 
     private var branchId = 0
-    val mapBranches: HashMap<String, String> = HashMap()
-    var selectedBranch = 0
-    var originId = 0
-    var mapLocations: HashMap<String, String> = HashMap()
-    private var location: LocationBarcode = LocationBarcode(0, "", "")
-
-    var itemsList: MutableList<TempInventoryData> = mutableListOf()
-
+    private val mapBranches: HashMap<String, String> = HashMap()
+    private var selectedBranch = 0
+    private var mapLocations: HashMap<String, String> = HashMap()
+    private var mapItems: HashMap<String, String> = HashMap()
+    private var itemsList: MutableList<TempInventoryData> = mutableListOf()
     private val SERVER_ERROR = "Server error, try later"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewTransferBinding.inflate(layoutInflater)
@@ -66,8 +70,10 @@ class NewTransferActivity : AppCompatActivity() {
 
         val sharedPreferences = getSharedPreferences("ACCOUNT", Context.MODE_PRIVATE)
         branchId = sharedPreferences.getInt("BRANCH", 0)
+
         getBranches()
         getLocations()
+        getItems()
         initRecyclerView()
         initListeners()
     }
@@ -91,20 +97,64 @@ class NewTransferActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
         binding.btnLocation.setOnClickListener {
-            openLocation()
+            openSelect(binding.llLocation, binding.llItem)
         }
         binding.btnItem.setOnClickListener {
-            openItems()
+            openSelect(binding.llItem, binding.llLocation)
+        }
+        binding.btnSave.setOnClickListener {
+            checkNewTransfer()
         }
     }
 
-    private fun openLocation() {
-        if (binding.llLocation.visibility == View.VISIBLE) {
+    private fun checkNewTransfer() {
+        if(selectedBranch!=0){
+            getNewTransfer()
+        }else{
+            messageDialog.showDialog(
+                this@NewTransferActivity,
+                R.layout.dialog_error,
+                "Select a branch."
+            ) { }
+        }
+    }
+
+    private fun getNewTransfer() {
+        val list: MutableList<TransferItemRequest> = mutableListOf()
+        itemsList.forEach { i ->
+            list.add(TransferItemRequest(i.inventory.id,i.quantity))
+        }
+        saveNewTransfer(NewTransfer(selectedBranch,list))
+    }
+
+    private fun saveNewTransfer(transfer: NewTransfer) {
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.createTransfer(transfer),
+                onSuccess = { response ->
+                    Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
+                    mainTransfer()
+                },
+                onError = { error ->
+                    Log.i("error", gson.toJson(error))
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_LONG).show()
+                }
+            )
+        }
+    }
+    private fun mainTransfer() {
+        val intent = Intent(this, TransferActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun openSelect(open: LinearLayout, close: LinearLayout) {
+        if (open.visibility == View.VISIBLE) {
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            binding.llLocation.visibility = View.GONE
+            open.visibility = View.GONE
         } else {
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            binding.llLocation.visibility = View.VISIBLE
+            open.visibility = View.VISIBLE
+            close.visibility = View.GONE
         }
     }
 
@@ -142,21 +192,30 @@ class NewTransferActivity : AppCompatActivity() {
     }
 
     private fun updateLocations(id: String, text: String) {
-        originId = id.toInt()
-        inventoryByLocation(text)
+        inventoryByLocation(id,text)
     }
 
-    private fun inventoryByLocation(text: String) {
+    private fun inventoryByLocation(id:String, text: String) {
         val pag = Pagination(1, 1000)
         val filters: MutableList<Filter> = mutableListOf()
-        filters.add(Filter("locationId", "eq", mutableListOf(originId.toString())))
+        filters.add(Filter("locationId", "eq", mutableListOf(id)))
         val requestBody = FilterRequest(filters, pag)
 
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getInventory(requestBody),
                 onSuccess = { response ->
-                    openLocationDialog(response.data, text)
+                    openDialog(
+                        text,
+                        "Items in ",
+                        TransferLocationAdapter(
+                            list = response.data,
+                            onClickListener = { TempInventoryData ->
+                                changeSelectedTotal(
+                                    TempInventoryData
+                                )
+                            })
+                    )
                 },
                 onError = { error ->
                     Log.i("error", gson.toJson(error))
@@ -166,21 +225,22 @@ class NewTransferActivity : AppCompatActivity() {
         }
     }
 
-    private fun openLocationDialog(inventory: MutableList<InventoryData>, text: String) {
+    private fun openDialog(
+        text: String,
+        sign: String,
+        adapter: RecyclerView.Adapter<out RecyclerView.ViewHolder>
+    ) {
         val dialogLocation = Dialog(this)
         dialogLocation.setContentView(R.layout.dialog_transfer_select_location)
         dialogLocation.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val adapter = TransferLocationAdapter(
-            list = inventory,
-            onClickListener = { TempInventoryData -> changeSelectedTotal(TempInventoryData) },
-        )
-        val recycler: RecyclerView = dialogLocation.findViewById(R.id.recyclerLocationList)
 
+        val recycler: RecyclerView = dialogLocation.findViewById(R.id.recyclerLocationList)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+
         val title: TextView = dialogLocation.findViewById(R.id.tvMainTitle)
         title.text = buildString {
-            append("Select items in ")
+            append(sign)
             append(text)
         }
         val btnSave: MaterialButton = dialogLocation.findViewById(R.id.btnSaveLocation)
@@ -192,17 +252,16 @@ class NewTransferActivity : AppCompatActivity() {
     }
 
     private fun changeSelectedTotal(item: TempInventoryData) {
-        Log.i("ADD_ELEMENT",item.toString())
-        val existingItem = itemsList.find { it.inventory.itemId == item.inventory.itemId }
+        Log.i("ADD_ELEMENT", item.toString())
+        val existingItem = itemsList.find { it.inventory.id == item.inventory.id }
         if (existingItem != null) {
             existingItem.quantity = item.quantity
         } else {
             itemsList.add(item)
         }
-        itemsList.removeIf { it.quantity==0 }
+        itemsList.removeIf { it.quantity == 0 }
     }
 
-    //    BYLOCATION
     private fun updateMainRecyclerView() {
         adapter = NewTransferAdapter(
             list = itemsList,
@@ -210,70 +269,6 @@ class NewTransferActivity : AppCompatActivity() {
         )
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter
-    }
-
-    private fun openItems() {
-        //var dialog = Dialog(this,android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_transfer_select_item)
-
-//        val tfLocationList: AutoCompleteTextView = dialog.findViewById(R.id.tfLocationList)
-//        dropDown.listArrangeWithId(
-//            locationList,
-//            tfLocationList,
-//            mapLocation,
-//            this,
-//            item.itemId.toString(),
-//            ::updateLocation
-//        )
-//        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//
-//        val tvItemDescription: TextView = dialog.findViewById(R.id.tvItemDescription)
-//        val etQuantity: EditText = dialog.findViewById(R.id.etQuantity)
-//        val btnStatus: MaterialButton = dialog.findViewById(R.id.btnStatus)
-//        val llStatus: LinearLayout = dialog.findViewById(R.id.llStatus)
-//
-//        if (item.quantity == 0) {
-//            llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ffe600"))
-//            checkButtonReceiveItemMaterialButton(
-//                btnStatus,
-//                "#ffe600",
-//                R.color.black,
-//                R.drawable.ic_exclamation
-//            )
-//        } else {
-//            if ((item.receivedQuantity + item.quantity) >= item.orderQuantity) {
-//                llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#20c95e"))
-//                checkButtonReceiveItemMaterialButton(
-//                    btnStatus,
-//                    "#20c95e",
-//                    R.color.white,
-//                    R.drawable.ic_done
-//                )
-//            } else {
-//                llStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff7700"))
-//                checkButtonReceiveItemMaterialButton(
-//                    btnStatus,
-//                    "#ff7700",
-//                    R.color.black,
-//                    R.drawable.ic_exclamation
-//                )
-//            }
-//        }
-//        tvItemDescription.text = item.description
-//        etQuantity.setText(item.quantity.toString())
-//
-//        if (item.locationId != 0) {
-//            val key = mapLocation.entries.find { it.value == item.locationId.toString() }?.key
-//            tfLocationList.setText(key)
-//        }
-//
-//        val btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
-//        btnSaveChange.setOnClickListener {
-//            updateItemList(item, dialog)
-//        }
-
-        dialog.show()
     }
 
     private fun getBranches() {
@@ -310,6 +305,78 @@ class NewTransferActivity : AppCompatActivity() {
 
     private fun updateBranch(id: String, text: String) {
         selectedBranch = id.toInt()
+    }
+
+    private fun getItems() {
+        val pag = Pagination(1, 1000)
+        val filters: MutableList<Filter> = mutableListOf()
+        val requestBody = FilterRequest(filters, pag)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.getItems(requestBody),
+                onSuccess = { response ->
+                    initItems(response.data)
+
+                },
+                onError = { error ->
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
+    }
+
+    private fun initItems(dataResponse: MutableList<ItemData>) {
+        val list: MutableList<String> = mutableListOf()
+        dataResponse.forEach { i ->
+            list.add(i.item + " " + i.description)
+            mapItems[i.item + " " + i.description] = i.id.toString();
+        }
+        val autoComplete: AutoCompleteTextView = findViewById(R.id.itemList)
+        dropDown.listArrange(
+            list,
+            autoComplete,
+            mapItems,
+            this@NewTransferActivity,
+            ::updateItem
+        )
+    }
+
+    private fun updateItem(id: String, text: String) {
+        if (id.toInt() != 0) {
+            getItemInventory(id, text)
+        }
+    }
+
+    private fun getItemInventory(id: String, text: String) {
+        val pag = Pagination(1, 1000)
+        val filters: MutableList<Filter> = mutableListOf()
+        filters.add(Filter("itemId", "eq", mutableListOf(id)))
+        filters.add(Filter("branchId", "eq", mutableListOf(branchId.toString())))
+        val requestBody = FilterRequest(filters, pag)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.getInventory(requestBody),
+                onSuccess = { response ->
+                    openDialog(
+                        text,
+                        "Select ",
+                        TransferItemAdapter(
+                            list = response.data,
+                            onClickListener = { TempInventoryData ->
+                                changeSelectedTotal(
+                                    TempInventoryData
+                                )
+                            })
+                    )
+                },
+                onError = { error ->
+                    Log.i("error", gson.toJson(error))
+                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
     }
 
 

@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"
                     android:backgroundTint="@color/black"
-                    android:text="@string/save"
+                    android:text="@string/finish"
                     android:textColor="@color/white"
                     app:cornerRadius="30dp"
                     app:strokeColor="@color/black"

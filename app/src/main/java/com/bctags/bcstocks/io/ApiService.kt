@@ -18,6 +18,7 @@ import com.bctags.bcstocks.io.response.PickedResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderResponse
 import com.bctags.bcstocks.io.response.ReceiveResponse
 import com.bctags.bcstocks.io.response.SupplierResponse
+import com.bctags.bcstocks.io.response.TransferResponse
 import com.bctags.bcstocks.io.response.UserResponse
 import com.bctags.bcstocks.io.response.WorkOrderPickedResponse
 import com.bctags.bcstocks.io.response.WorkOrderResponse
@@ -28,6 +29,7 @@ import com.bctags.bcstocks.model.FiltersRequest
 import com.bctags.bcstocks.model.GetOne
 import com.bctags.bcstocks.model.LoginRequest
 import com.bctags.bcstocks.model.NewPack
+import com.bctags.bcstocks.model.NewTransfer
 import com.bctags.bcstocks.model.PackageIds
 import com.bctags.bcstocks.model.PartialSetStatus
 import com.bctags.bcstocks.model.PickingRequest
@@ -121,6 +123,14 @@ interface ApiService {
 
     @POST(value = "/workorder/picked")
     fun getPickedWorkOrder(@Body requestBody: WorkOrder): Call<WorkOrderPickedResponse>
+
+    @POST(value = "/transfer-order/create")
+    fun createTransfer(@Body requestBody: NewTransfer): Call<GeneralResponseChange>
+
+    @POST(value = "/transfer-order/list")
+    fun getTransfer(@Body requestBody: FilterRequest): Call<TransferResponse>
+
+
 
 
 }
