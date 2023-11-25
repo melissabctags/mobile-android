@@ -20,6 +20,7 @@ import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.TempPagination
 import com.bctags.bcstocks.ui.transfer.adapter.TransferAdapter
 import com.bctags.bcstocks.ui.transfer.adapter.TransferLocationAdapter
+import com.bctags.bcstocks.ui.workorders.OrderDetailsActivity
 import com.bctags.bcstocks.ui.workorders.adapter.WorkOrdersAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
@@ -90,7 +91,7 @@ class TransferActivity : DrawerBaseActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
-                apiClient.getTransfer(requestBody),
+                apiClient.getTransferOrders(requestBody),
                 onSuccess = { response ->
                     useTransfer(response)
                 },
@@ -112,14 +113,16 @@ class TransferActivity : DrawerBaseActivity() {
     private fun initRecyclerView(list: MutableList<TransferData>) {
         adapter = TransferAdapter(
             list = list,
-            onClickListener = { TransferData -> checkTransfer(TransferData) },
+            onClickListener = { TransferData -> openTransfer(TransferData) },
         )
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter
     }
 
-    private fun checkTransfer(transferData: TransferData) {
-
+    private fun openTransfer(transferData: TransferData) {
+        val intent = Intent(this, TransferDetailsActivity::class.java)
+        intent.putExtra("TRANSFER_ID", transferData.id)
+        startActivity(intent)
     }
 
     private fun initListeners() {

@@ -10,16 +10,38 @@ data class TransferResponse(
 )
 data class TransferData(
     @SerializedName("id") var id: Int,
-    @SerializedName("destinationBranchId") var destinationBranchId: Int,
+    @SerializedName("destinationBranchName") var destinationBranchName: String,
     @SerializedName("status") var status: String,
     @SerializedName("number") var number: String,
     @SerializedName("createdAt") var createdAt: String,
-    @SerializedName("items") var items: List<TransferItemData>,
-    @SerializedName("Branch") var Branch: BranchData,
+    @SerializedName("createdByName") var createdByName: String,
 )
-data class TransferItemData(
+data class TransferOrderResponse(
+    @SerializedName("success") var success: Boolean,
+    @SerializedName("data") var data: TransferOrderData,
+)
+data class TransferOrderData(
     @SerializedName("id") var id: Int,
-    @SerializedName("Item") var Item:ItemData,
+    @SerializedName("number") var number: String,
+    @SerializedName("status") var status: String,
+    @SerializedName("createdAt") var createdAt: String,
+    @SerializedName("destinationBranchName") var destinationBranchName: String,
+    @SerializedName("createdByName") var createdByName: String,
+    @SerializedName("items") var items: MutableList<TransferOrderItemData>,
+)
+data class TransferOrderItemData(
+    @SerializedName("itemName") var itemName: String,
+    @SerializedName("itemDescription") var itemDescription:String,
+    @SerializedName("locationName") var locationName:String,
+    @SerializedName("upc") var upc:String,
+    @SerializedName("quantity") var quantity:Int,
 )
 
-
+data class TransferOrderItemExtra(
+    @SerializedName("itemName") var itemName: String,
+    @SerializedName("itemDescription") var itemDescription:String,
+    @SerializedName("locationName") var locationName:String,
+    @SerializedName("quantity") var quantity:Int,
+    @SerializedName("upc") var upc:String,
+    @SerializedName("scanned") var scanned:Int,
+)

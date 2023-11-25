@@ -22,7 +22,6 @@ import com.bctags.bcstocks.databinding.ActivityNewTransferBinding
 import com.bctags.bcstocks.io.ApiCall
 import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.Branch
-import com.bctags.bcstocks.io.response.InventoryData
 import com.bctags.bcstocks.io.response.ItemData
 import com.bctags.bcstocks.io.response.LocationData
 import com.bctags.bcstocks.model.Filter
@@ -108,23 +107,33 @@ class NewTransferActivity : AppCompatActivity() {
     }
 
     private fun checkNewTransfer() {
-        if(selectedBranch!=0){
+        if (selectedBranch != 0) {
             getNewTransfer()
-        }else{
+        } else {
             messageDialog.showDialog(
                 this@NewTransferActivity,
                 R.layout.dialog_error,
                 "Select a branch."
             ) { }
         }
+        if (itemsList.isEmpty()) {
+            messageDialog.showDialog(
+                this@NewTransferActivity,
+                R.layout.dialog_error,
+                "Select items."
+            ) { }
+        } else {
+            getNewTransfer()
+        }
     }
 
     private fun getNewTransfer() {
         val list: MutableList<TransferItemRequest> = mutableListOf()
         itemsList.forEach { i ->
-            list.add(TransferItemRequest(i.inventory.id,i.quantity))
+            list.add(TransferItemRequest(i.inventory.id, i.quantity))
         }
-        saveNewTransfer(NewTransfer(selectedBranch,list))
+        Log.i("TRANSFER",NewTransfer(selectedBranch, list).toString())
+        saveNewTransfer(NewTransfer(selectedBranch, list))
     }
 
     private fun saveNewTransfer(transfer: NewTransfer) {
@@ -142,6 +151,7 @@ class NewTransferActivity : AppCompatActivity() {
             )
         }
     }
+
     private fun mainTransfer() {
         val intent = Intent(this, TransferActivity::class.java)
         startActivity(intent)
@@ -192,10 +202,10 @@ class NewTransferActivity : AppCompatActivity() {
     }
 
     private fun updateLocations(id: String, text: String) {
-        inventoryByLocation(id,text)
+        inventoryByLocation(id, text)
     }
 
-    private fun inventoryByLocation(id:String, text: String) {
+    private fun inventoryByLocation(id: String, text: String) {
         val pag = Pagination(1, 1000)
         val filters: MutableList<Filter> = mutableListOf()
         filters.add(Filter("locationId", "eq", mutableListOf(id)))
@@ -290,8 +300,10 @@ class NewTransferActivity : AppCompatActivity() {
     private fun useBranches(response: List<Branch>) {
         val list: MutableList<String> = mutableListOf()
         response.forEach { item ->
-            list.add(item.name)
-            mapBranches[item.name] = item.id.toString();
+            if (item.id != branchId) {
+                list.add(item.name)
+                mapBranches[item.name] = item.id.toString()
+            }
         }
         val autoComplete: AutoCompleteTextView = findViewById(R.id.branchesList)
         dropDown.listArrange(
