@@ -8,7 +8,6 @@ import android.transition.TransitionManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,18 +82,18 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         }
     }
 
-    private fun openSelect(open: LinearLayout, close: LinearLayout) {
-        if (open.visibility == View.VISIBLE) {
-            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            open.visibility = View.GONE
-        } else {
-            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-            open.visibility = View.VISIBLE
-            close.visibility = View.GONE
-        }
-    }
+//    private fun openSelect(open: LinearLayout, close: LinearLayout) {
+//        if (open.visibility == View.VISIBLE) {
+//            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
+//            open.visibility = View.GONE
+//        } else {
+//            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
+//            open.visibility = View.VISIBLE
+//            close.visibility = View.GONE
+//        }
+//    }
 
-    var itemsList: MutableList<TransferOrderItemExtra> = mutableListOf()
+    private var itemsList: MutableList<TransferOrderItemExtra> = mutableListOf()
     private fun useTransfer(data: TransferOrderData) {
         binding.tvNumber.text = data.number
         binding.tvBranch.text = data.destinationBranchName
@@ -103,11 +102,11 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         data.items.forEach { i ->
             itemsList.add(
                 TransferOrderItemExtra(
-                    i.itemName,
+                    i.itemNumber,
                     i.itemDescription,
                     i.locationName,
                     i.quantity,
-                    i.upc,
+                    i.itemUpc,
                     0
                 )
             )
@@ -219,7 +218,6 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         lifecycleScope.launch(newSingleThreadContext("tagsReaderTagsReader")) {
             try {
                 while (isScanning) {
-                    totalTags++
                     val uhfTagInfo: UHFTAGInfo? = rfid.readTagFromBuffer()
                     if (uhfTagInfo != null) {
                         epcsList.add(uhfTagInfo.epc.toString())
@@ -246,6 +244,7 @@ class TransferDetailsActivity : DrawerBaseActivity() {
                 if (epcsList.isNotEmpty()) {
                     val list = epcsList.distinct() as MutableList<String>
                     Log.i("stopInventory", list.toString())
+                    totalTags= epcsList.count()
                     getUpcs(list)
                 } else {
                     messageDialog.showDialog(
@@ -277,16 +276,28 @@ class TransferDetailsActivity : DrawerBaseActivity() {
             if (upcsList.isNotEmpty()) {
                 val list = upcsList.distinct() as MutableList<String>
                 Log.i("UPC", list.toString())
+                Log.i("hashUpcs", hashUpcs.toString())
+                Log.i("itemsList", itemsList.toString())
                 setScannedTotals()
             }
         }
     }
 
     private fun setScannedTotals() {
-        itemsList.forEach { i ->
-            i.scanned = hashUpcs[i.upc]!!
+        lifecycleScope.launch {
+            itemsList.forEach { i ->
+                Log.i("i", hashUpcs[i.itemUpc].toString())
+                val newScanned: Int = hashUpcs[i.itemUpc]?.toInt() ?: 0
+                i.scanned = newScanned
+            }
+            adapter.notifyDataSetChanged()
+            val text:String = "Tags read: $totalTags"
+            binding.tvTotalTags.text = text
+            binding.btnCancel.visibility = View.VISIBLE
+            binding.btnClose.visibility = View.VISIBLE
+            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
+
         }
-        adapter.notifyDataSetChanged()
     }
 
 

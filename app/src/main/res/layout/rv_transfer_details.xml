@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/avenir_medium"
             android:gravity="center"
-            android:text="@string/status"
+            tools:text="@string/status"
             android:textColor="@color/black"
             android:textSize="16sp" />
 

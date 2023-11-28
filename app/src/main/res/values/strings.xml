@@ -131,6 +131,7 @@
     <string name="rflink">RFLink</string>
     <string name="set_link">Set link parameters</string>
     <string name="get_link">Get link parameters</string>
+    <string name="send">Send</string>
 
 
 </resources>

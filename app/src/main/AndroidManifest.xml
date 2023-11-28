@@ -22,6 +22,9 @@
             android:name=".ui.transfer.NewTransferActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.transfer.TransferDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.testThreads.ui.TestThreadsActivity"
             android:exported="false" />
         <activity

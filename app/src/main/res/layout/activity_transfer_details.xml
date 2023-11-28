@@ -226,16 +226,40 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="5dp"
-                            android:layout_marginVertical="5dp"
-                            android:fontFamily="@font/avenir_black"
-                            android:text="@string/items"
-                            android:textAllCaps="false"
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
+                            android:layout_marginTop="5dp"
+                            android:orientation="horizontal"
+                            android:paddingVertical="5dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="5dp"
+                                android:layout_marginVertical="5dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/avenir_black"
+                                android:text="@string/items"
+                                android:textAllCaps="false"
+                                android:textColor="@color/black"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/tvTotalTags"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="5dp"
+                                android:layout_marginVertical="5dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/avenir_black"
+                                android:textAlignment="viewEnd"
+                                android:textAllCaps="false"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                tools:text="@string/transfers_list" />
+                        </LinearLayout>
+
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -276,6 +300,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/avenir_medium"
                                 android:gravity="center"
+                                android:text="@string/scanned"
                                 android:textColor="@color/black"
                                 android:textSize="16sp" />
 
@@ -320,8 +345,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
+                    android:layout_marginTop="25dp"
                     android:backgroundTint="@color/black"
-                    android:text="@string/close"
+                    android:text="@string/send"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="18sp"
@@ -333,6 +359,7 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancel"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginTop="25dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"

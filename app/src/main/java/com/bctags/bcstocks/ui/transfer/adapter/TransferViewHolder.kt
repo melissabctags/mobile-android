@@ -26,7 +26,7 @@ class TransferViewHolder(view: View):RecyclerView.ViewHolder(view)  {
        fun render(item: TransferData, onClickListener: (TransferData) -> Unit) {
            binding.tvTransfer.text = item.number
            binding.tvBranch.text = item.destinationBranchName
-           binding.tvStatus.text = item.status
+           //binding.tvStatus.text = item.status
            binding.tvDate.text =  utils.dateFormatter(item.createdAt)
 
            binding.btnAction.setOnClickListener {

@@ -30,18 +30,18 @@ data class TransferOrderData(
     @SerializedName("items") var items: MutableList<TransferOrderItemData>,
 )
 data class TransferOrderItemData(
-    @SerializedName("itemName") var itemName: String,
+    @SerializedName("itemNumber") var itemNumber: String,
     @SerializedName("itemDescription") var itemDescription:String,
     @SerializedName("locationName") var locationName:String,
-    @SerializedName("upc") var upc:String,
+    @SerializedName("itemUpc") var itemUpc:String,
     @SerializedName("quantity") var quantity:Int,
 )
 
 data class TransferOrderItemExtra(
-    @SerializedName("itemName") var itemName: String,
+    @SerializedName("itemNumber") var itemNumber: String,
     @SerializedName("itemDescription") var itemDescription:String,
     @SerializedName("locationName") var locationName:String,
     @SerializedName("quantity") var quantity:Int,
-    @SerializedName("upc") var upc:String,
+    @SerializedName("itemUpc") var itemUpc:String,
     @SerializedName("scanned") var scanned:Int,
 )
