@@ -134,6 +134,9 @@ interface ApiService {
     @POST(value = "/transferorder/getOne")
     fun getTransferOrder(@Body requestBody: GetOne): Call<TransferOrderResponse>
 
+    @POST(value = "/transferorder/approve")
+    fun approveTransferOrder(@Body requestBody: GetOne): Call<GeneralResponseChange>
+
 
 
 

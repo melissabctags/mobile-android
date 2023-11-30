@@ -107,23 +107,14 @@ class NewTransferActivity : AppCompatActivity() {
     }
 
     private fun checkNewTransfer() {
-        if (selectedBranch != 0) {
+        if (selectedBranch != 0 && itemsList.isNotEmpty()) {
             getNewTransfer()
         } else {
             messageDialog.showDialog(
                 this@NewTransferActivity,
                 R.layout.dialog_error,
-                "Select a branch."
+                "Check your branch and items."
             ) { }
-        }
-        if (itemsList.isEmpty()) {
-            messageDialog.showDialog(
-                this@NewTransferActivity,
-                R.layout.dialog_error,
-                "Select items."
-            ) { }
-        } else {
-            getNewTransfer()
         }
     }
 
@@ -141,6 +132,7 @@ class NewTransferActivity : AppCompatActivity() {
             apiCall.performApiCall(
                 apiClient.createTransfer(transfer),
                 onSuccess = { response ->
+                    Log.i("RESPONSE",response.toString())
                     Toast.makeText(applicationContext, "Saved", Toast.LENGTH_LONG).show()
                     mainTransfer()
                 },

@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.ui.transfer
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -18,6 +19,7 @@ import com.bctags.bcstocks.io.ApiClient
 import com.bctags.bcstocks.io.response.TransferOrderData
 import com.bctags.bcstocks.io.response.TransferOrderItemExtra
 import com.bctags.bcstocks.model.GetOne
+import com.bctags.bcstocks.ui.MainMenuActivity
 import com.bctags.bcstocks.ui.transfer.adapter.TransferDetailsAdapter
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.DropDown
@@ -82,16 +84,6 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         }
     }
 
-//    private fun openSelect(open: LinearLayout, close: LinearLayout) {
-//        if (open.visibility == View.VISIBLE) {
-//            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-//            open.visibility = View.GONE
-//        } else {
-//            TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
-//            open.visibility = View.VISIBLE
-//            close.visibility = View.GONE
-//        }
-//    }
 
     private var itemsList: MutableList<TransferOrderItemExtra> = mutableListOf()
     private fun useTransfer(data: TransferOrderData) {
@@ -102,6 +94,7 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         data.items.forEach { i ->
             itemsList.add(
                 TransferOrderItemExtra(
+                    i.itemId,
                     i.itemNumber,
                     i.itemDescription,
                     i.locationName,
@@ -110,6 +103,9 @@ class TransferDetailsActivity : DrawerBaseActivity() {
                     0
                 )
             )
+        }
+        if(data.status=="sent"||data.status=="received"){
+            binding.btnScan.visibility = View.GONE
         }
         initRecyclerView(itemsList)
     }
@@ -137,12 +133,40 @@ class TransferDetailsActivity : DrawerBaseActivity() {
             binding.tvScanned.visibility = View.VISIBLE
         }
         binding.btnClose.setOnClickListener {
-
+            approveTransferOrder()
         }
         binding.btnCancel.setOnClickListener {
 
         }
     }
+
+    private fun approveTransferOrder() {
+        CoroutineScope(Dispatchers.IO).launch {
+            apiCall.performApiCall(
+                apiClient.approveTransferOrder(GetOne(transferOrderId)),
+                onSuccess = { response ->
+                    messageDialog.showDialog(
+                        this@TransferDetailsActivity,
+                        R.layout.dialog_success,
+                        "Saved",
+                    ) { mainTransferOrders() }
+                },
+                onError = { error ->
+                    Log.i("error",error.toString())
+                    messageDialog.showDialog(
+                        this@TransferDetailsActivity,
+                        R.layout.dialog_error,
+                        "An error occurred, try again later $error"
+                    ) { }
+                }
+            )
+        }
+    }
+    private fun mainTransferOrders() {
+        val intent = Intent(this, TransferActivity::class.java)
+        startActivity(intent)
+    }
+
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == 294 && triggerEnabled) {
@@ -285,6 +309,7 @@ class TransferDetailsActivity : DrawerBaseActivity() {
 
     private fun setScannedTotals() {
         lifecycleScope.launch {
+
             itemsList.forEach { i ->
                 Log.i("i", hashUpcs[i.itemUpc].toString())
                 val newScanned: Int = hashUpcs[i.itemUpc]?.toInt() ?: 0
@@ -294,7 +319,15 @@ class TransferDetailsActivity : DrawerBaseActivity() {
             val text:String = "Tags read: $totalTags"
             binding.tvTotalTags.text = text
             binding.btnCancel.visibility = View.VISIBLE
-            binding.btnClose.visibility = View.VISIBLE
+
+            val error = itemsList.any { it.scanned < it.quantity }
+
+            if (error) {
+                binding.btnClose.visibility = View.INVISIBLE
+            } else {
+                binding.btnClose.visibility = View.VISIBLE
+            }
+
             TransitionManager.beginDelayedTransition(binding.llBase, AutoTransition())
 
         }

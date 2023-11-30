@@ -30,6 +30,7 @@ data class TransferOrderData(
     @SerializedName("items") var items: MutableList<TransferOrderItemData>,
 )
 data class TransferOrderItemData(
+    @SerializedName("itemId") var itemId: Int,
     @SerializedName("itemNumber") var itemNumber: String,
     @SerializedName("itemDescription") var itemDescription:String,
     @SerializedName("locationName") var locationName:String,
@@ -38,6 +39,7 @@ data class TransferOrderItemData(
 )
 
 data class TransferOrderItemExtra(
+    @SerializedName("itemId") var itemId:Int,
     @SerializedName("itemNumber") var itemNumber: String,
     @SerializedName("itemDescription") var itemDescription:String,
     @SerializedName("locationName") var locationName:String,

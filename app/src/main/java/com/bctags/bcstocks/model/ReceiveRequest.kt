@@ -21,7 +21,8 @@ data class ReceiveNew(
     var carrierId: Int,
     var comments: String,
     var items: MutableList<ItemNewReceive>,
-    var invoice:String
+    var invoice:String,
+    var orderType: String
 )
 data class ItemNewReceive(
     var itemId: Int,
