@@ -16,6 +16,7 @@ import com.bctags.bcstocks.io.response.PackedResponse
 import com.bctags.bcstocks.io.response.PartialResponse
 import com.bctags.bcstocks.io.response.PickedResponse
 import com.bctags.bcstocks.io.response.PurchaseOrderResponse
+import com.bctags.bcstocks.io.response.ReceiveGetOneResponse
 import com.bctags.bcstocks.io.response.ReceiveResponse
 import com.bctags.bcstocks.io.response.SupplierResponse
 import com.bctags.bcstocks.io.response.TransferOrderResponse
@@ -64,6 +65,8 @@ interface ApiService {
 
     @POST(value = "/receipt/list")
     fun receiveList(@Body requestBody: FilterRequest): Call<ReceiveResponse>
+    @POST(value = "/receipt/getOne")
+    fun receiveGetOne(@Body requestBody: GetOne): Call<ReceiveGetOneResponse>
 
     @POST(value = "/supplier/list")
     fun supplierList(): Call<SupplierResponse>

@@ -13,7 +13,7 @@ import com.bctags.bcstocks.model.TempInventoryData
 //adapter: se encarga de coger la info
 class TransferDetailsAdapter(
     val list: MutableList<TransferOrderItemExtra>,
-    private val onClickListener: (TransferOrderItemExtra) -> Unit
+    private val onClickListener: (TransferOrderItemExtra) -> Unit,private val status:String
 ) : RecyclerView.Adapter<TransferDetailsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransferDetailsViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -29,7 +29,7 @@ class TransferDetailsAdapter(
     override fun getItemCount(): Int = list.size
     override fun onBindViewHolder(holder: TransferDetailsViewHolder, position: Int) {
         val item = list[position]
-        holder.render(item, onClickListener)
+        holder.render(item, onClickListener,status)
     }
 
 }

@@ -20,7 +20,7 @@
         android:paddingHorizontal="5dp"
         />
     <TextView
-        android:id="@+id/tvCarrier"
+        android:id="@+id/tvOrder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         tools:text="@string/carrier"

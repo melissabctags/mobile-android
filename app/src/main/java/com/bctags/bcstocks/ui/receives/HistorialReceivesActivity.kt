@@ -55,10 +55,9 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
         super.onCreate(savedInstanceState)
         binding = ActivityHistorialReceivesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        getCarrierList()
+        //getCarrierList()
         initUI()
         getReceivesList()
-
     }
 
     var day = 0
@@ -143,8 +142,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
 
     fun viewReceive(receiveData: ReceiveData) {
         val intent = Intent(this, ReceiveDetailsActivity::class.java)
-        val gson = Gson()
-        intent.putExtra("RECEIVE", gson.toJson(receiveData))
+        intent.putExtra("RECEIVE", receiveData.id)
         startActivity(intent)
     }
 
@@ -179,7 +177,7 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
     private fun resetForm() {
         pagination = TempPagination(1, 0, 2, 0)
         binding.etNumber.text.clear()
-        binding.carrierList.text.clear()
+//        binding.carrierList.text.clear()
         carrierId = 0
         binding.tvDate.text = " "
         filters.clear()
@@ -232,9 +230,9 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
 
             filters.add(Filter("createdAt", "between", mutableListOf(isoStringStart, isoStringEnd)))
         }
-        if (carrierId != 0) {
-            filters.add(Filter("carrierId", "eq", mutableListOf(carrierId.toString())))
-        }
+//        if (carrierId != 0) {
+//            filters.add(Filter("carrierId", "eq", mutableListOf(carrierId.toString())))
+//        }
         if (filters.isNotEmpty()) {
             getReceivesList()
         } else {
@@ -262,39 +260,39 @@ class HistorialReceivesActivity : DrawerBaseActivity(), DatePickerDialog.OnDateS
         startActivity(intent)
     }
 
-    private fun getCarrierList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            apiCall.performApiCall(
-                apiClient.getCarrierList(),
-                onSuccess = { response ->
-                    useCarriers(response.list)
-                },
-                onError = { error ->
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
-
-    private fun useCarriers(carrierResponse: MutableList<CarrierData>) {
-        val list: MutableList<String> = mutableListOf()
-        carrierResponse.forEach { i ->
-            list.add(i.name)
-            mapCarriers[i.name] = i.id.toString()
-        }
-        val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
-        dropDown.listArrange(
-            list,
-            autoComplete,
-            mapCarriers,
-            this@HistorialReceivesActivity,
-            ::updateCarriers
-        )
-    }
-
-    private fun updateCarriers(id: String, text: String) {
-        carrierId = id.toInt()
-    }
+//    private fun getCarrierList() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            apiCall.performApiCall(
+//                apiClient.getCarrierList(),
+//                onSuccess = { response ->
+//                    useCarriers(response.list)
+//                },
+//                onError = { error ->
+//                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//        }
+//    }
+//
+//    private fun useCarriers(carrierResponse: MutableList<CarrierData>) {
+//        val list: MutableList<String> = mutableListOf()
+//        carrierResponse.forEach { i ->
+//            list.add(i.name)
+//            mapCarriers[i.name] = i.id.toString()
+//        }
+//        val autoComplete: AutoCompleteTextView = findViewById(R.id.carrierList)
+//        dropDown.listArrange(
+//            list,
+//            autoComplete,
+//            mapCarriers,
+//            this@HistorialReceivesActivity,
+//            ::updateCarriers
+//        )
+//    }
+//
+//    private fun updateCarriers(id: String, text: String) {
+//        carrierId = id.toInt()
+//    }
 
 
 }

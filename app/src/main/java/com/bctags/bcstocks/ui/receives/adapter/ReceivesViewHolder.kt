@@ -20,7 +20,7 @@ class ReceivesViewHolder(view: View):RecyclerView.ViewHolder(view)  {
 
     fun render(receiveData: ReceiveData, onclickListener: (ReceiveData) -> Unit,){
         binding.tvNumber.text= receiveData.number
-        binding.tvCarrier.text= receiveData.Carrier.name
+        binding.tvOrder.text= receiveData.order
         binding.tvDate.text= utils.dateFormatter(receiveData.createdAt)
 
         itemView.setOnClickListener{

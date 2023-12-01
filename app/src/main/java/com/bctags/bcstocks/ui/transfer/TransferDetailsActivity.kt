@@ -106,14 +106,16 @@ class TransferDetailsActivity : DrawerBaseActivity() {
         }
         if(data.status=="sent"||data.status=="received"){
             binding.btnScan.visibility = View.GONE
+            binding.tvScanned.visibility = View.GONE
         }
-        initRecyclerView(itemsList)
+        initRecyclerView(itemsList,data.status)
     }
 
-    private fun initRecyclerView(items: MutableList<TransferOrderItemExtra>) {
+    private fun initRecyclerView(items: MutableList<TransferOrderItemExtra>,status:String) {
         adapter = TransferDetailsAdapter(
             list = items,
             onClickListener = { TransferOrderItemExtra -> something(TransferOrderItemExtra) },
+            status
         )
         binding.recyclerList.layoutManager = LinearLayoutManager(this)
         binding.recyclerList.adapter = adapter

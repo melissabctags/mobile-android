@@ -13,7 +13,7 @@ import com.bctags.bcstocks.io.response.TransferOrderItemExtra
 class TransferDetailsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding = RvTransferDetailsBinding.bind(view)
-    fun render(item: TransferOrderItemExtra, onClickListener: (TransferOrderItemExtra) -> Unit) {
+    fun render(item: TransferOrderItemExtra, onClickListener: (TransferOrderItemExtra) -> Unit, status:String) {
         binding.tvItemName.text = buildString {
             append(item.itemNumber)
             append("\n")
@@ -21,14 +21,9 @@ class TransferDetailsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         binding.tvQuantity.text = item.quantity.toString()
         binding.tvScanned.text = item.scanned.toString()
-//        if(item.scanned!=0){
-//            if ( binding.tvScanned.visibility == View.VISIBLE) {
-//                binding.tvScanned.visibility = View.INVISIBLE
-//            } else {
-//                binding.tvScanned.visibility = View.VISIBLE
-//            }
-//        }
-
+        if(status=="sent" || status=="sent" ){
+            binding.tvScanned.visibility = View.GONE
+        }
     }
 
 }

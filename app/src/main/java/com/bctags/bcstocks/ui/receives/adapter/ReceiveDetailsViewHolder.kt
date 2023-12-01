@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.RvReceivesListBinding
 import com.bctags.bcstocks.databinding.RvSimpleItemsListBinding
+import com.bctags.bcstocks.io.response.ItemGetOneReceive
 import com.bctags.bcstocks.io.response.ItemReceive
 import com.bctags.bcstocks.io.response.ReceiveData
 import com.bctags.bcstocks.io.response.WorkOrderData
@@ -22,7 +23,7 @@ class ReceiveDetailsViewHolder(view: View):RecyclerView.ViewHolder(view)  {
     val utils= Utils()
 
 
-    fun render(itemReceive: ItemReceive,position:Int){
+    fun render(itemReceive: ItemGetOneReceive, position:Int){
         binding.tvName.text = itemReceive.Item.item
         binding.tvDescription.text = itemReceive.Item.description
         binding.tvUnits.text = itemReceive.quantity.toString()

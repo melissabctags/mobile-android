@@ -180,7 +180,7 @@
                                 android:textSize="14sp" />
 
                         </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>-->
+                    </LinearLayout>
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -207,7 +207,7 @@
                             android:textSize="14sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
-
+                    -->
 
                     <TextView
                         android:layout_width="match_parent"
@@ -344,7 +344,7 @@
                                 android:layout_weight="2"
                                 android:fontFamily="@font/avenir_medium"
                                 android:gravity="start|center_vertical"
-                                android:text="@string/carrier"
+                                android:text="@string/order"
                                 android:textColor="@color/black"
                                 android:textSize="16sp" />
 

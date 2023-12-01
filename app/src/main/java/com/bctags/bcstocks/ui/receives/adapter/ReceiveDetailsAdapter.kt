@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bctags.bcstocks.R
+import com.bctags.bcstocks.io.response.ItemGetOneReceive
 import com.bctags.bcstocks.io.response.ItemReceive
 
 
 //adapter: se encarga de coger la info
-class ReceiveDetailsAdapter(val list: MutableList<ItemReceive>) :
+class ReceiveDetailsAdapter(val list: MutableList<ItemGetOneReceive>) :
     RecyclerView.Adapter<ReceiveDetailsViewHolder>() {
 
     //pasar el item, layout a modificar

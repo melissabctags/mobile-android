@@ -94,9 +94,9 @@ class NewReceiveActivity : DrawerBaseActivity() {
 
     private fun checkForm() {
         if (newReceive.carrierId != 0 && newReceive.purchaseOrderId != 0) {
-            if(newReceive.orderType.contains("purchaseOrder")){
+            if (newReceive.orderType.contains("po")) {
                 searchPo(newReceive.purchaseOrderId.toString())
-            }else{
+            } else {
                 getTransfer(newReceive.purchaseOrderId)
             }
             //scanActivity()
@@ -114,24 +114,27 @@ class NewReceiveActivity : DrawerBaseActivity() {
         newReceive.comments = binding.etComments.text.toString()
         newReceive.invoice = binding.etInvoice.text.toString()
         val gson = Gson()
-        if(newReceive.orderType.contains("purchaseOrder")){
+        if (newReceive.orderType.contains("po")) {
             intent.putExtra("PURCHASE_ORDER", gson.toJson(purchaseOrder))
-        }else{
+        } else {
             intent.putExtra("PURCHASE_ORDER", gson.toJson(transferOrder))
         }
         intent.putExtra("RECEIVE", gson.toJson(newReceive))
         //intent.putExtra("PURCHASE_ORDER", gson.toJson(purchaseOrder))
         startActivity(intent)
     }
-    private var transferOrder: TransferOrderData = TransferOrderData(0,"","","","","",
+
+    private var transferOrder: TransferOrderData = TransferOrderData(
+        0, "", "", "", "", "",
         mutableListOf()
     )
+
     private fun getTransfer(id: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getTransferOrder(GetOne(id)),
                 onSuccess = { response ->
-                    Log.i("getTransfer",response.data.toString())
+                    Log.i("getTransfer", response.data.toString())
                     transferOrder = response.data
                     scanActivity()
                 },
@@ -142,6 +145,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
             )
         }
     }
+
     private fun searchPo(id: String) {
         val pag = Pagination(1, 100)
         val poFilter = mutableListOf(Filter("id", "eq", mutableListOf(id)))
@@ -150,7 +154,7 @@ class NewReceiveActivity : DrawerBaseActivity() {
             apiCall.performApiCall(
                 apiClient.getPurchaseOrder(poRequestBody),
                 onSuccess = { response ->
-                    Log.i("purchaseOrder",response.list[0].toString())
+                    Log.i("purchaseOrder", response.list[0].toString())
                     purchaseOrder = (response.list[0])
                     scanActivity()
                 },
@@ -268,10 +272,10 @@ class NewReceiveActivity : DrawerBaseActivity() {
 
     private fun updatePo(id: String, text: String) {
         newReceive.purchaseOrderId = id.toInt()
-        if(text.contains("TO")){
-            newReceive.orderType="transferOrder"
-        }else{
-            newReceive.orderType="purchaseOrder"
+        if (text.contains("TO")) {
+            newReceive.orderType = "to"
+        } else {
+            newReceive.orderType = "po"
             searchPoSupplier(id)
         }
     }
@@ -301,21 +305,6 @@ class NewReceiveActivity : DrawerBaseActivity() {
         binding.tvPoSupplier.text = text
         purchaseOrder = poResponse.list[0]
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

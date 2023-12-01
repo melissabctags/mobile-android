@@ -34,6 +34,7 @@ import com.bctags.bcstocks.io.response.TransferOrderData
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.GetOne
+import com.bctags.bcstocks.model.ItemNewReceive
 import com.bctags.bcstocks.model.ItemsNewReceiveTempo
 import com.bctags.bcstocks.model.Pagination
 import com.bctags.bcstocks.model.ReceiveNew
@@ -105,7 +106,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
         newReceive = gson.fromJson(intent.getStringExtra("RECEIVE"), ReceiveNew::class.java)
 
         Log.i("newReceive.orderType", newReceive.orderType)
-        if (newReceive.orderType.contains("purchaseOrder")) {
+        if (newReceive.orderType.contains("po")) {
             purchaseOrder = gson.fromJson(
                 intent.getStringExtra("PURCHASE_ORDER"),
                 PurchaseOrderData::class.java
@@ -128,39 +129,39 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     }
 
-    private fun getTransfer(id: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            apiCall.performApiCall(
-                apiClient.getTransferOrder(GetOne(id)),
-                onSuccess = { response ->
-                    Log.i("getTransfer", response.data.toString())
-                    transferOrder = response.data
-                },
-                onError = { error ->
-                    Log.i("ERROR", error)
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
-
-    private fun searchPo(id: String) {
-        val pag = Pagination(1, 100)
-        val poFilter = mutableListOf(Filter("id", "eq", mutableListOf(id)))
-        val poRequestBody = FilterRequest(poFilter, pag)
-        CoroutineScope(Dispatchers.IO).launch {
-            apiCall.performApiCall(
-                apiClient.getPurchaseOrder(poRequestBody),
-                onSuccess = { response ->
-                    Log.i("purchaseOrder", response.list[0].toString())
-                    purchaseOrder = (response.list[0])
-                },
-                onError = { error ->
-                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
-                }
-            )
-        }
-    }
+//    private fun getTransfer(id: Int) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            apiCall.performApiCall(
+//                apiClient.getTransferOrder(GetOne(id)),
+//                onSuccess = { response ->
+//                    Log.i("getTransfer", response.data.toString())
+//                    transferOrder = response.data
+//                },
+//                onError = { error ->
+//                    Log.i("ERROR", error)
+//                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//        }
+//    }
+//
+//    private fun searchPo(id: String) {
+//        val pag = Pagination(1, 100)
+//        val poFilter = mutableListOf(Filter("id", "eq", mutableListOf(id)))
+//        val poRequestBody = FilterRequest(poFilter, pag)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            apiCall.performApiCall(
+//                apiClient.getPurchaseOrder(poRequestBody),
+//                onSuccess = { response ->
+//                    Log.i("purchaseOrder", response.list[0].toString())
+//                    purchaseOrder = (response.list[0])
+//                },
+//                onError = { error ->
+//                    Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
+//                }
+//            )
+//        }
+//    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == 294 && triggerEnabled) {
@@ -200,7 +201,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun initItemsList() {
         lifecycleScope.launch(Dispatchers.Default) {
-            if (newReceive.orderType.contains("purchaseOrder")) {
+            if (newReceive.orderType.contains("po")) {
                 (purchaseOrder.ItemsPo).forEach {
                     val itemReceiving = ItemsNewReceiveTempo(
                         it.Item.id,
@@ -411,7 +412,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                 checkButtonReceiveItemMaterialButton(
                     btnStatus,
                     "#20c95e",
-                    R.color.white,
+                    R.color.black,
                     R.drawable.ic_done
                 )
             } else {
@@ -478,45 +479,47 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
 
     private fun saveNewReceive() {
         Log.i("receiveItemsList", receiveItemsList.toString())
-//        val newItems = mutableListOf<ItemNewReceive>()
-//        var emptyLocations = "\n"
-//        var empty = false
-//        for (it in receiveItemsList) {
-//            if (it.quantity != 0) {
-//                if (it.locationId != 0) {
-//                    newItems.add(ItemNewReceive(it.itemId, it.quantity, it.locationId))
-//                } else {
-//                    emptyLocations = emptyLocations + " " + it.description + "\n"
-//                    empty = true
-//                }
-//            }
-//        }
-//        if (empty) {
-//            messageDialog.showDialog(
-//                this@ScannerReceiveActivity,
-//                R.layout.dialog_error,
-//                "Select a location for $emptyLocations"
-//            ) { }
-//        } else {
-//            receiveItemsList.removeAll { it.quantity == 0 }
-//            if (receiveItemsList.isNotEmpty()) {
-//                newReceive.items = newItems
-//                sendNewReceive()
-//            } else {
-//                messageDialog.showDialog(
-//                    this@ScannerReceiveActivity,
-//                    R.layout.dialog_error,
-//                    "Please input quantities"
-//                ) { }
-//            }
-//        }
+        val newItems = mutableListOf<ItemNewReceive>()
+        var emptyLocations = "\n"
+        var empty = false
+        for (it in receiveItemsList) {
+            if (it.quantity != 0) {
+                if (it.locationId != 0) {
+                    newItems.add(ItemNewReceive(it.itemId, it.quantity, it.locationId))
+                } else {
+                    emptyLocations = emptyLocations + " " + it.description + "\n"
+                    empty = true
+                }
+            }
+        }
+        if (empty) {
+            messageDialog.showDialog(
+                this@ScannerReceiveActivity,
+                R.layout.dialog_error,
+                "Select a location for $emptyLocations"
+            ) { }
+        } else {
+            receiveItemsList.removeAll { it.quantity == 0 }
+            if (receiveItemsList.isNotEmpty()) {
+                newReceive.items = newItems
+                sendNewReceive()
+            } else {
+                messageDialog.showDialog(
+                    this@ScannerReceiveActivity,
+                    R.layout.dialog_error,
+                    "Please input quantities"
+                ) { }
+            }
+        }
     }
 
     private fun sendNewReceive() {
+        Log.i("sendNewReceive-newReceive", newReceive.toString())
         CoroutineScope(Dispatchers.Main).launch {
             apiCall.performApiCall(
                 apiClient.createReceive(newReceive),
                 onSuccess = { response ->
+                    Log.i("response", response.toString())
                     messageDialog.showDialog(
                         this@ScannerReceiveActivity,
                         R.layout.dialog_success,
@@ -524,6 +527,7 @@ class ScannerReceiveActivity : DrawerBaseActivity() {
                     ) { goMainReceive() }
                 },
                 onError = { error ->
+                    Log.i("error", error.toString())
                     messageDialog.showDialog(
                         this@ScannerReceiveActivity,
                         R.layout.dialog_error,

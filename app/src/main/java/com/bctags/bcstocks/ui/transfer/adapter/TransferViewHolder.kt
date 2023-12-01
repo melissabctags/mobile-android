@@ -29,7 +29,7 @@ class TransferViewHolder(view: View):RecyclerView.ViewHolder(view)  {
            //binding.tvStatus.text = item.status
            binding.tvDate.text =  utils.dateFormatter(item.createdAt)
 
-           binding.btnAction.setOnClickListener {
+           itemView.setOnClickListener{
                onClickListener(item)
            }
 
