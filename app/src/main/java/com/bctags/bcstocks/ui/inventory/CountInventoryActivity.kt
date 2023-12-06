@@ -1,5 +1,6 @@
 package com.bctags.bcstocks.ui.inventory
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,7 +22,9 @@ import com.bctags.bcstocks.model.CountLocation
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
+import com.bctags.bcstocks.ui.MainMenuActivity
 import com.bctags.bcstocks.ui.inventory.adapterInventoryCount.CounterAdapter
+import com.bctags.bcstocks.ui.transfer.TransferActivity
 import com.bctags.bcstocks.util.DrawerBaseActivity
 import com.bctags.bcstocks.util.EPCTools
 import com.bctags.bcstocks.util.MessageDialog
@@ -229,8 +232,14 @@ class CountInventoryActivity : DrawerBaseActivity() {
             initRead()
         }
         binding.llHeader.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            //onBackPressedDispatcher.onBackPressed()
+            goMenu()
         }
+    }
+
+    private fun goMenu() {
+        val intent = Intent(this, MainMenuActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

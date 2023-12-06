@@ -20,6 +20,7 @@ import com.bctags.bcstocks.model.CountLocation
 import com.bctags.bcstocks.model.Filter
 import com.bctags.bcstocks.model.FilterRequest
 import com.bctags.bcstocks.model.Pagination
+import com.bctags.bcstocks.ui.MainMenuActivity
 import com.bctags.bcstocks.ui.inventory.adapterInventoryCount.CountLocationsAdapter
 import com.bctags.bcstocks.ui.locations.adapter.ItemLocationAdapter
 import com.bctags.bcstocks.ui.workorders.OrderDetailsActivity
@@ -62,8 +63,13 @@ class InventoryCountActivity : DrawerBaseActivity() {
             goInventoryCount()
         }
         binding.llHeader.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+//            onBackPressedDispatcher.onBackPressed()
+            goMenu()
         }
+    }
+    private fun goMenu() {
+        val intent = Intent(this, MainMenuActivity::class.java)
+        startActivity(intent)
     }
     private fun goInventoryCount() {
         val intent = Intent(this, CountInventoryActivity::class.java)

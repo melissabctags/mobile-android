@@ -327,7 +327,7 @@
                                     app:cornerRadius="20dp"
                                     app:icon="@drawable/ic_less_than"
                                     app:iconGravity="textEnd"
-                                    app:iconPadding="0dp"
+                                    app:iconPadding="6dp"
                                     app:iconTint="@color/white" />
 
                                 <TextView

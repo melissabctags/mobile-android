@@ -61,11 +61,12 @@
 
             <ImageView
                 android:id="@+id/btnHistorialNew"
+                android:layout_marginHorizontal="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/image_description"
-                android:src="@drawable/historial_new_receive" />
+                android:src="@drawable/ic_historial" />
 
             <LinearLayout
                 android:id="@+id/llSearch"
