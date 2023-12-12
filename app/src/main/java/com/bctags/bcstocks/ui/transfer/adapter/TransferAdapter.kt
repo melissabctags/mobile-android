@@ -28,7 +28,7 @@ class TransferAdapter(
     override fun getItemCount(): Int = list.size
     override fun onBindViewHolder(holder: TransferViewHolder, position: Int) {
         val item = list[position]
-        holder.render(item, onClickListener)
+        holder.render(item, onClickListener,position)
     }
 
 }

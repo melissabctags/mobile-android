@@ -75,9 +75,8 @@ class LocationsItemsActivity : DrawerBaseActivity() {
         barcodeDecoder.open(this)
         barcodeDecoder.setDecodeCallback { barcodeEntity ->
             if (barcodeEntity.resultCode == BarcodeDecoder.DECODE_SUCCESS) {
-                //todo: ask barcode and locations relation
                 // barcodeEntity.barcodeData==location.name
-                if( barcodeEntity.barcodeData!=""){
+                if( barcodeEntity.barcodeData.toInt()==destinationLocation.id){
                     binding.btnSaveChange.visibility = View.VISIBLE
                 }else{
                     messageDialog.showDialog(

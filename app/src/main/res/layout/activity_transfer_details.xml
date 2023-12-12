@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray"
+    android:background="@color/almost_white"
     android:orientation="vertical">
 
     <!--HEADER-->
@@ -63,10 +63,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:layout_marginHorizontal="30dp"
-                app:cardCornerRadius="25dp"
+                app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
-                app:contentPadding="5dp">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -105,10 +104,16 @@
                             android:textSize="16sp"
                             tools:text="@string/work_orders" />
                     </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@color/light_gray" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingVertical="5dp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -137,12 +142,16 @@
                             tools:text="@string/po" />
 
                     </LinearLayout>
-
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@color/light_gray" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingVertical="7dp">
+                        android:paddingVertical="5dp">
 
                         <TextView
                             android:layout_width="0dp"
@@ -169,12 +178,16 @@
                             android:textSize="16sp"
                             tools:text="@string/date" />
                     </LinearLayout>
-
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:background="@color/light_gray" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingVertical="7dp">
+                        android:paddingVertical="5dp">
 
                         <TextView
                             android:layout_width="0dp"
@@ -210,29 +223,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginVertical="10dp"
                 android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="15dp"
-                    app:contentPadding="5dp"
-                    app:cardElevation="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
                         android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
                             android:orientation="horizontal"
-                            android:paddingVertical="5dp">
+                            >
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -258,14 +261,13 @@
                                 android:textAllCaps="false"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
-                                tools:text="@string/transfers_list" />
+                                tools:text="@string/transfer_list" />
                         </LinearLayout>
 
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
                             android:background="@color/light_gray"
                             android:orientation="horizontal"
                             android:paddingVertical="5dp">
@@ -311,6 +313,7 @@
                         <ScrollView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
+                            android:background="@color/white"
                             android:layout_marginBottom="10dp">
 
                             <androidx.recyclerview.widget.RecyclerView
@@ -323,7 +326,7 @@
 
                     </LinearLayout>
 
-                </androidx.cardview.widget.CardView>
+
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnScan"
@@ -331,13 +334,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
-                    android:backgroundTint="@color/red"
+                    android:backgroundTint="@color/black"
                     android:text="@string/scan"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     app:cornerRadius="30dp"
-                    app:strokeColor="@color/red"
+                    app:strokeColor="@color/black"
                     app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -347,14 +350,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_marginTop="25dp"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/red"
                     android:text="@string/send"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:visibility="invisible"
                     app:cornerRadius="30dp"
-                    app:strokeColor="@color/black"
+                    app:strokeColor="@color/red"
                     app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton

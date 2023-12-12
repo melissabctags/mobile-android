@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical"
+    android:id="@+id/llRow"
     android:paddingHorizontal="10dp"
     android:paddingVertical="10dp">
 

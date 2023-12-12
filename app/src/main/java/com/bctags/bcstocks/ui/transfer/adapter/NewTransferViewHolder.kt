@@ -1,7 +1,9 @@
 package com.bctags.bcstocks.ui.transfer.adapter
 
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.RvNewTransferBinding
 import com.bctags.bcstocks.model.TempInventoryData
 
@@ -26,6 +28,16 @@ class NewTransferViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         binding.btnDelete.setOnClickListener {
             onClickListener(item, position)
         }
+
+        if(position%2==1 ){
+            val colorResId = R.color.light_gray
+            val color = ContextCompat.getColor(itemView.context, colorResId)
+            binding.llRow.setBackgroundColor(color)
+        }
+
+
+
+
     }
 
 
