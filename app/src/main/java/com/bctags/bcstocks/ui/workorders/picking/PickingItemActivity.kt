@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bctags.bcstocks.R
 import com.bctags.bcstocks.databinding.ActivityPickingItemBinding
@@ -56,7 +55,7 @@ class PickingItemActivity : DrawerBaseActivity() {
     private var partialId: Int = 0
     private var workOrderId: Int = 0
     private var pickedList: List<PickedItem> = listOf()
-    private var totalPicked=0
+    private var totalPicked = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPickingItemBinding.inflate(layoutInflater)
@@ -104,14 +103,21 @@ class PickingItemActivity : DrawerBaseActivity() {
     fun close() {
         barcodeDecoder.close()
     }
-
+    fun eliminarUltimoCaracter(original: String): String {
+        return if (original.isEmpty()) {
+            original
+        } else {
+            original.substring(0, original.length - 1)
+        }
+    }
     fun open(dialog: Dialog, location: LocationData) {
         barcodeDecoder.open(this)
         barcodeDecoder.setDecodeCallback { barcodeEntity ->
             if (barcodeEntity.resultCode == BarcodeDecoder.DECODE_SUCCESS) {
-                //todo: ask barcode and locations relation
-                // barcodeEntity.barcodeData==location.name
-                if (barcodeEntity.barcodeData != "") {
+
+                val codeBar = eliminarUltimoCaracter(barcodeEntity.barcodeData)
+
+                if (codeBar.toInt() == location.id) {
                     var btnSaveChange: MaterialButton = dialog.findViewById(R.id.btnSaveChange)
                     btnSaveChange.visibility = View.VISIBLE
                 } else {
@@ -200,7 +206,7 @@ class PickingItemActivity : DrawerBaseActivity() {
 //                binding.tvQty.text = "0"
 //            }
 
-            totalPicked= totalPicked+myNewInt
+            totalPicked = totalPicked + myNewInt
             binding.tvQty.text = (totalPicked).toString()
             //getPicked(workOrderId)
             dialog.hide()
@@ -263,7 +269,7 @@ class PickingItemActivity : DrawerBaseActivity() {
     private fun initUI() {
         binding.tvItem.text = itemWorkOrder.Item.description
         binding.tvOrder.text = itemWorkOrder.quantity.toString()
-        Log.i("picked",pickedList.toString())
+        Log.i("picked", pickedList.toString())
         val foundItem = pickedList.find { it.itemId == itemWorkOrder.Item.id }
         if (foundItem != null) {
             binding.tvQty.text = foundItem.quantity.toString()
@@ -275,7 +281,7 @@ class PickingItemActivity : DrawerBaseActivity() {
 
     private fun initListeners() {
         binding.llHeader.setOnClickListener {
-           // onBackPressedDispatcher.onBackPressed()
+            // onBackPressedDispatcher.onBackPressed()
             backToMainPicking()
         }
         binding.btnDone.setOnClickListener {

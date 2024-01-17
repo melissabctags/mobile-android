@@ -76,15 +76,25 @@ class LocationsActivity : DrawerBaseActivity() {
         getItems()
     }
 
+    fun eliminarUltimoCaracter(original: String): String {
+        return if (original.isEmpty()) {
+            original
+        } else {
+            original.substring(0, original.length - 1)
+        }
+    }
     fun close() {
         barcodeDecoder.close()
     }
     fun open() {
+        Log.i("SCAN","SCAN")
         barcodeDecoder.open(this)
         barcodeDecoder.setDecodeCallback { barcodeEntity ->
             if (barcodeEntity.resultCode == BarcodeDecoder.DECODE_SUCCESS) {
+
+                val codeBar = eliminarUltimoCaracter(barcodeEntity.barcodeData)
                 // barcodeEntity.barcodeData==location.name
-                if( barcodeEntity.barcodeData.toInt()==location.id){
+                if(codeBar.toInt()==location.id){
                     binding.btnSaveChange.visibility = View.VISIBLE
                 }else{
                     messageDialog.showDialog(
@@ -234,15 +244,17 @@ class LocationsActivity : DrawerBaseActivity() {
         val pag = Pagination(1, 1000)
         val filters: MutableList<Filter> = mutableListOf()
         val requestBody = FilterRequest(filters,pag)
-
+        Log.i("ITEMS","fcnhusdifhuisdfhs")
         CoroutineScope(Dispatchers.IO).launch {
             apiCall.performApiCall(
                 apiClient.getItems(requestBody),
                 onSuccess = { response ->
+                    Log.i("ITEMS",response.data.toString())
                     initItems(response.data)
 
                 },
                 onError = { error ->
+                    Log.i("ITEMS",error.toString())
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()
                 }
             )
@@ -251,6 +263,7 @@ class LocationsActivity : DrawerBaseActivity() {
 
     private fun initItems(dataResponse: MutableList<ItemData>) {
         val list: MutableList<String> = mutableListOf()
+        Log.i("ITEMS",dataResponse.toString())
         dataResponse.forEach { i ->
             list.add(i.item + " " + i.description)
             mapItem[i.item + " " + i.description] = i.id.toString();

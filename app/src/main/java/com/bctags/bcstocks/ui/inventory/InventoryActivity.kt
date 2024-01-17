@@ -200,7 +200,6 @@ class InventoryActivity : DrawerBaseActivity() {
                 apiClient.getLocationsList(requestBody),
                 onSuccess = { response ->
                     initLocationsList(response.list)
-
                 },
                 onError = { error ->
                     Toast.makeText(applicationContext, SERVER_ERROR, Toast.LENGTH_SHORT).show()

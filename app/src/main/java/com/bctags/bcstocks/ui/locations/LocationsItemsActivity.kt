@@ -71,12 +71,21 @@ class LocationsItemsActivity : DrawerBaseActivity() {
     fun close() {
         barcodeDecoder.close()
     }
+    fun eliminarUltimoCaracter(original: String): String {
+        return if (original.isEmpty()) {
+            original
+        } else {
+            original.substring(0, original.length - 1)
+        }
+    }
     fun open() {
         barcodeDecoder.open(this)
         barcodeDecoder.setDecodeCallback { barcodeEntity ->
             if (barcodeEntity.resultCode == BarcodeDecoder.DECODE_SUCCESS) {
                 // barcodeEntity.barcodeData==location.name
-                if( barcodeEntity.barcodeData.toInt()==destinationLocation.id){
+                val codeBar = eliminarUltimoCaracter(barcodeEntity.barcodeData)
+
+                if(codeBar.toInt()==destinationLocation.id){
                     binding.btnSaveChange.visibility = View.VISIBLE
                 }else{
                     messageDialog.showDialog(

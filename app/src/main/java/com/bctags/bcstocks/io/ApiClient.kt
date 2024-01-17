@@ -6,7 +6,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiClient {
 
-    private var BASE_URL = "http://143.198.154.189:5000/"
+    //private var BASE_URL = "http://143.198.154.189:5000/"
+    private var BASE_URL = "https://api.bc-stocks.com.mx"
 
     val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor())
